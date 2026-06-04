@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Manrope:wght@200..800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Playfair Display", Georgia, serif;
+  
+  --color-brand-green: #1B3022;
+  --color-brand-gold: #C5A059;
+  --color-brand-parchment: #F5F2ED;
+  --color-brand-obsidian: #2C2C2C;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F5F2ED; /* Parchment: main background */
+  color: #2C2C2C; /* Obsidian: primary body text */
+}
+
+/* Custom styles for professional scrollbars matching natural craft */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5F2ED;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C5A059;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1B3022;
+}
+
