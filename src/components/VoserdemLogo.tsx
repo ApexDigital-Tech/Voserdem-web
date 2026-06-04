@@ -39,14 +39,14 @@ export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
 
   const dimensions = {
     sm: 'h-10 w-10',
-    md: 'h-14 w-14',
+    md: 'h-16 w-16',
     lg: 'h-24 w-24',
     xl: 'h-36 w-36',
   };
 
   const heightDimensions = {
     sm: 'h-10',
-    md: 'h-14',
+    md: 'h-16',
     lg: 'h-24',
     xl: 'h-36',
   };
@@ -168,11 +168,11 @@ export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
       )}
 
       {/* Branded Typography on the right side */}
-      <div className="text-left font-sans">
+      <div className="text-left font-sans min-w-0">
         <span className="font-display text-2xl font-black tracking-tight text-[#F5F2ED] block leading-none">
           {logoData.brandName}
         </span>
-        <span className="text-[9px] uppercase tracking-wider text-[#C5A059] font-bold block max-w-[210px] mt-1 leading-tight">
+        <span className="text-[9px] uppercase tracking-wider text-[#C5A059] font-bold block whitespace-nowrap mt-1 leading-tight">
           {logoData.slogan}
         </span>
       </div>
@@ -212,20 +212,20 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
 
   const dimensions = {
     sm: 'h-10 w-10',
-    md: 'h-14 w-14',
+    md: 'h-16 w-16',
     lg: 'h-24 w-24',
     xl: 'h-36 w-36',
   };
 
   const heightDimensions = {
     sm: 'h-10',
-    md: 'h-14',
+    md: 'h-16',
     lg: 'h-24',
     xl: 'h-36',
   };
 
   return (
-    <div className={`flex flex-col items-center text-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-3 ${className}`}>
       {logoData.useCustomImage && logoData.imageUrl ? (
         <img
           src={cleanGoogleDriveUrl(logoData.imageUrl)}
@@ -235,10 +235,11 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
         />
       ) : (
         <svg
-          viewBox="0 0 400 240"
+          viewBox="0 0 400 400"
           className={`${dimensions[size]} shrink-0`}
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid meet"
         >
           <defs>
             <linearGradient id="gold-emblem-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -248,42 +249,30 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
               <stop offset="75%" stopColor="#8C6612" />
               <stop offset="100%" stopColor="#FBE9B6" />
             </linearGradient>
-            
             <filter id="gold-shadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.25" />
+              <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.3" />
             </filter>
           </defs>
-
           <g filter="url(#gold-shadow)">
-            {/* Highly stylized V shape representing a person holding a circle */}
-            <circle cx="200" cy="55" r="28" fill="url(#gold-emblem-grad)" />
-
+            <circle cx="200" cy="100" r="36" fill="url(#gold-emblem-grad)" />
             <path
-              d="M 100 65
-                 C 105 65, 140 175, 200 175
-                 C 260 175, 295 65, 300 65
-                 C 275 78, 245 118, 200 118
-                 C 155 118, 125 78, 100 65 Z"
+              d="M 80 120 C 90 120, 145 265, 200 265 C 255 265, 310 120, 320 120 C 295 135, 255 190, 200 190 C 145 190, 105 135, 80 120 Z"
               fill="url(#gold-emblem-grad)"
             />
             <path
-              d="M 180 128
-                 C 192 128, 200 122, 208 112
-                 C 220 95, 260 62, 275 58
-                 C 280 75, 240 102, 215 124
-                 C 200 135, 188 135, 180 128 Z"
+              d="M 178 196 C 192 196, 200 188, 210 175 C 225 152, 275 112, 295 105 C 300 123, 255 158, 225 188 C 210 202, 193 202, 178 196 Z"
               fill="url(#gold-emblem-grad)"
             />
           </g>
         </svg>
       )}
 
-      {/* Gold 3D Text Typography */}
-      <div className="font-sans space-y-1">
+      {/* Gold Text Typography — left-aligned, row layout */}
+      <div className="font-sans space-y-0.5 text-left">
         <h3 className="font-display text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FFF0C2] via-[#C5A059] to-[#8C6612] tracking-widest leading-none">
           {logoData.brandName}
         </h3>
-        <p className="text-[10px] uppercase tracking-widest text-[#C5A059] font-bold">
+        <p className="text-[9px] uppercase tracking-widest text-[#C5A059] font-bold whitespace-nowrap">
           {logoData.slogan}
         </p>
       </div>
