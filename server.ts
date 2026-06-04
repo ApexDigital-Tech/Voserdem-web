@@ -1,6 +1,5 @@
 import express from 'express';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
 import { supabase } from './src/utils/supabaseClient.js';
 import { Project, Donation, Message, BlogPost, Bulletin, Subscriber, CarouselSlide, LogoConfig } from './src/types.js';
 
@@ -858,6 +857,9 @@ app.post('/api/admin/reset', requireAdmin, async (req, res) => {
 // ---------------------- VITE / MIDDLEWARE SETUP ----------------------
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
+    // Dynamic import: vite is a devDependency and must NOT be imported at module level
+    // because Vercel serverless does not install devDependencies.
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
