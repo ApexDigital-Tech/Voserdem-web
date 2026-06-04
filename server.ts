@@ -4,7 +4,7 @@ import { createServer as createViteServer } from 'vite';
 import { supabase } from './src/utils/supabaseClient.js';
 import { Project, Donation, Message, BlogPost, Bulletin, Subscriber, CarouselSlide, LogoConfig } from './src/types.js';
 
-const app = express();
+export const app = express();
 const PORT = 3000;
 const TENANT_ID = 'voserdem-bolivia';
 const ADMIN_PASSKEY = 'voserdem2026';
@@ -876,4 +876,6 @@ async function startServer() {
   });
 }
 
-startServer();
+if (!process.env.VERCEL) {
+  startServer();
+}
