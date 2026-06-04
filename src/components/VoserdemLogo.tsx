@@ -230,7 +230,7 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
         <img
           src={cleanGoogleDriveUrl(logoData.imageUrl)}
           alt={logoData.brandName}
-          className={`${heightDimensions[size]} w-auto max-w-[240px] shrink-0 object-contain rounded-xl invert contrast-125`}
+          className={`${heightDimensions[size]} w-auto max-w-[240px] shrink-0 object-contain rounded-xl`}
           referrerPolicy="no-referrer"
         />
       ) : (
