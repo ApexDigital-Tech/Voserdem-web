@@ -65,6 +65,10 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
   const [slides, setSlides] = useState<CarouselSlide[] | null>(null);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
+  const { scrollY } = useScroll();
+  // Translate the background background relative to viewport scrolling
+  const yBg = useTransform(scrollY, [0, 1000], [0, 320]);
+
   useEffect(() => {
     fetch('/api/carousel')
       .then((res) => (res.ok ? res.json() : []))
@@ -116,10 +120,6 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
   };
 
   const activeSlide = slidesToRender[currentSlide] || slidesToRender[0] || defaultSlides[0];
-
-  const { scrollY } = useScroll();
-  // Translate the background background relative to viewport scrolling
-  const yBg = useTransform(scrollY, [0, 1000], [0, 320]);
 
   return (
     <div className="relative bg-[#1B3022] min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] overflow-hidden flex flex-col justify-between border-b border-[#C5A059]/30">

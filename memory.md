@@ -10,6 +10,10 @@
 - **Problema**: La visualización del carrusel de imágenes de fondo se sentía estático durante la navegación vertical.
 - **Solución**: Integramos los hooks `useScroll` y `useTransform` provistos por `motion/react`. El fondo del carrusel computa una transición suave sobre el eje Y (`0` a `320px`) dependiente del recorrido de scroll del viewport (`0` a `1000px`), generando un dinamismo visual sin penalizar el rendimiento del navegador. El background-position se ancló correctamente en el eje superior para evitar cortes accidentales del punto focal en dispositivos móviles.
 
+### Seguridad en Restauración de Base de Datos (Admin Panel)
+- **Problema**: El botón "Restaurar Valores por Defecto" en el panel de administración carecía de confirmación estricta y su color rojo provocaba pulsaciones accidentales, lo que causó un reseteo no deseado de toda la base de datos Supabase en producción.
+- **Solución**: Se mitigó el riesgo de UX implementando un "camuflaje" visual del botón (colores neutros/transparentes que solo se activan en hover). A nivel de lógica de seguridad, se agregó un `window.prompt` de validación estricta que exige al administrador teclear explícitamente la palabra `"CONFIRMAR"` en mayúsculas antes de disparar el endpoint de reseteo (`/api/admin/reset`).
+
 ### Selección de Monedas y Coordenadas Financieras (Donaciones)
 - **Problema**: Donantes locales requerían soporte directo en Bolivianos (BOB) con lectura QR, mientras que iniciativas internacionales requerían soporte en Dólares (USD) vía transferencias tradicionales en cuenta corriente.
 - **Solución**: 
