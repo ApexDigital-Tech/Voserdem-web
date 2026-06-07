@@ -62,7 +62,7 @@ const defaultSlides: CarouselSlide[] = [
 ];
 
 export default function Hero({ onLearnMore, onDonate }: HeroProps) {
-  const [slides, setSlides] = useState<CarouselSlide[]>([]);
+  const [slides, setSlides] = useState<CarouselSlide[] | null>(null);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   useEffect(() => {
@@ -81,7 +81,7 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
       });
   }, []);
 
-  const slidesToRender = slides.length > 0 ? slides : defaultSlides;
+  const slidesToRender = slides && slides.length > 0 ? slides : defaultSlides;
 
   // Auto-play interval for the slides (6500ms duration)
   useEffect(() => {
@@ -91,6 +91,12 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
     }, 6500);
     return () => clearInterval(timer);
   }, [slidesToRender.length]);
+
+  if (slides === null) {
+    return <div className="min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] bg-[#1B3022] flex items-center justify-center animate-pulse" />;
+  }
+
+
 
   // Helper to format titles with md-like *asterisks* into gorgeous highlighted spans
   const formatTitle = (titleText: string) => {

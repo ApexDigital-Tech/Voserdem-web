@@ -56,38 +56,7 @@ export default function AboutUs({
   onBulletinsClick = () => {}
 }: AboutUsProps) {
   // Dynamic Content States
-  const [aboutData, setAboutData] = useState<AboutUsData>({
-    introSub: 'Nuestro Propósito Coherente',
-    introTitle: '¿Quiénes Somos en VOSERDEM?',
-    introText: 'El Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM) es una institución boliviana guiada por profesionales y voluntarios de gran dedicación, profundamente comprometidos con la equidad social y la salud ecológica.',
-    missionTitle: 'Nuestra Misión',
-    missionText: 'Promover y consolidar el desarrollo integral del ser humano y la conservación del medio ambiente, capacitando a poblaciones marginadas mediante proyectos cooperativos, asistencia nutricional directa, agricultura ecológica y transferencia tecnológica participativa.',
-    visionTitle: 'Nuestra Visión',
-    visionText: 'Constituirnos en un modelo de referencia boliviano e internacional sobre desarrollo sostenible comunitario, donde la ecología regenerativa y la solidaridad intergeneracional se conjuguen para erradicar la extrema marginación de niños, jóvenes y adultos mayores.',
-    imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800',
-    pillars: [
-      {
-        title: 'Desarrollo Humano Integral',
-        description: 'Acompañamos a sectores en vulnerabilidad social en Cochabamba, proveyendo nutrición, educación popular, afecto, y capacitación laboral para fomentar autonomía.',
-        iconName: 'Users'
-      },
-      {
-        title: 'Restauración del Medio Ambiente',
-        description: 'Llevamos adelante proyectos de reforestación nativa, permacultura y ecotecnologías en nuestro centro piloto "Ecocamp Chocaya", devolviendo salud al ecosistema.',
-        iconName: 'Leaf'
-      },
-      {
-        title: 'Dignidad para la Vejez',
-        description: 'Nuestro programa estrella "Las Abuelitas" acoge a adultas mayores ofreciendo apoyo nutricional calórico ideal, controles sanitarios continuos y un hogar comunitario afectuoso.',
-        iconName: 'Heart'
-      },
-      {
-        title: 'Educación y Conciencia',
-        description: 'Capacitamos de manera activa a escuelas públicas y delegados juveniles sobre conservación del agua, bio-construcción, abonos orgánicos e iniciativas de reciclaje.',
-        iconName: 'GraduationCap'
-      }
-    ]
-  });
+  const [aboutData, setAboutData] = useState<AboutUsData | null>(null);
 
   // Previews States
   const [latestProject, setLatestProject] = useState<Project | null>(null);
@@ -134,6 +103,13 @@ export default function AboutUs({
       })
       .catch(err => console.error('Error picking latest bulletin preview:', err));
   }, []);
+
+  if (aboutData === null) {
+    return (
+      <div className="space-y-16 py-16 bg-[#F5F2ED] min-h-[600px] flex items-center justify-center animate-pulse">
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-16 py-16 bg-[#F5F2ED]">

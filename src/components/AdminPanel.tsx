@@ -7,7 +7,9 @@ import {
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 
 export default function AdminPanel() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('voserdem_admin_auth') === 'true';
+  });
   const [passwordInput, setPasswordInput] = useState<string>('');
   const [loginError, setLoginError] = useState<string | null>(null);
 
@@ -46,7 +48,7 @@ export default function AdminPanel() {
   // Project Form States
   const [formTitle, setFormTitle] = useState('');
   const [formCategory, setFormCategory] = useState<'Educación' | 'Medio Ambiente' | 'Adulto Mayor' | 'Desarrollo'>('Medio Ambiente');
-  const [formRegion, setFormRegion] = useState<'Altiplano' | 'Valles' | 'Oriente' | 'Chaco'>('Valles');
+  const [formRegion, setFormRegion] = useState<'Andino' | 'Valles' | 'Amazonia' | 'Chaco'>('Andino');
   const [formArea, setFormArea] = useState<'Educación' | 'Medio Ambiente' | 'Productivo' | 'Intergeneracional'>('Medio Ambiente');
   const [formDescription, setFormDescription] = useState('');
   const [formDetails, setFormDetails] = useState('');
@@ -295,11 +297,18 @@ export default function AdminPanel() {
     e.preventDefault();
     if (passwordInput.trim() === ADMIN_PASSKEY) {
       setIsAuthenticated(true);
+      sessionStorage.setItem('voserdem_admin_auth', 'true');
       setLoginError(null);
       loadAllAdminData();
     } else {
-      setLoginError('Contraseńa incorrecta para el Portal de VOSERDEM. Pista: "voserdem2026"');
+      setLoginError('Contraseña incorrecta. Intente de nuevo.');
     }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('voserdem_admin_auth');
+    setPasswordInput('');
   };
 
   const loadAllAdminData = async () => {
@@ -441,13 +450,15 @@ export default function AdminPanel() {
             brandName: logoColorBrandName,
             slogan: logoColorSlogan,
             useCustomImage: logoColorUseCustomImage,
-            imageUrl: cleanGoogleDriveUrl(logoColorImageUrl)
+            // Save original URL — cleanGoogleDriveUrl runs only at render time in VoserdemLogo
+            imageUrl: logoColorImageUrl
           },
           logoGold: {
             brandName: logoGoldBrandName,
             slogan: logoGoldSlogan,
             useCustomImage: logoGoldUseCustomImage,
-            imageUrl: cleanGoogleDriveUrl(logoGoldImageUrl)
+            // Save original URL — cleanGoogleDriveUrl runs only at render time in VoserdemLogo
+            imageUrl: logoGoldImageUrl
           }
         })
       });
@@ -600,7 +611,10 @@ export default function AdminPanel() {
   };
 
   const handleResetDatabase = async () => {
-    if (!window.confirm('ATENCIÓN: Esto restaurará los proyectos iniciales y borrará todas las donaciones y mensajes registrados en data-store.json. ¿Deseas proceder?')) {
+    const userInput = window.prompt('ATENCIÓN PELIGRO: Esto restaurará los proyectos iniciales y borrará TODAS las donaciones, mensajes, blogs y configuraciones actuales de la base de datos de producción.\n\nPara confirmar esta acción destructiva, escribe "CONFIRMAR" en mayúsculas:');
+    
+    if (userInput !== 'CONFIRMAR') {
+      showStatus('Operación de restauración cancelada. No se realizaron cambios.', 'success');
       return;
     }
 
@@ -710,7 +724,8 @@ export default function AdminPanel() {
           </button>
           <button
             onClick={handleResetDatabase}
-            className="bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+            className="bg-transparent hover:bg-rose-50 text-[#a39c93] hover:text-rose-700 border border-transparent hover:border-rose-200 text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer opacity-70 hover:opacity-100"
+            title="Peligro: Restablecimiento de Base de Datos"
           >
             <Database className="h-4 w-4" />
             Restaurar Valores por Defecto
@@ -2250,7 +2265,7 @@ export default function AdminPanel() {
                       <img
                         src={cleanGoogleDriveUrl(logoGoldImageUrl)}
                         alt="Logo Gold Preview"
-                        className="h-12 w-12 object-contain rounded-xl invert contrast-125"
+                        className="h-12 w-12 object-contain rounded-xl"
                         referrerPolicy="no-referrer"
                       />
                     ) : (

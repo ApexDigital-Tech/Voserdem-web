@@ -1,12 +1,14 @@
 import React from 'react';
 import { Trees, Mail, Phone, Heart, Globe, Award } from 'lucide-react';
 import { VoserdemLogoGold } from './VoserdemLogo';
+import { LogoConfig } from '../types';
 
 interface FooterProps {
   setActiveTab: (tab: string) => void;
+  logoConfig?: LogoConfig;
 }
 
-export default function Footer({ setActiveTab }: FooterProps) {
+export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
   const year = new Date().getFullYear();
 
   return (
@@ -16,7 +18,7 @@ export default function Footer({ setActiveTab }: FooterProps) {
         {/* Colon 1: Branding */}
         <div className="md:col-span-5 space-y-5 flex flex-col items-start text-left">
           <div className="self-start">
-            <VoserdemLogoGold size="md" className="!items-start !text-left" />
+            <VoserdemLogoGold size="md" className="!items-start !text-left" config={logoConfig} />
           </div>
           
           <p className="text-xs text-[#F5F2ED]/80 leading-relaxed max-w-sm font-sans pt-2">

@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { Heart, Menu, X, Landmark, Users, Trees, MessageSquare, ShieldCheck, HeartHandshake, BookOpen, FileText } from 'lucide-react';
 import { VoserdemLogoColor } from './VoserdemLogo';
+import { LogoConfig } from '../types';
 
 interface NavbarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  logoConfig?: LogoConfig;
 }
 
-export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
+export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
@@ -30,7 +32,7 @@ export default function Navbar({ activeTab, setActiveTab }: NavbarProps) {
               onClick={() => setActiveTab('about')}
               className="flex items-center cursor-pointer group transition-transform duration-200"
             >
-              <VoserdemLogoColor size="md" className="group-hover:scale-102" />
+              <VoserdemLogoColor size="md" className="group-hover:scale-102" config={logoConfig} />
             </button>
           </div>
 

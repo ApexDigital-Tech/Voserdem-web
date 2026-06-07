@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import AboutUs from './components/AboutUs';
@@ -10,29 +10,81 @@ import HowToHelp from './components/HowToHelp';
 import Blog from './components/Blog';
 import Bulletins from './components/Bulletins';
 import Footer from './components/Footer';
+import { LogoConfig } from './types';
+
+// Default logo config used before the first API response arrives (avoids flash)
+const defaultLogoConfig: LogoConfig = {
+  logoColor: {
+    brandName: 'VOSERDEM',
+    slogan: 'Voluntarios al Servicio de los Dem\u00e1s',
+    useCustomImage: false,
+    imageUrl: ''
+  },
+  logoGold: {
+    brandName: 'VOSERDEM',
+    slogan: 'Unidos por Bolivia',
+    useCustomImage: false,
+    imageUrl: ''
+  }
+};
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('about');
   const [preselectedProjectId, setPreselectedProjectId] = useState<string>('');
+  // Logos loaded once at app level — prevents flash-of-SVG in Navbar/Footer
+  const [logoConfig, setLogoConfig] = useState<LogoConfig>(defaultLogoConfig);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
+  const refreshLogos = useCallback(() => {
+    fetch('/api/logos')
+      .then(res => res.json())
+      .then(data => setLogoConfig(data))
+      .catch(() => {}) // silently keep defaults
+      .finally(() => setIsInitialLoading(false));
+  }, []);
+
+  useEffect(() => {
+    refreshLogos();
+    // Re-fetch when admin saves branding
+    window.addEventListener('logo-updated', refreshLogos);
+    return () => window.removeEventListener('logo-updated', refreshLogos);
+  }, [refreshLogos]);
+
+  // Scroll to top instantly on every navigation
+  const navigate = useCallback((tab: string) => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    setActiveTab(tab);
+  }, []);
 
   const navigateToDonateWithProject = (projectId: string) => {
     setPreselectedProjectId(projectId);
-    setActiveTab('donate');
+    navigate('donate');
   };
 
   const handleSuccessRedirect = () => {
     setPreselectedProjectId('');
-    setActiveTab('projects');
+    navigate('projects');
   };
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center bg-[#F5F2ED]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1B3022]"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen font-sans">
       {/* Top sticky Navigation Header */}
-      <Navbar activeTab={activeTab} setActiveTab={(tab) => {
-        // Reset preselected projects if moving elsewhere
-        if (tab !== 'donate') setPreselectedProjectId('');
-        setActiveTab(tab);
-      }} />
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          if (tab !== 'donate') setPreselectedProjectId('');
+          navigate(tab);
+        }}
+        logoConfig={logoConfig}
+      />
 
       {/* Main Tab Render Flow */}
       <main className="flex-grow">
@@ -43,16 +95,10 @@ export default function App() {
               onDonate={() => setActiveTab('donate')} 
             />
             <AboutUs 
-              onDonateClick={() => setActiveTab('donate')}
-              onProjectsClick={() => setActiveTab('projects')}
-              onBlogClick={() => {
-                setActiveTab('blog');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onBulletinsClick={() => {
-                setActiveTab('boletines');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onDonateClick={() => navigate('donate')}
+              onProjectsClick={() => navigate('projects')}
+              onBlogClick={() => navigate('blog')}
+              onBulletinsClick={() => navigate('boletines')}
             />
           </div>
         )}
@@ -107,11 +153,10 @@ export default function App() {
       </main>
 
       {/* Global Branded Footer */}
-      <Footer setActiveTab={(tab) => {
-        if (tab !== 'donate') setPreselectedProjectId('');
-        setActiveTab(tab);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }} />
+      <Footer
+        setActiveTab={navigate}
+        logoConfig={logoConfig}
+      />
     </div>
   );
 }

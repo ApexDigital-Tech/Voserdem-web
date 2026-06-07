@@ -18,7 +18,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
   // Modal State
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const regions = ['Todas', 'Altiplano', 'Valles', 'Oriente', 'Chaco'];
+  const regions = ['Todas', 'Andina', 'Valles', 'Amazonia', 'Chaco'];
   const areas = ['Educación', 'Medio Ambiente', 'Productivo', 'Intergeneracional'];
 
   const getProjectRegion = (p: Project): string => p.region || 'Valles';

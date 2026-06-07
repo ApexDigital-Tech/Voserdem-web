@@ -5,32 +5,30 @@ import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 interface LogoProps {
   className?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  config?: LogoConfig;
 }
 
-export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
-  const [config, setConfig] = useState<LogoConfig | null>(null);
-
-  const fetchLogos = () => {
-    fetch('/api/logos')
-      .then(res => res.json())
-      .then(data => setConfig(data))
-      .catch(err => console.error('Error fetching logos color:', err));
-  };
+export function VoserdemLogoColor({ className = '', size = 'md', config: externalConfig }: LogoProps) {
+  const [internalConfig, setInternalConfig] = useState<LogoConfig | null>(null);
 
   useEffect(() => {
+    if (externalConfig) return; // Use external config if provided
+
+    const fetchLogos = () => {
+      fetch('/api/logos')
+        .then(res => res.json())
+        .then(data => setInternalConfig(data))
+        .catch(err => console.error('Error fetching logos color:', err));
+    };
+
     fetchLogos();
-
-    const handleUpdate = () => {
-      fetchLogos();
-    };
-
+    const handleUpdate = () => fetchLogos();
     window.addEventListener('logo-updated', handleUpdate);
-    return () => {
-      window.removeEventListener('logo-updated', handleUpdate);
-    };
-  }, []);
+    return () => window.removeEventListener('logo-updated', handleUpdate);
+  }, [externalConfig]);
 
-  const logoData = config?.logoColor || {
+  const activeConfig = externalConfig || internalConfig;
+  const logoData = activeConfig?.logoColor || {
     brandName: 'VOSERDEM',
     slogan: 'Voluntarios al Servicio de los Demás',
     useCustomImage: false,
@@ -38,17 +36,17 @@ export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
   };
 
   const dimensions = {
-    sm: 'h-10 w-10',
-    md: 'h-16 w-16',
-    lg: 'h-24 w-24',
-    xl: 'h-36 w-36',
+    sm: 'h-12 w-12',
+    md: 'h-20 w-20',
+    lg: 'h-28 w-28',
+    xl: 'h-40 w-40',
   };
 
   const heightDimensions = {
-    sm: 'h-10',
-    md: 'h-16',
-    lg: 'h-24',
-    xl: 'h-36',
+    sm: 'h-12',
+    md: 'h-20',
+    lg: 'h-28',
+    xl: 'h-40',
   };
 
   return (
@@ -169,7 +167,7 @@ export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
 
       {/* Branded Typography on the right side */}
       <div className="text-left font-sans min-w-0">
-        <span className="font-display text-2xl font-black tracking-tight text-[#F5F2ED] block leading-none">
+        <span className="font-display text-2xl font-black tracking-tight text-[#F5F2ED] block leading-none whitespace-nowrap">
           {logoData.brandName}
         </span>
         <span className="text-[9px] uppercase tracking-wider text-[#C5A059] font-bold block whitespace-nowrap mt-1 leading-tight">
@@ -180,30 +178,27 @@ export function VoserdemLogoColor({ className = '', size = 'md' }: LogoProps) {
   );
 }
 
-export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
-  const [config, setConfig] = useState<LogoConfig | null>(null);
-
-  const fetchLogos = () => {
-    fetch('/api/logos')
-      .then(res => res.json())
-      .then(data => setConfig(data))
-      .catch(err => console.error('Error fetching logos gold:', err));
-  };
+export function VoserdemLogoGold({ className = '', size = 'md', config: externalConfig }: LogoProps) {
+  const [internalConfig, setInternalConfig] = useState<LogoConfig | null>(null);
 
   useEffect(() => {
+    if (externalConfig) return; // Use external config if provided
+
+    const fetchLogos = () => {
+      fetch('/api/logos')
+        .then(res => res.json())
+        .then(data => setInternalConfig(data))
+        .catch(err => console.error('Error fetching logos gold:', err));
+    };
+
     fetchLogos();
-
-    const handleUpdate = () => {
-      fetchLogos();
-    };
-
+    const handleUpdate = () => fetchLogos();
     window.addEventListener('logo-updated', handleUpdate);
-    return () => {
-      window.removeEventListener('logo-updated', handleUpdate);
-    };
-  }, []);
+    return () => window.removeEventListener('logo-updated', handleUpdate);
+  }, [externalConfig]);
 
-  const logoData = config?.logoGold || {
+  const activeConfig = externalConfig || internalConfig;
+  const logoData = activeConfig?.logoGold || {
     brandName: 'VOSERDEM',
     slogan: 'Unidos por Bolivia',
     useCustomImage: false,
@@ -211,17 +206,17 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
   };
 
   const dimensions = {
-    sm: 'h-10 w-10',
-    md: 'h-16 w-16',
-    lg: 'h-24 w-24',
-    xl: 'h-36 w-36',
+    sm: 'h-12 w-12',
+    md: 'h-20 w-20',
+    lg: 'h-28 w-28',
+    xl: 'h-40 w-40',
   };
 
   const heightDimensions = {
-    sm: 'h-10',
-    md: 'h-16',
-    lg: 'h-24',
-    xl: 'h-36',
+    sm: 'h-12',
+    md: 'h-20',
+    lg: 'h-28',
+    xl: 'h-40',
   };
 
   return (
@@ -269,7 +264,7 @@ export function VoserdemLogoGold({ className = '', size = 'md' }: LogoProps) {
 
       {/* Gold Text Typography — left-aligned, row layout */}
       <div className="font-sans space-y-0.5 text-left">
-        <h3 className="font-display text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FFF0C2] via-[#C5A059] to-[#8C6612] tracking-widest leading-none">
+        <h3 className="font-display text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#FFF0C2] via-[#C5A059] to-[#8C6612] tracking-widest leading-none whitespace-nowrap">
           {logoData.brandName}
         </h3>
         <p className="text-[9px] uppercase tracking-widest text-[#C5A059] font-bold whitespace-nowrap">
