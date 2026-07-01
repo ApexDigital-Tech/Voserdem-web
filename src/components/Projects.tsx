@@ -82,7 +82,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
               key={area}
               onClick={() => setSelectedRegion(area)}
               className={`px-4 py-2 rounded-[4px] text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
-                selectedRegion === reg
+                selectedRegion === area
                   ? 'bg-[#1B3022] text-[#F5F2ED] shadow-sm'
                   : 'bg-[#C5A059]/10 text-[#2C2C2C] hover:bg-[#C5A059]/20 hover:text-[#1B3022]'
               }`}
