@@ -1,4 +1,5 @@
 {
+  "name": "voserdem-web",
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
