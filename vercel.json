@@ -1,5 +1,4 @@
 {
-  "name": "voserdem-web",
   "version": 2,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
@@ -8,14 +7,14 @@
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "redirects": [
-    { "source": "/nosotros/?", "destination": "/nuestra-obra", "permanent": true },
-    { "source": "/quienes-somos/?", "destination": "/nuestra-obra", "permanent": true },
-    { "source": "/proyectos/?", "destination": "/programas", "permanent": true },
-    { "source": "/blog/?", "destination": "/noticias", "permanent": true },
-    { "source": "/noticias/?", "destination": "/noticias", "permanent": true },
-    { "source": "/contacto/?", "destination": "/como-ayudar", "permanent": true },
-    { "source": "/donaciones/?", "destination": "/como-ayudar", "permanent": true },
-    { "source": "/donar/?", "destination": "/como-ayudar", "permanent": true },
+    { "source": "/nosotros", "destination": "/nuestra-obra", "permanent": true },
+    { "source": "/quienes-somos", "destination": "/nuestra-obra", "permanent": true },
+    { "source": "/proyectos", "destination": "/programas", "permanent": true },
+    { "source": "/blog", "destination": "/noticias", "permanent": true },
+    { "source": "/noticias", "destination": "/noticias", "permanent": true },
+    { "source": "/contacto", "destination": "/como-ayudar", "permanent": true },
+    { "source": "/donaciones", "destination": "/como-ayudar", "permanent": true },
+    { "source": "/donar", "destination": "/como-ayudar", "permanent": true },
     { "source": "/category/(.*)", "destination": "/noticias", "permanent": true },
     { "source": "/tag/(.*)", "destination": "/noticias", "permanent": true },
     { "source": "/author/(.*)", "destination": "/noticias", "permanent": true }
