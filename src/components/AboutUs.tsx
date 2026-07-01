@@ -124,11 +124,11 @@ export default function AboutUs({
               {aboutData.introSub}
             </span>
             <h2 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight leading-tight">
-              {aboutData.introTitle}
+              Quiénes Somos
             </h2>
             <div className="h-[1px] bg-[#C5A059]/30 w-32" />
             <p className="text-[#2C2C2C] text-sm leading-relaxed font-sans pre-wrap">
-              {aboutData.introText}
+              VOSERDEM es una asociación de laicos católicos comprometida con el desarrollo integral y una Bolivia mejor. Con 34 años de servicio continuo, articulamos acciones solidarias bajo el Modelo de Desarrollo Sostenible Integral, honrando la dignidad humana y el cuidado de la casa común.
             </p>
             
             <div className="flex flex-wrap gap-4 pt-2">
@@ -212,11 +212,11 @@ export default function AboutUs({
       <section className="bg-[#FCF9F8]/65 py-16 border-y border-[#C5A059]/25">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">Nuestra Contribución Local</span>
-            <h2 className="font-display text-3xl font-bold text-[#1B3022]">Pilares Estratégicos de Acción</h2>
+            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">Presencia a Nivel Nacional</span>
+            <h2 className="font-display text-3xl font-bold text-[#1B3022]">Mapa de Impacto Territorial</h2>
             <div className="h-[1px] bg-[#C5A059]/30 w-20 mx-auto" />
             <p className="text-xs text-[#2C2C2C]/80 font-sans">
-              Articulamos iniciativas complementarias para lograr un impacto permanente en Cochabamba.
+              Nuestra acción capilar transforma vidas en cuatro grandes sitios piloto de Bolivia.
             </p>
           </div>
 
@@ -251,14 +251,14 @@ export default function AboutUs({
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] flex items-center justify-center gap-1.5">
             <Activity className="h-3 w-3 animate-pulse" />
-            Difusión y Transparencia
+            Transparencia y Evidencia
           </span>
           <h2 className="font-display text-3xl font-black text-[#1B3022] tracking-tight">
-            VOSERDEM en la Comunidad: Últimas Novedades
+            Programas Emblemáticos e Historia Viva
           </h2>
           <div className="h-[1px] bg-[#C5A059]/30 w-24 mx-auto" />
           <p className="text-xs text-[#2C2C2C] font-sans">
-            Previsualiza nuestras historias, proyectos en curso y boletines institucionales organizados con imágenes y enlaces directos de acción.
+            Conoce el estado de nuestros programas activos (Ecocampo, Comedores, Agua), rinde homenaje a quienes hicieron esto posible y revisa nuestra memoria institucional.
           </p>
         </div>
 
@@ -268,7 +268,7 @@ export default function AboutUs({
           <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-6 flex flex-col justify-between hover:border-[#1B3022]/35 transition-all">
             <div className="space-y-4">
               <span className="bg-[#1B3022]/10 border border-[#C5A059]/30 text-[#1B3022] text-[9px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-[4px] inline-block">
-                Iniciativa Activa
+                Programa Emblemático
               </span>
               
               {latestProject ? (
@@ -318,7 +318,7 @@ export default function AboutUs({
           <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-6 flex flex-col justify-between hover:border-[#1B3022]/35 transition-all">
             <div className="space-y-4">
               <span className="bg-[#C5A059]/10 border border-[#C5A059]/30 text-[#C5A059] text-[9px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-[4px] inline-block">
-                Último en el Blog
+                Historia Viva
               </span>
 
               {latestBlog ? (
@@ -360,7 +360,7 @@ export default function AboutUs({
           <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-6 flex flex-col justify-between hover:border-[#1B3022]/35 transition-all">
             <div className="space-y-4">
               <span className="bg-[#1B3022]/10 border border-[#C5A059]/30 text-[#1B3022] text-[9px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-[4px] inline-block">
-                Boletín Oficial
+                Transparencia (Boletines)
               </span>
 
               {latestBulletin ? (
@@ -423,10 +423,10 @@ export default function AboutUs({
           
           <div className="max-w-3xl relative z-10 space-y-6">
             <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[#F5F2ED]">
-              ¿Quieres ser parte de la transformación ecológica y humana en Bolivia?
+              ¿Quieres ser parte de la transformación en Bolivia?
             </h3>
             <p className="text-[#F5F2ED]/85 text-xs sm:text-sm leading-relaxed max-w-xl font-sans">
-              Cada donación se traduce directamente en herramientas para sembrar huertos directos, almuerzos calientes para abuelitas desamparadas y árboles nativos cuidando acuíferos.
+              Apoya la educación en Sacaca, la reforestación en Chocaya o los comedores escolares en el Norte de Potosí. Tu voluntad de hacer el bien se convierte en resultados verificables.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button

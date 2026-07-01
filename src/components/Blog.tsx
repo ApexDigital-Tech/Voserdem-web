@@ -12,7 +12,11 @@ const SignatureDivider = () => (
   </div>
 );
 
-export default function Blog() {
+interface BlogProps {
+  hideHeader?: boolean;
+}
+
+export default function Blog({ hideHeader = false }: BlogProps) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -50,18 +54,20 @@ export default function Blog() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Page title header */}
-        <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
-          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
-            Artículos y Vivencias
-          </span>
-          <h1 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
-            Blog de VOSERDEM
-          </h1>
-          <SignatureDivider />
-          <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-            Explora las historias reales, el conocimiento técnico agroecológico y el espíritu voluntario de los proyectos activos en Cochabamba, Chocaya y la cordillera del Tunari.
-          </p>
-        </div>
+        {!hideHeader && (
+          <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
+            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
+              Artículos y Vivencias
+            </span>
+            <h1 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
+              Blog de VOSERDEM
+            </h1>
+            <SignatureDivider />
+            <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
+              Explora las historias reales, el conocimiento técnico agroecológico y el espíritu voluntario de los proyectos activos en Cochabamba, Chocaya y la cordillera del Tunari.
+            </p>
+          </div>
+        )}
 
         {/* Filter bars & Search */}
         <div className="flex flex-col md:flex-row gap-4 justify-between items-center bg-[#FCF9F8] border border-[#C5A059]/30 p-4 rounded-[8px] shadow-none">

@@ -12,7 +12,11 @@ const SignatureDivider = () => (
   </div>
 );
 
-export default function Bulletins() {
+interface BulletinsProps {
+  hideHeader?: boolean;
+}
+
+export default function Bulletins({ hideHeader = false }: BulletinsProps) {
   const [bulletins, setBulletins] = useState<Bulletin[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
@@ -71,18 +75,20 @@ export default function Bulletins() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Title Header */}
-        <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
-          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
-            Centro de Publicaciones
-          </span>
-          <h1 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
-            Boletines Oficinales VOSERDEM
-          </h1>
-          <SignatureDivider />
-          <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-            Consulte la línea histórica de nuestros boletines institucionales. Creemos firmemente en el acceso público, la transparencia absoluta y la rendición de cuentas a nuestros donantes y comunidad.
-          </p>
-        </div>
+        {!hideHeader && (
+          <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
+            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
+              Memoria Histórica y Transparencia
+            </span>
+            <h1 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
+              Boletines VOSERDEM
+            </h1>
+            <div className="h-[1px] bg-[#C5A059]/30 w-32 mx-auto" />
+            <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
+              Accede a nuestra colección histórica de revistas y boletines, un registro detallado de más de 34 años de trabajo voluntario y solidaridad institucional en Bolivia.
+            </p>
+          </div>
+        )}
 
         {/* Dynamic Split Grid (Newsletter Form + Bulletins stream) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">

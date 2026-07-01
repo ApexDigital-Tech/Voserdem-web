@@ -22,42 +22,26 @@ const defaultSlides: CarouselSlide[] = [
   {
     id: 'slide-1',
     image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=1600',
-    badge: 'Medio Ambiente & Ecología',
-    badgeIconName: 'Trees',
-    title: 'Sembrando *Sostenibilidad*, Cultivando *Dignidad* Humana',
-    description: 'Somos una organización sin fines de lucro en Cochabamba, Bolivia. Restauramos ecosistemas degradados en el Ecocamp Chocaya y brindamos amor, nutrición y salud integral a nuestras queridas Abuelitas.'
+    badge: '34 Años de Servicio',
+    badgeIconName: 'Award',
+    title: 'Una *Bolivia mejor* es posible',
+    description: 'Con la voluntad de hacer bien el bien y siguiendo las huellas de Jesús. 34 años de trayectoria en Cochabamba, Potosí y Santa Cruz.'
   },
   {
     id: 'slide-2',
     image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=1600',
-    badge: 'Desarrollo Humano & Nutrición',
-    badgeIconName: 'Users',
-    title: 'Nutrición, Salud y *Amor Incondicional* para Abuelitas',
-    description: 'Ofrecemos raciones alimentarias balanceadas, cuidado fisioterapéutico, acompañamiento espiritual y un espacio seguro de socialización para adultos mayores vulnerables en Cochabamba.'
+    badge: 'Desarrollo Humano',
+    badgeIconName: 'Heart',
+    title: 'Educación, Salud y *Dignidad*',
+    description: 'Impactando a más de 1200 estudiantes en comedores escolares y brindando atención cálida a las abuelitas de Cochabamba.'
   },
   {
     id: 'slide-3',
     image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=1600',
-    badge: 'Educación & Ecocamp Chocaya',
+    badge: 'Impacto Territorial',
     badgeIconName: 'Landmark',
-    title: 'Formación y *Regeneración Ecológica* Integrada',
-    description: 'Transformamos la relación con nuestra Madre Tierra mediante capacitaciones en agroecología y reforestación nativa autónoma, capacitando a las nuevas generaciones de líderes ambientales.'
-  },
-  {
-    id: 'slide-4',
-    image: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&q=80&w=1600',
-    badge: 'Voluntariado Recíproco',
-    badgeIconName: 'Heart',
-    title: 'El Poder de Servir con el *Corazón Abierto*',
-    description: 'Guiamos a voluntarios locales y extranjeros para canalizar sus profesiones y conocimientos directamente en áreas de salud, educación y restauración forestal boliviana.'
-  },
-  {
-    id: 'slide-5',
-    image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=1600',
-    badge: 'Proyectos Sostenibles',
-    badgeIconName: 'Activity',
-    title: 'Uniendo Esfuerzos para el *Futuro de Bolivia*',
-    description: 'Desarrollamos tecnologías alternativas y huertos biointensivos que empoderan económicamente a familias vulnerables para lograr total soberanía ecológica alimentaria.'
+    title: 'De los *Andes* al *Oriente*',
+    description: 'Transformando comunidades en Sacaca, Quillacollo, Villa Tunari y el Norte Integrado Cruceño mediante desarrollo sostenible.'
   }
 ];
 
@@ -237,12 +221,12 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                   <Award className="h-6 w-6" />
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-bold text-[#C5A059] uppercase tracking-widest block">Estadísticas de impacto</span>
+                  <span className="text-[9px] font-bold text-[#C5A059] uppercase tracking-widest block">Institución con historia</span>
                   <p className="text-xs text-[#F5F2ED]/85 leading-relaxed font-sans">
-                    Nuestros donativos cubren directamente la adquisición de árboles, alimentos para las abuelitas y herramientas agroecológicas en Cochabamba.
+                    Más de tres décadas construyendo una Bolivia mejor mediante el Modelo de Desarrollo Sostenible Integral, guiados por el espíritu de servicio.
                   </p>
                   <p className="text-[10px] italic text-[#C5A059] font-medium pt-1">
-                    ✓ Transparencia civil total auditada
+                    ✓ Transparencia civil auditada
                   </p>
                 </div>
               </div>
@@ -256,10 +240,10 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12 w-full">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
           {[
-            { count: '10+', text: 'Años de Impacto', icon: Award, color: '#C5A059' },
-            { count: '10k+', text: 'Árboles Nativos', icon: Trees, color: '#F5F2ED' },
-            { count: '150+', text: 'Adultos Mayores', icon: Users, color: '#C5A059' },
-            { count: '3', text: 'Programas Activos', icon: Landmark, color: '#F5F2ED' },
+            { count: '34', text: 'Años de Servicio', icon: Award, color: '#C5A059' },
+            { count: '4', text: 'Sitios Piloto', icon: Landmark, color: '#F5F2ED' },
+            { count: '1200+', text: 'Estudiantes (Comedores)', icon: Users, color: '#C5A059' },
+            { count: '500+', text: 'Familias con Agua Segura', icon: Activity, color: '#F5F2ED' },
           ].map((stat, i) => {
             const Icon = stat.icon;
             return (

@@ -18,22 +18,22 @@ const SignatureDivider = () => (
 export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpProps) {
   const options = [
     {
-      title: 'Voluntariado en Ecocamp Chocaya',
-      description: 'Únete a las jornadas de fin de semana para riego, deshierbe, plantación de árboles nativos y preparación de tierra orgánica para nuestro vivero comunal.',
+      title: 'Voluntariado',
+      description: 'Únete a las jornadas de fin de semana para riego, deshierbe, plantación de árboles nativos y preparación de tierra orgánica para nuestro vivero comunal, o comparte tiempo con los adultos mayores.',
       icon: Sprout,
-      benefits: 'Capacitación en permacultura básica certificada y contacto directo con la naturaleza del Tunari.'
+      benefits: 'Capacitación certificada, contacto directo con la naturaleza y apoyo social activo.'
     },
     {
-      title: 'Nutrir a las Abuelitas',
-      description: 'Apoya el comedor de Cochabamba preparando raciones, clasificando donaciones de ropa y medicamentos, o compartiendo talleres manuales de costura con nuestras abuelitas.',
+      title: 'Donación Institucional',
+      description: 'Aporta recursos económicos directos que se transforman en sistemas de riego por goteo, infraestructura educativa o raciones nutricionales en los comedores.',
       icon: Heart,
-      benefits: 'Intercambio generacional invaluable y apoyo social activo para combatir la soledad de la vejez.'
+      benefits: 'Transparencia total con informes verificables y deducción fiscal oportuna.'
     },
     {
-      title: 'Hacer una Donación de Impacto',
-      description: 'Aporta recursos económicos directos que se transforman en sistemas de riego por goteo, plántulas nativas, o insumos de comida caliente diaria de alta dosis nutricional.',
-      icon: Award,
-      benefits: 'Transparencia de uso informada con informes semestrales y deducción civil oportuna.'
+      title: 'Alianzas y Cooperación',
+      description: 'Acuerdos estratégicos con gremios, responsabilidad social empresarial (RSE) o red de parroquias para potenciar el impacto en nuestros sitios piloto.',
+      icon: Users,
+      benefits: 'Multiplicación del impacto social y cumplimiento de Objetivos de Desarrollo Sostenible (ODS).'
     },
   ];
 

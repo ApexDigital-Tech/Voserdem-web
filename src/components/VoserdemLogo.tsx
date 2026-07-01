@@ -200,7 +200,7 @@ export function VoserdemLogoGold({ className = '', size = 'md', config: external
   const activeConfig = externalConfig || internalConfig;
   const logoData = activeConfig?.logoGold || {
     brandName: 'VOSERDEM',
-    slogan: 'Unidos por Bolivia',
+    slogan: 'Una Bolivia mejor es posible',
     useCustomImage: false,
     imageUrl: ''
   };

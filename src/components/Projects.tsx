@@ -18,19 +18,16 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
   // Modal State
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const regions = ['Todas', 'Andina', 'Valles', 'Amazonia', 'Chaco'];
-  const areas = ['Educación', 'Medio Ambiente', 'Productivo', 'Intergeneracional'];
+  const areas = ['Todas', 'Educación', 'Comedores', 'Agua y Agroforestería', 'Acompañamiento Social'];
 
-  const getProjectRegion = (p: Project): string => p.region || 'Valles';
   const getProjectArea = (p: Project): string => {
-    if (p.area) return p.area;
-    // Map legacy category if undefined
-    if (p.category === 'Educación') return 'Educación';
-    if (p.category === 'Medio Ambiente') return 'Medio Ambiente';
-    if (p.category === 'Adulto Mayor') return 'Intergeneracional';
-    if (p.category === 'Desarrollo') return 'Productivo';
-    return 'Medio Ambiente';
+    const cat = p.category || p.area || '';
+    if (cat.includes('Educación')) return 'Educación';
+    if (cat.includes('Agua') || cat.includes('Medio Ambiente') || cat.includes('Agroforestería')) return 'Agua y Agroforestería';
+    if (cat.includes('Comedor')) return 'Comedores';
+    return 'Acompañamiento Social';
   };
+  const getProjectRegion = (p: Project): string => p.region || 'Bolivia';
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -59,7 +56,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
     if (selectedRegion === 'Todas') {
       setFilteredProjects(projects);
     } else {
-      setFilteredProjects(projects.filter(p => getProjectRegion(p) === selectedRegion));
+      setFilteredProjects(projects.filter(p => getProjectArea(p) === selectedRegion));
     }
   }, [selectedRegion, projects]);
 
@@ -69,28 +66,28 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
       {/* Tab Filter & Intro */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4 border-b border-[#C5A059]/20">
         <div>
-          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Soporte Vital y Regeneración</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">Impacto Directo</span>
           <h2 className="font-display text-3xl sm:text-4xl font-black text-[#1B3022] mt-1">
-            Programas y Proyectos Activos
+            Programas Emblemáticos
           </h2>
           <p className="text-xs text-[#2C2C2C] mt-1 max-w-xl font-sans">
-            Reorganizados por Regiones geográficas y Áreas de intervención para brindarte una total transparencia en cada rincón de Bolivia.
+            Reorganizados por Líneas de Intervención para brindarte una total transparencia sobre las iniciativas activas.
           </p>
         </div>
 
         {/* Filter Badges */}
         <div className="flex flex-wrap gap-2 w-full md:w-auto">
-          {regions.map((reg) => (
+          {areas.map((area) => (
             <button
-              key={reg}
-              onClick={() => setSelectedRegion(reg)}
+              key={area}
+              onClick={() => setSelectedRegion(area)}
               className={`px-4 py-2 rounded-[4px] text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer ${
                 selectedRegion === reg
                   ? 'bg-[#1B3022] text-[#F5F2ED] shadow-sm'
                   : 'bg-[#C5A059]/10 text-[#2C2C2C] hover:bg-[#C5A059]/20 hover:text-[#1B3022]'
               }`}
             >
-              {reg === 'Todas' ? 'Todas las Regiones' : reg}
+              {area === 'Todas' ? 'Todos los Programas' : area}
             </button>
           ))}
         </div>
@@ -124,27 +121,27 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
         </div>
       ) : filteredProjects.length === 0 ? (
         <div className="text-center py-20 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#C5A059]/30">
-          <p className="text-[#2C2C2C]/80 text-xs font-semibold uppercase tracking-wider">No se encontraron proyectos disponibles para esta región.</p>
+          <p className="text-[#2C2C2C]/80 text-xs font-semibold uppercase tracking-wider">No se encontraron programas disponibles para esta línea.</p>
           <button
             onClick={() => setSelectedRegion('Todas')}
             className="mt-4 text-[#1B3022] font-semibold text-xs tracking-widest uppercase hover:underline cursor-pointer"
           >
-            Ver todas las regiones
+            Ver todas las líneas
           </button>
         </div>
       ) : (
         <div className="space-y-12">
-          {regions.filter(r => r !== 'Todas' && (selectedRegion === 'Todas' || r === selectedRegion)).map((region) => {
-            const projectsInRegion = filteredProjects.filter(p => getProjectRegion(p) === region);
+          {areas.filter(a => a !== 'Todas' && (selectedRegion === 'Todas' || a === selectedRegion)).map((area) => {
+            const projectsInRegion = filteredProjects.filter(p => getProjectArea(p) === area);
             if (projectsInRegion.length === 0) return null;
 
             return (
-              <div key={region} className="space-y-8 bg-white/45 p-6 sm:p-8 rounded-[12px] border border-[#C5A059]/20 shadow-xs animate-fade-in">
+              <div key={area} className="space-y-8 bg-white/45 p-6 sm:p-8 rounded-[12px] border border-[#C5A059]/20 shadow-xs animate-fade-in">
                 {/* Region Heading */}
                 <div className="flex items-center gap-3">
                   <div className="h-1 bg-[#1B3022] w-6 rounded-full"></div>
                   <h3 className="font-display text-2xl font-black text-[#1B3022] tracking-tight uppercase">
-                    Región {region}
+                    {area}
                   </h3>
                   <div className="flex-1 h-[1px] bg-gradient-to-r from-[#C5A059]/30 to-transparent"></div>
                 </div>

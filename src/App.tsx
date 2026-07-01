@@ -7,9 +7,10 @@ import DonationForm from './components/DonationForm';
 import Contact from './components/Contact';
 import AdminPanel from './components/AdminPanel';
 import HowToHelp from './components/HowToHelp';
-import Blog from './components/Blog';
-import Bulletins from './components/Bulletins';
 import Footer from './components/Footer';
+import NuestraObra from './components/NuestraObra';
+import ImpactoTerritorial from './components/ImpactoTerritorial';
+import Transparencia from './components/Transparencia';
 import { LogoConfig } from './types';
 
 // Default logo config used before the first API response arrives (avoids flash)
@@ -22,7 +23,7 @@ const defaultLogoConfig: LogoConfig = {
   },
   logoGold: {
     brandName: 'VOSERDEM',
-    slogan: 'Unidos por Bolivia',
+    slogan: 'Una Bolivia mejor es posible',
     useCustomImage: false,
     imageUrl: ''
   }
@@ -32,14 +33,17 @@ export default function App() {
   const getInitialTab = () => {
     const path = window.location.pathname.replace(/^\/|\/$/g, '');
     let tab = path;
-    if (tab === 'sobre-nosotros' || tab === '') tab = 'about';
+    if (tab === 'sobre-nosotros' || tab === 'home' || tab === '') tab = 'home';
+    if (tab === 'nuestra-obra') tab = 'nuestra-obra';
+    if (tab === 'impacto') tab = 'impacto';
     if (tab === 'como-ayudar') tab = 'how-to-help';
     if (tab === 'contacto') tab = 'contact';
-    if (tab === 'proyectos') tab = 'projects';
+    if (tab === 'proyectos' || tab === 'programas') tab = 'projects';
+    if (tab === 'transparencia') tab = 'transparencia';
     if (tab === 'donar') tab = 'donate';
     
-    const validTabs = ['about', 'projects', 'donate', 'contact', 'admin', 'how-to-help', 'blog', 'boletines'];
-    return validTabs.includes(tab) ? tab : 'about';
+    const validTabs = ['home', 'nuestra-obra', 'impacto', 'projects', 'transparencia', 'donate', 'contact', 'admin', 'how-to-help'];
+    return validTabs.includes(tab) ? tab : 'home';
   };
 
   const [activeTab, setActiveTab] = useState<string>(getInitialTab());
@@ -69,10 +73,10 @@ export default function App() {
     setActiveTab(tab);
     
     let path = tab;
-    if (tab === 'about') path = '';
+    if (tab === 'home') path = '';
     if (tab === 'how-to-help') path = 'como-ayudar';
     if (tab === 'contact') path = 'contacto';
-    if (tab === 'projects') path = 'proyectos';
+    if (tab === 'projects') path = 'programas';
     if (tab === 'donate') path = 'donar';
     
     window.history.pushState({}, '', `/${path}`);
@@ -116,7 +120,7 @@ export default function App() {
 
       {/* Main Tab Render Flow */}
       <main className="flex-grow">
-        {activeTab === 'about' && (
+        {activeTab === 'home' && (
           <div className="animate-fade-in">
             <Hero 
               onLearnMore={() => setActiveTab('projects')} 
@@ -125,9 +129,21 @@ export default function App() {
             <AboutUs 
               onDonateClick={() => navigate('donate')}
               onProjectsClick={() => navigate('projects')}
-              onBlogClick={() => navigate('blog')}
-              onBulletinsClick={() => navigate('boletines')}
+              onBlogClick={() => navigate('transparencia')}
+              onBulletinsClick={() => navigate('transparencia')}
             />
+          </div>
+        )}
+
+        {activeTab === 'nuestra-obra' && (
+          <div className="animate-fade-in">
+            <NuestraObra />
+          </div>
+        )}
+
+        {activeTab === 'impacto' && (
+          <div className="animate-fade-in">
+            <ImpactoTerritorial />
           </div>
         )}
 
@@ -137,15 +153,9 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'blog' && (
+        {activeTab === 'transparencia' && (
           <div className="animate-fade-in animate-duration-300">
-            <Blog />
-          </div>
-        )}
-
-        {activeTab === 'boletines' && (
-          <div className="animate-fade-in animate-duration-300">
-            <Bulletins />
+            <Transparencia />
           </div>
         )}
 

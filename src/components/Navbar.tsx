@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Menu, X, Landmark, Users, Trees, MessageSquare, ShieldCheck, HeartHandshake, BookOpen, FileText } from 'lucide-react';
+import { Heart, Menu, X, Landmark, Users, Trees, MessageSquare, ShieldCheck, HeartHandshake, BookOpen, FileText, Map } from 'lucide-react';
 import { VoserdemLogoColor } from './VoserdemLogo';
 import { LogoConfig } from '../types';
 
@@ -13,10 +13,10 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { id: 'about', label: 'Sobre Nosotros', icon: Users },
-    { id: 'projects', label: 'Proyectos', icon: Trees },
-    { id: 'blog', label: 'Blog', icon: BookOpen },
-    { id: 'boletines', label: 'Boletines', icon: FileText },
+    { id: 'about', label: 'Nuestra Obra', icon: Users },
+    { id: 'impacto', label: 'Impacto Territorial', icon: Map },
+    { id: 'projects', label: 'Programas', icon: Trees },
+    { id: 'transparencia', label: 'Transparencia', icon: BookOpen },
     { id: 'how-to-help', label: 'Cómo Ayudar', icon: HeartHandshake },
     { id: 'contact', label: 'Contacto', icon: MessageSquare },
     { id: 'admin', label: 'Admin Portal', icon: ShieldCheck },

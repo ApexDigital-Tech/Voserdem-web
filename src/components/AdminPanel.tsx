@@ -32,7 +32,7 @@ export default function AdminPanel() {
   const [logoColorImageUrl, setLogoColorImageUrl] = useState('');
 
   const [logoGoldBrandName, setLogoGoldBrandName] = useState('VOSERDEM');
-  const [logoGoldSlogan, setLogoGoldSlogan] = useState('Unidos por Bolivia');
+  const [logoGoldSlogan, setLogoGoldSlogan] = useState('Una Bolivia mejor es posible');
   const [logoGoldUseCustomImage, setLogoGoldUseCustomImage] = useState(false);
   const [logoGoldImageUrl, setLogoGoldImageUrl] = useState('');
 
@@ -360,7 +360,7 @@ export default function AdminPanel() {
         }
         if (logoData.logoGold) {
           setLogoGoldBrandName(logoData.logoGold.brandName || 'VOSERDEM');
-          setLogoGoldSlogan(logoData.logoGold.slogan || 'Unidos por Bolivia');
+          setLogoGoldSlogan(logoData.logoGold.slogan || 'Una Bolivia mejor es posible');
           setLogoGoldUseCustomImage(!!logoData.logoGold.useCustomImage);
           setLogoGoldImageUrl(logoData.logoGold.imageUrl || '');
         }
@@ -2204,7 +2204,7 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Subtítulo del Corporativo / Unidos por Bolivia</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Subtítulo del Corporativo / Una Bolivia mejor es posible</label>
                   <input
                     type="text"
                     required
