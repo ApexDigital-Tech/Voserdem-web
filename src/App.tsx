@@ -29,7 +29,20 @@ const defaultLogoConfig: LogoConfig = {
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('about');
+  const getInitialTab = () => {
+    const path = window.location.pathname.replace(/^\/|\/$/g, '');
+    let tab = path;
+    if (tab === 'sobre-nosotros' || tab === '') tab = 'about';
+    if (tab === 'como-ayudar') tab = 'how-to-help';
+    if (tab === 'contacto') tab = 'contact';
+    if (tab === 'proyectos') tab = 'projects';
+    if (tab === 'donar') tab = 'donate';
+    
+    const validTabs = ['about', 'projects', 'donate', 'contact', 'admin', 'how-to-help', 'blog', 'boletines'];
+    return validTabs.includes(tab) ? tab : 'about';
+  };
+
+  const [activeTab, setActiveTab] = useState<string>(getInitialTab());
   const [preselectedProjectId, setPreselectedProjectId] = useState<string>('');
   // Logos loaded once at app level — prevents flash-of-SVG in Navbar/Footer
   const [logoConfig, setLogoConfig] = useState<LogoConfig>(defaultLogoConfig);
@@ -54,6 +67,21 @@ export default function App() {
   const navigate = useCallback((tab: string) => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
     setActiveTab(tab);
+    
+    let path = tab;
+    if (tab === 'about') path = '';
+    if (tab === 'how-to-help') path = 'como-ayudar';
+    if (tab === 'contact') path = 'contacto';
+    if (tab === 'projects') path = 'proyectos';
+    if (tab === 'donate') path = 'donar';
+    
+    window.history.pushState({}, '', `/${path}`);
+  }, []);
+
+  useEffect(() => {
+    const handlePopState = () => setActiveTab(getInitialTab());
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const navigateToDonateWithProject = (projectId: string) => {
