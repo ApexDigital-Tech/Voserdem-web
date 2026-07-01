@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import NuestraObra from './components/NuestraObra';
 import ImpactoTerritorial from './components/ImpactoTerritorial';
 import Transparencia from './components/Transparencia';
+import Blog from './components/Blog';
 import { LogoConfig } from './types';
 
 // Default logo config used before the first API response arrives (avoids flash)
@@ -42,7 +43,7 @@ export default function App() {
     if (tab === 'transparencia') tab = 'transparencia';
     if (tab === 'donar') tab = 'donate';
     
-    const validTabs = ['home', 'nuestra-obra', 'impacto', 'projects', 'transparencia', 'donate', 'contact', 'admin', 'how-to-help'];
+    const validTabs = ['home', 'nuestra-obra', 'impacto', 'projects', 'transparencia', 'blog', 'donate', 'contact', 'admin', 'how-to-help'];
     return validTabs.includes(tab) ? tab : 'home';
   };
 
@@ -78,6 +79,7 @@ export default function App() {
     if (tab === 'contact') path = 'contacto';
     if (tab === 'projects') path = 'programas';
     if (tab === 'donate') path = 'donar';
+    if (tab === 'blog') path = 'blog';
     
     window.history.pushState({}, '', `/${path}`);
   }, []);
@@ -129,7 +131,7 @@ export default function App() {
             <AboutUs 
               onDonateClick={() => navigate('donate')}
               onProjectsClick={() => navigate('projects')}
-              onBlogClick={() => navigate('transparencia')}
+              onBlogClick={() => navigate('blog')}
               onBulletinsClick={() => navigate('transparencia')}
             />
           </div>
@@ -180,6 +182,12 @@ export default function App() {
         {activeTab === 'contact' && (
           <div className="animate-fade-in">
             <Contact />
+          </div>
+        )}
+
+        {activeTab === 'blog' && (
+          <div className="animate-fade-in">
+            <Blog />
           </div>
         )}
 

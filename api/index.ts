@@ -561,11 +561,47 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
   if (req.body.readTime !== undefined) updates.readTime = req.body.readTime;
   if (req.body.featured !== undefined) updates.featured = !!req.body.featured;
   try {
-    const { error } = await supabase.from('blog').update(updates).eq('id', id).eq('organization_id', TENANT_ID);
-    if (error) throw error;
-    const { data: updated, error: findErr } = await supabase.from('blog').select('*').eq('id', id).eq('organization_id', TENANT_ID).single();
+    // Check if record exists first (handles IDs created locally that aren't in Supabase)
+    const { data: existing } = await supabase
+      .from('blog')
+      .select('id')
+      .eq('id', id)
+      .eq('organization_id', TENANT_ID)
+      .maybeSingle();
+
+    if (existing) {
+      // Record exists — standard update
+      const { error } = await supabase.from('blog').update(updates).eq('id', id).eq('organization_id', TENANT_ID);
+      if (error) throw error;
+    } else {
+      // Record does not exist in Supabase — upsert from body to avoid data loss
+      const upsertRow = {
+        id,
+        organization_id: TENANT_ID,
+        title: req.body.title || 'Sin título',
+        summary: req.body.summary || '',
+        content: req.body.content || '',
+        image: req.body.image || '',
+        category: req.body.category || 'Institucional',
+        author: req.body.author || 'VOSERDEM',
+        date: req.body.date || new Date().toISOString().split('T')[0],
+        readTime: req.body.readTime || '3 min',
+        featured: !!req.body.featured,
+        status: req.body.status || 'published',
+        ...updates
+      };
+      const { error } = await supabase.from('blog').upsert(upsertRow);
+      if (error) throw error;
+    }
+
+    const { data: updated, error: findErr } = await supabase
+      .from('blog')
+      .select('*')
+      .eq('id', id)
+      .eq('organization_id', TENANT_ID)
+      .maybeSingle();
     if (findErr) throw findErr;
-    res.json(mapBlogFromDb(updated));
+    res.json(updated ? mapBlogFromDb(updated) : { id, ...updates });
   } catch (err: any) {
     console.error('blog PUT:', err.message);
     res.status(500).json({ error: 'Error al actualizar el artículo.' });

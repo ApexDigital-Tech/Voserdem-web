@@ -16,7 +16,7 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
     { id: 'nuestra-obra', label: 'Nuestra Obra', icon: Users },
     { id: 'impacto', label: 'Impacto Territorial', icon: Map },
     { id: 'projects', label: 'Programas', icon: Trees },
-    { id: 'transparencia', label: 'Transparencia', icon: BookOpen },
+    { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'how-to-help', label: 'Cómo Ayudar', icon: HeartHandshake },
     { id: 'contact', label: 'Contacto', icon: MessageSquare },
     { id: 'admin', label: 'Admin Portal', icon: ShieldCheck },
