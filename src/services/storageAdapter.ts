@@ -385,13 +385,16 @@ export class SupabaseStorage implements IStorage {
   }
 
   async updateLogoConfig(tenantId: string, config: any): Promise<LogoConfig> {
-    const { error } = await supabase.from('logos').upsert({
+    const { data, error } = await supabase.from('logos').upsert({
       id: 'default',
       organization_id: tenantId,
-      logoColor: config.logoColor,
-      logoGold: config.logoGold
+      logoColor: typeof config.logoColor === 'string' ? JSON.parse(config.logoColor) : config.logoColor,
+      logoGold: typeof config.logoGold === 'string' ? JSON.parse(config.logoGold) : config.logoGold
     });
-    if (error) throw error;
+    if (error) {
+      console.error('Full Supabase Error (logos):', JSON.stringify({ data, error }, null, 2));
+      throw error;
+    }
     return config;
   }
 
@@ -402,8 +405,16 @@ export class SupabaseStorage implements IStorage {
   }
 
   async updateAboutUs(tenantId: string, config: any): Promise<any> {
-    const { error } = await supabase.from('about').upsert(mapAboutToDb(config, tenantId));
-    if (error) throw error;
+    const dbObj = mapAboutToDb(config, tenantId);
+    // Asegurar que pillars sea un array u objeto válido para JSONB si es string
+    if (typeof dbObj.pillars === 'string') {
+      try { dbObj.pillars = JSON.parse(dbObj.pillars); } catch(e){}
+    }
+    const { data, error } = await supabase.from('about').upsert(dbObj);
+    if (error) {
+      console.error('Full Supabase Error (about):', JSON.stringify({ data, error }, null, 2));
+      throw error;
+    }
     return config;
   }
 }

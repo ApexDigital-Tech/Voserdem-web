@@ -138,11 +138,11 @@ const initialBulletins = [
 function mapDonationFromDb(db: any) {
   return {
     id: db.id,
-    donorName: db.donor_name,
+    donorName: db.donorName,
     email: db.email,
     amount: Number(db.amount),
-    projectId: db.project_id,
-    projectTitle: db.project_title,
+    projectId: db.projectId,
+    projectTitle: db.projectTitle,
     date: db.date,
     comment: db.comment || ''
   };
@@ -158,7 +158,7 @@ function mapBlogFromDb(db: any) {
     category: db.category,
     author: db.author,
     date: db.date,
-    readTime: db.read_time || '3 min',
+    readTime: db.readTime || '3 min',
     featured: !!db.featured,
     status: db.status || 'published'
   };
@@ -169,9 +169,9 @@ function mapBulletinFromDb(db: any) {
     id: db.id,
     title: db.title,
     summary: db.summary,
-    publishDate: db.publish_date,
-    issueNumber: db.issue_number,
-    downloadUrl: db.download_url || '',
+    publishDate: db.publishDate,
+    issueNumber: db.issueNumber,
+    downloadUrl: db.downloadUrl || '',
     image: db.image || '',
     status: db.status || 'published'
   };
@@ -182,7 +182,7 @@ function mapCarouselFromDb(db: any) {
     id: db.id,
     image: db.image,
     badge: db.badge || '',
-    badgeIconName: db.badge_icon_name || 'Trees',
+    badgeIconName: db.badgeIconName || 'Trees',
     title: db.title || '',
     description: db.description || ''
   };
@@ -190,23 +190,23 @@ function mapCarouselFromDb(db: any) {
 
 function mapAboutFromDb(db: any) {
   return {
-    introSub: db.intro_sub,
-    introTitle: db.intro_title,
-    introText: db.intro_text,
-    missionTitle: db.mission_title,
-    missionText: db.mission_text,
-    visionTitle: db.vision_title,
-    visionText: db.vision_text,
-    imageUrl: db.image_url,
-    heroImageUrl: db.hero_image_url || '',
+    introSub: db.introSub,
+    introTitle: db.introTitle,
+    introText: db.introText,
+    missionTitle: db.missionTitle,
+    missionText: db.missionText,
+    visionTitle: db.visionTitle,
+    visionText: db.visionText,
+    imageUrl: db.imageUrl,
+    heroImageUrl: db.hero_imageUrl || '',
     pillars: db.pillars
   };
 }
 
 function mapLogosFromDb(db: any) {
   return {
-    logoColor: db.logo_color,
-    logoGold: db.logo_gold
+    logoColor: db.logoColor,
+    logoGold: db.logoGold
   };
 }
 
@@ -223,7 +223,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/carousel', async (_req, res) => {
   try {
     const { data, error } = await supabase
-      .from('carousel_slides')
+      .from('carousel')
       .select('*')
       .eq('organization_id', TENANT_ID);
     if (error) throw error;
@@ -239,17 +239,17 @@ app.put('/api/carousel', requireAdmin, async (req, res) => {
   if (!Array.isArray(slides)) return res.status(400).json({ error: 'Debe ser un array.' });
   if (slides.length > 5) return res.status(400).json({ error: 'Máximo 5 diapositivas.' });
   try {
-    await supabase.from('carousel_slides').delete().eq('organization_id', TENANT_ID);
+    await supabase.from('carousel').delete().eq('organization_id', TENANT_ID);
     const rows = slides.map((s: any) => ({
       id: s.id || `slide-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       organization_id: TENANT_ID,
       image: s.image,
       badge: s.badge || '',
-      badge_icon_name: s.badgeIconName || 'Trees',
+      badgeIconName: s.badgeIconName || 'Trees',
       title: s.title || '',
       description: s.description || ''
     }));
-    const { error } = await supabase.from('carousel_slides').insert(rows);
+    const { error } = await supabase.from('carousel').insert(rows);
     if (error) throw error;
     res.json(rows.map(mapCarouselFromDb));
   } catch (err: any) {
@@ -262,7 +262,7 @@ app.put('/api/carousel', requireAdmin, async (req, res) => {
 app.get('/api/logos', async (_req, res) => {
   try {
     const { data, error } = await supabase
-      .from('logo_config')
+      .from('logos')
       .select('*')
       .eq('organization_id', TENANT_ID)
       .eq('id', 'default')
@@ -280,11 +280,11 @@ app.put('/api/logos', requireAdmin, async (req, res) => {
   if (!logoColor || !logoGold)
     return res.status(400).json({ error: 'Faltan configuraciones de logotipo.' });
   try {
-    const { error } = await supabase.from('logo_config').upsert({
+    const { error } = await supabase.from('logos').upsert({
       id: 'default',
       organization_id: TENANT_ID,
-      logo_color: logoColor,
-      logo_gold: logoGold
+      logoColor: typeof logoColor === 'string' ? JSON.parse(logoColor) : logoColor,
+      logoGold: typeof logoGold === 'string' ? JSON.parse(logoGold) : logoGold
     });
     if (error) throw error;
     res.json({ logoColor, logoGold });
@@ -298,7 +298,7 @@ app.put('/api/logos', requireAdmin, async (req, res) => {
 app.get('/api/about', async (_req, res) => {
   try {
     const { data, error } = await supabase
-      .from('about_us')
+      .from('about')
       .select('*')
       .eq('organization_id', TENANT_ID)
       .eq('id', 'default')
@@ -319,19 +319,19 @@ app.put('/api/about', requireAdmin, async (req, res) => {
     imageUrl, heroImageUrl, pillars
   } = req.body;
   try {
-    const { error } = await supabase.from('about_us').upsert({
+    const { error } = await supabase.from('about').upsert({
       id: 'default',
       organization_id: TENANT_ID,
-      intro_sub: introSub || initialAboutUs.introSub,
-      intro_title: introTitle || initialAboutUs.introTitle,
-      intro_text: introText || initialAboutUs.introText,
-      mission_title: missionTitle || initialAboutUs.missionTitle,
-      mission_text: missionText || initialAboutUs.missionText,
-      vision_title: visionTitle || initialAboutUs.visionTitle,
-      vision_text: visionText || initialAboutUs.visionText,
-      image_url: imageUrl || initialAboutUs.imageUrl,
-      hero_image_url: heroImageUrl || initialAboutUs.heroImageUrl,
-      pillars: Array.isArray(pillars) ? pillars : initialAboutUs.pillars
+      introSub: introSub || initialAboutUs.introSub,
+      introTitle: introTitle || initialAboutUs.introTitle,
+      introText: introText || initialAboutUs.introText,
+      missionTitle: missionTitle || initialAboutUs.missionTitle,
+      missionText: missionText || initialAboutUs.missionText,
+      visionTitle: visionTitle || initialAboutUs.visionTitle,
+      visionText: visionText || initialAboutUs.visionText,
+      imageUrl: imageUrl || initialAboutUs.imageUrl,
+      heroImageUrl: heroImageUrl || initialAboutUs.heroImageUrl,
+      pillars: typeof pillars === 'string' ? JSON.parse(pillars) : (Array.isArray(pillars) ? pillars : initialAboutUs.pillars)
     });
     if (error) throw error;
     res.json(req.body);
@@ -431,10 +431,10 @@ app.post('/api/donations', async (req, res) => {
     const newDonation = {
       id: `don-${Date.now()}`,
       organization_id: TENANT_ID,
-      donor_name: donorName, email,
+      donorName: donorName, email,
       amount: amountNum,
-      project_id: projectId,
-      project_title: proj.title,
+      projectId: projectId,
+      projectTitle: proj.title,
       date: new Date().toISOString(),
       comment
     };
@@ -518,7 +518,7 @@ app.post('/api/blog', requireAdmin, async (req, res) => {
     image: image || 'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=800',
     category, author,
     date: new Date().toISOString().split('T')[0],
-    read_time: readTime || '3 min',
+    readTime: readTime || '3 min',
     featured: !!featured,
     status: status || 'published'
   };
@@ -537,7 +537,7 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
   const updates: any = {};
   const fields = ['title','summary','content','image','category','author','status'];
   fields.forEach(f => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
-  if (req.body.readTime !== undefined) updates.read_time = req.body.readTime;
+  if (req.body.readTime !== undefined) updates.readTime = req.body.readTime;
   if (req.body.featured !== undefined) updates.featured = !!req.body.featured;
   try {
     const { error } = await supabase.from('blog').update(updates).eq('id', id).eq('organization_id', TENANT_ID);
@@ -586,9 +586,9 @@ app.post('/api/bulletins', requireAdmin, async (req, res) => {
     id: `bull-${Date.now()}`,
     organization_id: TENANT_ID,
     title, summary,
-    issue_number: issueNumber,
-    publish_date: new Date().toISOString().split('T')[0],
-    download_url: downloadUrl || '',
+    issueNumber: issueNumber,
+    publishDate: new Date().toISOString().split('T')[0],
+    downloadUrl: downloadUrl || '',
     image: image || '',
     status: status || 'published'
   };
@@ -607,8 +607,8 @@ app.put('/api/bulletins/:id', requireAdmin, async (req, res) => {
   const updates: any = {};
   const fields = ['title','summary','image','status'];
   fields.forEach(f => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
-  if (req.body.issueNumber !== undefined) updates.issue_number = req.body.issueNumber;
-  if (req.body.downloadUrl !== undefined) updates.download_url = req.body.downloadUrl;
+  if (req.body.issueNumber !== undefined) updates.issueNumber = req.body.issueNumber;
+  if (req.body.downloadUrl !== undefined) updates.downloadUrl = req.body.downloadUrl;
   try {
     const { error } = await supabase.from('bulletins').update(updates).eq('id', id).eq('organization_id', TENANT_ID);
     if (error) throw error;
@@ -689,40 +689,40 @@ app.post('/api/admin/reset', requireAdmin, async (_req, res) => {
       supabase.from('blog').delete().eq('organization_id', TENANT_ID),
       supabase.from('bulletins').delete().eq('organization_id', TENANT_ID),
       supabase.from('subscribers').delete().eq('organization_id', TENANT_ID),
-      supabase.from('about_us').delete().eq('organization_id', TENANT_ID),
-      supabase.from('carousel_slides').delete().eq('organization_id', TENANT_ID),
-      supabase.from('logo_config').delete().eq('organization_id', TENANT_ID)
+      supabase.from('about').delete().eq('organization_id', TENANT_ID),
+      supabase.from('carousel').delete().eq('organization_id', TENANT_ID),
+      supabase.from('logos').delete().eq('organization_id', TENANT_ID)
     ]);
     await supabase.from('projects').insert(initialProjects.map(p => ({ ...p, organization_id: TENANT_ID })));
     await supabase.from('blog').insert(initialBlog.map(b => ({
       id: b.id, organization_id: TENANT_ID,
       title: b.title, summary: b.summary, content: b.content,
       image: b.image, category: b.category, author: b.author,
-      date: b.date, read_time: b.readTime, featured: b.featured, status: 'published'
+      date: b.date, readTime: b.readTime, featured: b.featured, status: 'published'
     })));
     await supabase.from('bulletins').insert(initialBulletins.map(b => ({
       id: b.id, organization_id: TENANT_ID,
       title: b.title, summary: b.summary,
-      issue_number: b.issueNumber, publish_date: b.publishDate,
-      download_url: b.downloadUrl, image: b.image, status: 'published'
+      issueNumber: b.issueNumber, publishDate: b.publishDate,
+      downloadUrl: b.downloadUrl, image: b.image, status: 'published'
     })));
-    await supabase.from('about_us').insert({
+    await supabase.from('about').insert({
       id: 'default', organization_id: TENANT_ID,
-      intro_sub: initialAboutUs.introSub, intro_title: initialAboutUs.introTitle,
-      intro_text: initialAboutUs.introText, mission_title: initialAboutUs.missionTitle,
-      mission_text: initialAboutUs.missionText, vision_title: initialAboutUs.visionTitle,
-      vision_text: initialAboutUs.visionText, image_url: initialAboutUs.imageUrl,
-      hero_image_url: initialAboutUs.heroImageUrl, pillars: initialAboutUs.pillars
+      introSub: initialAboutUs.introSub, introTitle: initialAboutUs.introTitle,
+      introText: initialAboutUs.introText, missionTitle: initialAboutUs.missionTitle,
+      missionText: initialAboutUs.missionText, visionTitle: initialAboutUs.visionTitle,
+      visionText: initialAboutUs.visionText, imageUrl: initialAboutUs.imageUrl,
+      heroImageUrl: initialAboutUs.heroImageUrl, pillars: initialAboutUs.pillars
     });
-    await supabase.from('carousel_slides').insert(initialCarouselSlides.map(cs => ({
+    await supabase.from('carousel').insert(initialCarouselSlides.map(cs => ({
       id: cs.id, organization_id: TENANT_ID,
       image: cs.image, badge: cs.badge,
-      badge_icon_name: cs.badgeIconName, title: cs.title, description: cs.description
+      badgeIconName: cs.badgeIconName, title: cs.title, description: cs.description
     })));
-    await supabase.from('logo_config').insert({
+    await supabase.from('logos').insert({
       id: 'default', organization_id: TENANT_ID,
-      logo_color: initialLogoConfig.logoColor,
-      logo_gold: initialLogoConfig.logoGold
+      logoColor: initialLogoConfig.logoColor,
+      logoGold: initialLogoConfig.logoGold
     });
     res.json({ success: true, message: 'Base de datos restaurada a valores predeterminados.' });
   } catch (err: any) {
