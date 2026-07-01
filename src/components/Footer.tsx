@@ -22,7 +22,7 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
           </div>
           
           <p className="text-xs text-[#F5F2ED]/80 leading-relaxed max-w-sm font-sans pt-2">
-            Fundación voluntaria para el desarrollo humano y la regeneración ecológica integrada. Trabajamos por una Bolivia más justa, autónoma y ecológicamente saludable.
+            Organización boliviana de voluntariado dedicada a construir una sociedad más justa, fraterna y en armonía con la Creación.
           </p>
           
           <div className="flex items-center gap-1.5 text-[10px] text-[#F5F2ED]/90 font-semibold tracking-wider uppercase">
@@ -36,15 +36,15 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
           <h4 className="text-[#C5A059] font-bold uppercase tracking-widest text-[10px]">Secciones</h4>
           <ul className="space-y-2">
             {[
-              { id: 'about', name: 'Quiénes Somos (VOSERDEM)' },
+              { id: 'nuestra-obra', name: 'Quiénes Somos (VOSERDEM)' },
               { id: 'projects', name: 'Programas de Impacto' },
-              { id: 'blog', name: 'Nuestro Blog de Vivencias' },
-              { id: 'boletines', name: 'Boletines Oficiales' },
+              { id: 'transparencia', name: 'Nuestro Blog de Vivencias' },
+              { id: 'transparencia', name: 'Boletines Oficiales' },
               { id: 'how-to-help', name: 'Canales de Apoyo' },
               { id: 'contact', name: 'Buzón de Contacto' },
               { id: 'admin', name: 'Portal Interno (Admin)' }
-            ].map((link) => (
-              <li key={link.id}>
+            ].map((link, idx) => (
+              <li key={`${link.id}-${idx}`}>
                 <button
                   onClick={() => setActiveTab(link.id)}
                   className="hover:text-[#C5A059] transition-colors hover:underline cursor-pointer text-left"
@@ -81,7 +81,7 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-[#F5F2ED]/60 font-sans">
         <p>© {year} Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM). Todos los derechos reservados.</p>
         <div className="flex gap-4">
-          <button onClick={() => setActiveTab('about')} className="hover:underline hover:text-[#C5A059]">Condiciones del Donante</button>
+          <button onClick={() => setActiveTab('nuestra-obra')} className="hover:underline hover:text-[#C5A059]">Condiciones del Donante</button>
           <span>•</span>
           <button onClick={() => setActiveTab('contact')} className="hover:underline hover:text-[#C5A059]">Capacitaciones Ecocamp</button>
         </div>

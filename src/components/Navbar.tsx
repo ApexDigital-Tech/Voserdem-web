@@ -13,7 +13,7 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
   const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
-    { id: 'about', label: 'Nuestra Obra', icon: Users },
+    { id: 'nuestra-obra', label: 'Nuestra Obra', icon: Users },
     { id: 'impacto', label: 'Impacto Territorial', icon: Map },
     { id: 'projects', label: 'Programas', icon: Trees },
     { id: 'transparencia', label: 'Transparencia', icon: BookOpen },
@@ -29,7 +29,7 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
           <div className="flex items-center">
             {/* Logo */}
             <button
-              onClick={() => setActiveTab('about')}
+              onClick={() => setActiveTab('home')}
               className="flex items-center cursor-pointer group transition-transform duration-200"
             >
               <VoserdemLogoColor size="md" className="group-hover:scale-102" config={logoConfig} />

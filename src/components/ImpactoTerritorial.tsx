@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, Users, Leaf, GraduationCap, Droplets, Utensils } from 'lucide-react';
+import { Map, Users, Leaf, GraduationCap, Droplets, Utensils, Sprout } from 'lucide-react';
 
 export default function ImpactoTerritorial() {
   const regions = [
@@ -53,7 +53,7 @@ export default function ImpactoTerritorial() {
     }
   ];
 
-  const Sprout = Leaf; // Alias fallback if missing
+
 
   return (
     <div className="bg-[#F5F2ED] py-16 px-4 sm:px-6 lg:px-8 space-y-16 max-w-7xl mx-auto">
