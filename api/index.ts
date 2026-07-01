@@ -53,23 +53,44 @@ const initialLogoConfig = {
 };
 
 const initialAboutUs = {
-  introSub: 'Nuestro Propósito Coherente',
-  introTitle: '¿Quiénes Somos en VOSERDEM?',
+  introSub: 'Asociación de Laicos Católicos · Bolivia',
+  introTitle: 'Institución con Alma, Resultados y Visión',
   introText:
-    'El Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM) es una institución boliviana...',
+    'Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones migrantes temporales. Hoy somos una obra sostenida por voluntarios, fundadores y aliados internacionales, que responde a la extrema vulnerabilidad con acciones estructurales: unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que unen el desarrollo humano y la espiritualidad de servicio.',
   missionTitle: 'Nuestra Misión',
-  missionText: 'Promover y consolidar el desarrollo integral...',
-  visionTitle: 'Nuestra Visión',
-  visionText: 'Constituirnos en un modelo de referencia...',
+  missionText:
+    'Servir a las poblaciones más vulnerables de Bolivia aplicando el Modelo de Desarrollo Sostenible Integral (DSI). Nuestra labor articula la formación educativa (técnica y superior), el sustento nutricional en comedores comunitarios, el acompañamiento directo a sectores marginados y el cuidado responsable de la casa común a través de la agroforestería y el desarrollo territorial; todo ello cimentado en la espiritualidad cristiana y el compromiso voluntario.',
+  visionTitle: 'Nuestra Visión 2030',
+  visionText:
+    'Consolidar operativamente nuestra institución a nivel nacional e internacional, afianzando la plena sostenibilidad de nuestras obras estructurales: las Unidades Académicas (UAS UCB V), los Centros Multifuncionales y los programas de atención comunitaria. Aspiramos a una presencia autónoma y transformadora en los Sitios Piloto Andino, Valles, Amazónico y Chaco, demostrando que una Bolivia mejor, justa y equitativa es posible.',
   imageUrl:
     'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800',
   heroImageUrl:
     'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=600',
   pillars: [
     {
-      title: 'Desarrollo Humano Integral',
-      description: 'Acompañamos a sectores en vulnerabilidad...',
+      title: 'Sitio Piloto Andino',
+      description:
+        'Sacaca, Norte de Potosí y Kami. Centro Multifuncional «Gabriela» y Unidad Académica Sacaca (UAS UCB V). Intervención en zonas de extrema pobreza con infraestructura educativa y de servicio social.',
+      iconName: 'Landmark'
+    },
+    {
+      title: 'Sitio Piloto Valles',
+      description:
+        'Quillacollo, Cercado y Ecocampo Chocaya. Raíz fundacional en la Parroquia Compañía de Jesús. Agroforestería, energía solar y acompañamiento a comunidades rurales.',
+      iconName: 'Leaf'
+    },
+    {
+      title: 'Sitio Piloto Amazónico',
+      description:
+        'Villa Tunari, El Torno y Norte Integrado Cruceño. Comedores escolares y descentralización de la acción educativa en el trópico boliviano.',
       iconName: 'Users'
+    },
+    {
+      title: 'Sitio Piloto Chaco',
+      description:
+        'Región en gestación estratégica. VOSERDEM avanza hacia la presencia integral en las cuatro grandes bioregiones de Bolivia, completando su cobertura territorial nacional.',
+      iconName: 'Compass'
     }
   ]
 };

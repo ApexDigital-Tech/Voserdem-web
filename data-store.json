@@ -140,35 +140,35 @@
   ],
   "subscribers": [],
   "aboutUs": {
-    "introSub": "Nuestro Propósito Coherente",
-    "introTitle": "¿Quiénes Somos en VOSERDEM?",
-    "introText": "El Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM) es una institución boliviana guiada por profesionales y voluntarios de gran dedicación, profundamente comprometidos con la equidad social y la salud ecológica.",
+    "introSub": "Asociación de Laicos Católicos · Bolivia",
+    "introTitle": "Institución con Alma, Resultados y Visión",
+    "introText": "Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones migrantes temporales. Hoy somos una obra sostenida por voluntarios, fundadores y aliados internacionales, que responde a la extrema vulnerabilidad con acciones estructurales: unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que unen el desarrollo humano y la espiritualidad de servicio.",
     "missionTitle": "Nuestra Misión",
-    "missionText": "Promover y consolidar el desarrollo integral del ser humano y la conservación del medio ambiente, capacitando a poblaciones marginadas mediante proyectos cooperativos, asistencia nutricional directa, agricultura ecológica y transferencia tecnológica participativa.",
-    "visionTitle": "Nuestra Visión",
-    "visionText": "Constituirnos en un modelo de referencia boliviano e internacional sobre desarrollo sostenible comunitario, donde la ecología regenerativa y la solidaridad intergeneracional se conjuguen para erradicar la extrema marginación de niños, jóvenes y adultos mayores.",
+    "missionText": "Servir a las poblaciones más vulnerables de Bolivia aplicando el Modelo de Desarrollo Sostenible Integral (DSI). Nuestra labor articula la formación educativa (técnica y superior), el sustento nutricional en comedores comunitarios, el acompañamiento directo a sectores marginados y el cuidado responsable de la casa común a través de la agroforestería y el desarrollo territorial; todo ello cimentado en la espiritualidad cristiana y el compromiso voluntario.",
+    "visionTitle": "Nuestra Visión 2030",
+    "visionText": "Consolidar operativamente nuestra institución a nivel nacional e internacional, afianzando la plena sostenibilidad de nuestras obras estructurales: las Unidades Académicas (UAS UCB V), los Centros Multifuncionales y los programas de atención comunitaria. Aspiramos a una presencia autónoma y transformadora en los Sitios Piloto Andino, Valles, Amazónico y Chaco, demostrando que una Bolivia mejor, justa y equitativa es posible.",
     "imageUrl": "https://lh3.googleusercontent.com/d/1YZuC_fwe_Q8nVnH1tHzgts8tUbOKG_uX",
     "heroImageUrl": "https://lh3.googleusercontent.com/d/1HCc3nOPUZMvvJOXnChQtij8F5NEbT0jn",
     "pillars": [
       {
-        "title": "Desarrollo Humano Integral",
-        "description": "Acompañamos a sectores en vulnerabilidad social en Cochabamba, proveyendo nutrición, educación popular, afecto, y capacitación laboral para fomentar autonomía.",
-        "iconName": "Users"
+        "title": "Sitio Piloto Andino",
+        "description": "Sacaca, Norte de Potosí y Kami. Centro Multifuncional «Gabriela» y Unidad Académica Sacaca (UAS UCB V). Intervención en zonas de extrema pobreza con infraestructura educativa y de servicio social.",
+        "iconName": "Landmark"
       },
       {
-        "title": "Restauración del Medio Ambiente",
-        "description": "Llevamos adelante proyectos de reforestación nativa, permacultura y ecotecnologías en nuestro centro piloto \"Ecocamp Chocaya\", devolviendo salud al ecosistema.",
+        "title": "Sitio Piloto Valles",
+        "description": "Quillacollo, Cercado y Ecocampo Chocaya. Raíz fundacional en la Parroquia Compañía de Jesús. Agroforestería, energía solar y acompañamiento a comunidades rurales.",
         "iconName": "Leaf"
       },
       {
-        "title": "Dignidad para la Vejez",
-        "description": "Nuestro programa estrella \"Las Abuelitas\" acoge a adultas mayores ofreciendo apoyo nutricional calórico ideal, controles sanitarios continuos y un hogar comunitario afectuoso.",
-        "iconName": "Heart"
+        "title": "Sitio Piloto Amazónico",
+        "description": "Villa Tunari, El Torno y Norte Integrado Cruceño. Comedores escolares y descentralización de la acción educativa en el trópico boliviano.",
+        "iconName": "Users"
       },
       {
-        "title": "Educación y Conciencia",
-        "description": "Capacitamos de manera activa a escuelas públicas y delegados juveniles sobre conservación del agua, bio-construcción, abonos orgánicos e iniciativas de reciclaje.",
-        "iconName": "GraduationCap"
+        "title": "Sitio Piloto Chaco",
+        "description": "Región en gestación estratégica. VOSERDEM avanza hacia la presencia integral en las cuatro grandes bioregiones de Bolivia, completando su cobertura territorial nacional.",
+        "iconName": "Compass"
       }
     ]
   },

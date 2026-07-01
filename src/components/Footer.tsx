@@ -22,7 +22,11 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
           </div>
           
           <p className="text-xs text-[#F5F2ED]/80 leading-relaxed max-w-sm font-sans pt-2">
-            Organización boliviana de voluntariado dedicada a construir una sociedad más justa, fraterna y en armonía con la Creación.
+            Organización civil boliviana sin fines de lucro, inspirada espiritualmente y sostenida por voluntarios, ejecutando proyectos de desarrollo sostenible integral en 4 regiones clave del país.
+          </p>
+
+          <p className="text-[11px] text-[#C5A059]/90 leading-relaxed max-w-sm font-sans italic border-l-2 border-[#C5A059]/40 pl-3">
+            "Una Bolivia mejor es posible con la voluntad de hacer bien el bien y siguiendo las huellas de Jesús."
           </p>
           
           <div className="flex items-center gap-1.5 text-[10px] text-[#F5F2ED]/90 font-semibold tracking-wider uppercase">
@@ -31,17 +35,16 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
           </div>
         </div>
 
-        {/* Colon 2: Quick Links */}
         <div className="md:col-span-3 space-y-4 text-xs">
           <h4 className="text-[#C5A059] font-bold uppercase tracking-widest text-[10px]">Secciones</h4>
           <ul className="space-y-2">
             {[
-              { id: 'nuestra-obra', name: 'Quiénes Somos (VOSERDEM)' },
+              { id: 'nuestra-obra', name: 'Nuestra Obra (Identidad)' },
+              { id: 'impacto', name: 'Impacto Territorial' },
               { id: 'projects', name: 'Programas de Impacto' },
-              { id: 'transparencia', name: 'Nuestro Blog de Vivencias' },
-              { id: 'transparencia', name: 'Boletines Oficiales' },
-              { id: 'how-to-help', name: 'Canales de Apoyo' },
-              { id: 'contact', name: 'Buzón de Contacto' },
+              { id: 'transparencia', name: 'Transparencia y Memoria' },
+              { id: 'how-to-help', name: 'Cómo Ayudar' },
+              { id: 'contact', name: 'Contacto' },
               { id: 'admin', name: 'Portal Interno (Admin)' }
             ].map((link, idx) => (
               <li key={`${link.id}-${idx}`}>
@@ -79,11 +82,11 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
 
       {/* Copy Right and Acknowledgements */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-[#F5F2ED]/60 font-sans">
-        <p>© {year} Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM). Todos los derechos reservados.</p>
+        <p>© {year} Asociación de Laicos Católicos Voserdem — Voluntarios al Servicio de los Demás. Todos los derechos reservados.</p>
         <div className="flex gap-4">
-          <button onClick={() => setActiveTab('nuestra-obra')} className="hover:underline hover:text-[#C5A059]">Condiciones del Donante</button>
+          <button onClick={() => setActiveTab('transparencia')} className="hover:underline hover:text-[#C5A059]">Memoria Institucional</button>
           <span>•</span>
-          <button onClick={() => setActiveTab('contact')} className="hover:underline hover:text-[#C5A059]">Capacitaciones Ecocamp</button>
+          <button onClick={() => setActiveTab('contact')} className="hover:underline hover:text-[#C5A059]">Contacto Oficial</button>
         </div>
       </div>
 

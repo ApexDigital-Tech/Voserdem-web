@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { 
-  Leaf, Heart, Users, Shield, GraduationCap, Compass, 
+  Leaf, Heart, Users, Shield, GraduationCap, Compass, Landmark,
   ArrowRight, BookOpen, FileText, Award, Calendar, ExternalLink, Activity
 } from 'lucide-react';
 import { Project, BlogPost, Bulletin } from '../types';
@@ -46,7 +46,8 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Users,
   Shield,
   GraduationCap,
-  Compass
+  Compass,
+  Landmark
 };
 
 export default function AboutUs({ 
@@ -128,7 +129,7 @@ export default function AboutUs({
             </h2>
             <div className="h-[1px] bg-[#C5A059]/30 w-32" />
             <p className="text-[#2C2C2C] text-sm leading-relaxed font-sans pre-wrap">
-              VOSERDEM es una asociación de laicos católicos comprometida con el desarrollo integral y una Bolivia mejor. Con 34 años de servicio continuo, articulamos acciones solidarias bajo el Modelo de Desarrollo Sostenible Integral, honrando la dignidad humana y el cuidado de la casa común.
+              Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones migrantes. Hoy somos una obra sostenida por voluntarios, fundadores y aliados internacionales que responde a la extrema vulnerabilidad con acciones estructurales: unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que unen el desarrollo humano y la espiritualidad de servicio.
             </p>
             
             <div className="flex flex-wrap gap-4 pt-2">
@@ -426,7 +427,7 @@ export default function AboutUs({
               ¿Quieres ser parte de la transformación en Bolivia?
             </h3>
             <p className="text-[#F5F2ED]/85 text-xs sm:text-sm leading-relaxed max-w-xl font-sans">
-              Apoya la educación en Sacaca, la reforestación en Chocaya o los comedores escolares en el Norte de Potosí. Tu voluntad de hacer el bien se convierte en resultados verificables.
+              Apoya la formación de jóvenes en Sacaca, el sostenimiento de comedores comunitarios o el acompañamiento a los adultos mayores. Tu compromiso se traduce en resultados verificables y una Bolivia con más dignidad.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
