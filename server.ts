@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import express from 'express';
 import path from 'path';
-import { supabase } from './src/utils/supabaseClient.js';
+import { getStorageAdapter } from './src/services/storageAdapter.js';
 import { Project, Donation, Message, BlogPost, Bulletin, Subscriber, CarouselSlide, LogoConfig } from './src/types.js';
 
 export const app = express();
@@ -9,6 +10,9 @@ const TENANT_ID = 'voserdem-bolivia';
 const ADMIN_PASSKEY = 'voserdem2026';
 
 app.use(express.json());
+
+// Initialize our storage adapter (it will use Supabase or LocalJSON based on process.env.USE_LOCAL_JSON)
+const db = getStorageAdapter();
 
 // ---------------------- ADMIN AUTENTICACION MIDDLEWARE ----------------------
 function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -106,101 +110,21 @@ const initialLogoConfig = {
   }
 };
 
-// ---------------------- DATABASE MAPPING HELPERS ----------------------
-function mapDonationFromDb(db: any): Donation {
-  return {
-    id: db.id,
-    donorName: db.donor_name,
-    email: db.email,
-    amount: Number(db.amount),
-    projectId: db.project_id,
-    projectTitle: db.project_title,
-    date: db.date,
-    comment: db.comment || ''
-  };
-}
-
-function mapBlogFromDb(db: any): BlogPost {
-  return {
-    id: db.id,
-    title: db.title,
-    summary: db.summary,
-    content: db.content,
-    image: db.image,
-    category: db.category,
-    author: db.author,
-    date: db.date,
-    readTime: db.read_time || '3 min',
-    featured: !!db.featured,
-    status: db.status || 'published'
-  };
-}
-
-function mapBulletinFromDb(db: any): Bulletin {
-  return {
-    id: db.id,
-    title: db.title,
-    summary: db.summary,
-    publishDate: db.publish_date,
-    issueNumber: db.issue_number,
-    downloadUrl: db.download_url || '',
-    image: db.image || '',
-    status: db.status || 'published'
-  };
-}
-
-function mapCarouselFromDb(db: any): CarouselSlide {
-  return {
-    id: db.id,
-    image: db.image,
-    badge: db.badge || '',
-    badgeIconName: db.badge_icon_name || 'Trees',
-    title: db.title || '',
-    description: db.description || ''
-  };
-}
-
-function mapAboutFromDb(db: any): any {
-  return {
-    introSub: db.intro_sub,
-    introTitle: db.intro_title,
-    introText: db.intro_text,
-    missionTitle: db.mission_title,
-    missionText: db.mission_text,
-    visionTitle: db.vision_title,
-    visionText: db.vision_text,
-    imageUrl: db.image_url,
-    heroImageUrl: db.hero_image_url || '',
-    pillars: db.pillars
-  };
-}
-
-function mapLogosFromDb(db: any): LogoConfig {
-  return {
-    logoColor: db.logo_color,
-    logoGold: db.logo_gold
-  };
-}
-
 // ---------------------- API ROUTES ----------------------
 
 // Health Check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', database: 'supabase', time: new Date().toISOString() });
+  res.json({ status: 'ok', database: process.env.USE_LOCAL_JSON === 'true' ? 'local_json' : 'supabase', time: new Date().toISOString() });
 });
 
 // CAROUSEL API
 app.get('/api/carousel', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('carousel_slides')
-      .select('*')
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    const data = await db.getCarouselSlides(TENANT_ID);
     if (!data || data.length === 0) {
       return res.json(initialCarouselSlides);
     }
-    res.json(data.map(mapCarouselFromDb));
+    res.json(data);
   } catch (err: any) {
     console.error('Error fetching carousel:', err.message);
     res.json(initialCarouselSlides);
@@ -216,19 +140,16 @@ app.put('/api/carousel', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'El carrusel debe contener un máximo de 5 fotografías.' });
   }
   try {
-    await supabase.from('carousel_slides').delete().eq('organization_id', TENANT_ID);
     const newSlides = slides.map((slide: any) => ({
       id: slide.id || `slide-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      organization_id: TENANT_ID,
       image: slide.image,
       badge: slide.badge || '',
-      badge_icon_name: slide.badgeIconName || 'Trees',
+      badgeIconName: slide.badgeIconName || 'Trees',
       title: slide.title || '',
       description: slide.description || ''
     }));
-    const { error } = await supabase.from('carousel_slides').insert(newSlides);
-    if (error) throw error;
-    res.json(newSlides.map(mapCarouselFromDb));
+    const saved = await db.updateCarouselSlides(TENANT_ID, newSlides);
+    res.json(saved);
   } catch (err: any) {
     console.error('Error saving carousel:', err.message);
     res.status(500).json({ error: 'Error interno del servidor al actualizar el carrusel.' });
@@ -238,15 +159,9 @@ app.put('/api/carousel', requireAdmin, async (req, res) => {
 // LOGOS API
 app.get('/api/logos', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('logo_config')
-      .select('*')
-      .eq('organization_id', TENANT_ID)
-      .eq('id', 'default')
-      .maybeSingle();
-    if (error) throw error;
+    const data = await db.getLogoConfig(TENANT_ID);
     if (!data) return res.json(initialLogoConfig);
-    res.json(mapLogosFromDb(data));
+    res.json(data);
   } catch (err: any) {
     console.error('Error fetching logos:', err.message);
     res.json(initialLogoConfig);
@@ -259,14 +174,8 @@ app.put('/api/logos', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'Faltan configuraciones indispensables para guardar los logos.' });
   }
   try {
-    const { error } = await supabase.from('logo_config').upsert({
-      id: 'default',
-      organization_id: TENANT_ID,
-      logo_color: logoColor,
-      logo_gold: logoGold
-    });
-    if (error) throw error;
-    res.json({ logoColor, logoGold });
+    const saved = await db.updateLogoConfig(TENANT_ID, { logoColor, logoGold });
+    res.json(saved);
   } catch (err: any) {
     console.error('Error updating logos:', err.message);
     res.status(500).json({ error: 'Error interno al guardar logotipos.' });
@@ -276,15 +185,9 @@ app.put('/api/logos', requireAdmin, async (req, res) => {
 // ABOUT US API
 app.get('/api/about', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('about_us')
-      .select('*')
-      .eq('organization_id', TENANT_ID)
-      .eq('id', 'default')
-      .maybeSingle();
-    if (error) throw error;
+    const data = await db.getAboutUs(TENANT_ID);
     if (!data) return res.json(initialAboutUs);
-    res.json(mapAboutFromDb(data));
+    res.json(data);
   } catch (err: any) {
     console.error('Error fetching about data:', err.message);
     res.json(initialAboutUs);
@@ -294,22 +197,20 @@ app.get('/api/about', async (req, res) => {
 app.put('/api/about', requireAdmin, async (req, res) => {
   const { introSub, introTitle, introText, missionTitle, missionText, visionTitle, visionText, imageUrl, heroImageUrl, pillars } = req.body;
   try {
-    const { error } = await supabase.from('about_us').upsert({
-      id: 'default',
-      organization_id: TENANT_ID,
-      intro_sub: introSub || initialAboutUs.introSub,
-      intro_title: introTitle || initialAboutUs.introTitle,
-      intro_text: introText || initialAboutUs.introText,
-      mission_title: missionTitle || initialAboutUs.missionTitle,
-      mission_text: missionText || initialAboutUs.missionText,
-      vision_title: visionTitle || initialAboutUs.visionTitle,
-      vision_text: visionText || initialAboutUs.visionText,
-      image_url: imageUrl || initialAboutUs.imageUrl,
-      hero_image_url: heroImageUrl || initialAboutUs.heroImageUrl,
+    const updates = {
+      introSub: introSub || initialAboutUs.introSub,
+      introTitle: introTitle || initialAboutUs.introTitle,
+      introText: introText || initialAboutUs.introText,
+      missionTitle: missionTitle || initialAboutUs.missionTitle,
+      missionText: missionText || initialAboutUs.missionText,
+      visionTitle: visionTitle || initialAboutUs.visionTitle,
+      visionText: visionText || initialAboutUs.visionText,
+      imageUrl: imageUrl || initialAboutUs.imageUrl,
+      heroImageUrl: heroImageUrl || initialAboutUs.heroImageUrl,
       pillars: Array.isArray(pillars) ? pillars : initialAboutUs.pillars
-    });
-    if (error) throw error;
-    res.json(req.body);
+    };
+    const saved = await db.updateAboutUs(TENANT_ID, updates);
+    res.json(saved);
   } catch (err: any) {
     console.error('Error updating about data:', err.message);
     res.status(500).json({ error: 'Error interno al guardar sección Sobre Nosotros.' });
@@ -319,11 +220,7 @@ app.put('/api/about', requireAdmin, async (req, res) => {
 // PROJECTS API
 app.get('/api/projects', async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    const data = await db.getProjects(TENANT_ID);
     res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching projects:', err.message);
@@ -338,7 +235,6 @@ app.post('/api/projects', requireAdmin, async (req, res) => {
   }
   const newProject = {
     id: `proj-${Date.now()}`,
-    organization_id: TENANT_ID,
     title,
     description,
     category,
@@ -349,12 +245,12 @@ app.post('/api/projects', requireAdmin, async (req, res) => {
     raised: 0,
     location: location || 'Cochabamba, Bolivia',
     impact: impact || '',
-    details: details || description
+    details: details || description,
+    organization_id: TENANT_ID
   };
   try {
-    const { error } = await supabase.from('projects').insert(newProject);
-    if (error) throw error;
-    res.status(201).json(newProject);
+    const created = await db.createProject(newProject);
+    res.status(201).json(created);
   } catch (err: any) {
     console.error('Error creating project:', err.message);
     res.status(500).json({ error: 'Error interno al crear el proyecto.' });
@@ -378,20 +274,7 @@ app.put('/api/projects/:id', requireAdmin, async (req, res) => {
   if (details !== undefined) updates.details = details;
 
   try {
-    const { error } = await supabase
-      .from('projects')
-      .update(updates)
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
-
-    const { data: updated, error: findErr } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID)
-      .single();
-    if (findErr) throw findErr;
+    const updated = await db.updateProject(id, TENANT_ID, updates);
     res.json(updated);
   } catch (err: any) {
     console.error('Error updating project:', err.message);
@@ -402,12 +285,7 @@ app.put('/api/projects/:id', requireAdmin, async (req, res) => {
 app.delete('/api/projects/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
-    const { error } = await supabase
-      .from('projects')
-      .delete()
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    await db.deleteProject(id, TENANT_ID);
     res.json({ success: true, message: 'Proyecto eliminado con éxito.' });
   } catch (err: any) {
     console.error('Error deleting project:', err.message);
@@ -427,41 +305,31 @@ app.post('/api/donations', async (req, res) => {
   }
 
   try {
-    const { data: proj, error: projErr } = await supabase
-      .from('projects')
-      .select('*')
-      .eq('id', projectId)
-      .eq('organization_id', TENANT_ID)
-      .maybeSingle();
-    if (projErr || !proj) {
+    const proj = await db.getProjectById(projectId, TENANT_ID);
+    if (!proj) {
       return res.status(404).json({ error: 'Proyecto destinatario no existe.' });
     }
 
     const newRaised = Number(proj.raised || 0) + amountNum;
-    const { error: updateErr } = await supabase
-      .from('projects')
-      .update({ raised: newRaised })
-      .eq('id', projectId)
-      .eq('organization_id', TENANT_ID);
-    if (updateErr) throw updateErr;
+    await db.updateProject(projectId, TENANT_ID, { raised: newRaised });
 
     const newDonation = {
       id: `don-${Date.now()}`,
       organization_id: TENANT_ID,
-      donor_name: donorName,
+      donorName: donorName,
       email,
       amount: amountNum,
-      project_id: projectId,
-      project_title: proj.title,
+      projectId: projectId,
+      projectTitle: proj.title,
       date: new Date().toISOString(),
       comment
     };
-    const { error: insertErr } = await supabase.from('donations').insert(newDonation);
-    if (insertErr) throw insertErr;
+    
+    const created = await db.createDonation(newDonation);
 
     res.status(201).json({ 
       success: true, 
-      donation: mapDonationFromDb(newDonation), 
+      donation: created, 
       currentRaised: newRaised 
     });
   } catch (err: any) {
@@ -472,12 +340,8 @@ app.post('/api/donations', async (req, res) => {
 
 app.get('/api/donations', requireAdmin, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('donations')
-      .select('*')
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
-    res.json((data || []).map(mapDonationFromDb));
+    const data = await db.getDonations(TENANT_ID);
+    res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching donations:', err.message);
     res.status(500).json({ error: 'Error al recuperar donaciones.' });
@@ -500,9 +364,8 @@ app.post('/api/messages', async (req, res) => {
     date: new Date().toISOString()
   };
   try {
-    const { error } = await supabase.from('messages').insert(newMessage);
-    if (error) throw error;
-    res.status(201).json({ success: true, message: newMessage });
+    const created = await db.createMessage(newMessage);
+    res.status(201).json({ success: true, message: created });
   } catch (err: any) {
     console.error('Error submitting message:', err.message);
     res.status(500).json({ error: 'Error interno al enviar mensaje.' });
@@ -511,11 +374,7 @@ app.post('/api/messages', async (req, res) => {
 
 app.get('/api/messages', requireAdmin, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    const data = await db.getMessages(TENANT_ID);
     res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching messages:', err.message);
@@ -527,13 +386,8 @@ app.get('/api/messages', requireAdmin, async (req, res) => {
 app.get('/api/blog', async (req, res) => {
   const showAll = req.query.all === 'true' || req.query.status === 'all';
   try {
-    let query = supabase.from('blog').select('*').eq('organization_id', TENANT_ID);
-    if (!showAll) {
-      query = query.neq('status', 'draft');
-    }
-    const { data, error } = await query;
-    if (error) throw error;
-    res.json((data || []).map(mapBlogFromDb));
+    const data = await db.getBlogPosts(TENANT_ID, showAll);
+    res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching blog posts:', err.message);
     res.status(500).json({ error: 'Error al recuperar publicaciones.' });
@@ -555,14 +409,13 @@ app.post('/api/blog', requireAdmin, async (req, res) => {
     category,
     author,
     date: new Date().toISOString().split('T')[0],
-    read_time: readTime || '3 min',
+    readTime: readTime || '3 min',
     featured: !!featured,
     status: status || 'published'
   };
   try {
-    const { error } = await supabase.from('blog').insert(newPost);
-    if (error) throw error;
-    res.status(201).json(mapBlogFromDb(newPost));
+    const created = await db.createBlogPost(newPost);
+    res.status(201).json(created);
   } catch (err: any) {
     console.error('Error creating blog post:', err.message);
     res.status(500).json({ error: 'Error interno al crear el artículo.' });
@@ -579,26 +432,13 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
   if (image !== undefined) updates.image = image;
   if (category !== undefined) updates.category = category;
   if (author !== undefined) updates.author = author;
-  if (readTime !== undefined) updates.read_time = readTime;
+  if (readTime !== undefined) updates.readTime = readTime;
   if (featured !== undefined) updates.featured = !!featured;
   if (status !== undefined) updates.status = status;
 
   try {
-    const { error } = await supabase
-      .from('blog')
-      .update(updates)
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
-
-    const { data: updated, error: findErr } = await supabase
-      .from('blog')
-      .select('*')
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID)
-      .single();
-    if (findErr) throw findErr;
-    res.json(mapBlogFromDb(updated));
+    const updated = await db.updateBlogPost(id, TENANT_ID, updates);
+    res.json(updated);
   } catch (err: any) {
     console.error('Error updating blog post:', err.message);
     res.status(500).json({ error: 'Error interno al actualizar el artículo.' });
@@ -608,12 +448,7 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
 app.delete('/api/blog/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
-    const { error } = await supabase
-      .from('blog')
-      .delete()
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    await db.deleteBlogPost(id, TENANT_ID);
     res.json({ success: true, message: 'Artículo de blog eliminado con éxito.' });
   } catch (err: any) {
     console.error('Error deleting blog post:', err.message);
@@ -625,13 +460,8 @@ app.delete('/api/blog/:id', requireAdmin, async (req, res) => {
 app.get('/api/bulletins', async (req, res) => {
   const showAll = req.query.all === 'true' || req.query.status === 'all';
   try {
-    let query = supabase.from('bulletins').select('*').eq('organization_id', TENANT_ID);
-    if (!showAll) {
-      query = query.neq('status', 'draft');
-    }
-    const { data, error } = await query;
-    if (error) throw error;
-    res.json((data || []).map(mapBulletinFromDb));
+    const data = await db.getBulletins(TENANT_ID, showAll);
+    res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching bulletins:', err.message);
     res.status(500).json({ error: 'Error al recuperar boletines.' });
@@ -648,16 +478,15 @@ app.post('/api/bulletins', requireAdmin, async (req, res) => {
     organization_id: TENANT_ID,
     title,
     summary,
-    issue_number: issueNumber,
-    publish_date: new Date().toISOString().split('T')[0],
-    download_url: downloadUrl || '',
+    issueNumber: issueNumber,
+    publishDate: new Date().toISOString().split('T')[0],
+    downloadUrl: downloadUrl || '',
     image: image || '',
     status: status || 'published'
   };
   try {
-    const { error } = await supabase.from('bulletins').insert(newBulletin);
-    if (error) throw error;
-    res.status(201).json(mapBulletinFromDb(newBulletin));
+    const created = await db.createBulletin(newBulletin);
+    res.status(201).json(created);
   } catch (err: any) {
     console.error('Error creating bulletin:', err.message);
     res.status(500).json({ error: 'Error interno al crear el boletín.' });
@@ -670,27 +499,14 @@ app.put('/api/bulletins/:id', requireAdmin, async (req, res) => {
   const updates: any = {};
   if (title !== undefined) updates.title = title;
   if (summary !== undefined) updates.summary = summary;
-  if (issueNumber !== undefined) updates.issue_number = issueNumber;
-  if (downloadUrl !== undefined) updates.download_url = downloadUrl;
+  if (issueNumber !== undefined) updates.issueNumber = issueNumber;
+  if (downloadUrl !== undefined) updates.downloadUrl = downloadUrl;
   if (image !== undefined) updates.image = image;
   if (status !== undefined) updates.status = status;
 
   try {
-    const { error } = await supabase
-      .from('bulletins')
-      .update(updates)
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
-
-    const { data: updated, error: findErr } = await supabase
-      .from('bulletins')
-      .select('*')
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID)
-      .single();
-    if (findErr) throw findErr;
-    res.json(mapBulletinFromDb(updated));
+    const updated = await db.updateBulletin(id, TENANT_ID, updates);
+    res.json(updated);
   } catch (err: any) {
     console.error('Error updating bulletin:', err.message);
     res.status(500).json({ error: 'Error interno al actualizar el boletín.' });
@@ -700,12 +516,7 @@ app.put('/api/bulletins/:id', requireAdmin, async (req, res) => {
 app.delete('/api/bulletins/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
-    const { error } = await supabase
-      .from('bulletins')
-      .delete()
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    await db.deleteBulletin(id, TENANT_ID);
     res.json({ success: true, message: 'Boletín eliminado con éxito.' });
   } catch (err: any) {
     console.error('Error deleting bulletin:', err.message);
@@ -716,11 +527,7 @@ app.delete('/api/bulletins/:id', requireAdmin, async (req, res) => {
 // NEWSLETTER SUBSCRIBERS API
 app.get('/api/subscribers', requireAdmin, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('subscribers')
-      .select('*')
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    const data = await db.getSubscribers(TENANT_ID);
     res.json(data || []);
   } catch (err: any) {
     console.error('Error fetching subscribers:', err.message);
@@ -734,13 +541,7 @@ app.post('/api/subscribers', async (req, res) => {
     return res.status(400).json({ error: 'Dirección de correo electrónico inválida.' });
   }
   try {
-    const { data: existing, error: findErr } = await supabase
-      .from('subscribers')
-      .select('*')
-      .eq('email', email.trim())
-      .eq('organization_id', TENANT_ID)
-      .maybeSingle();
-    if (findErr) throw findErr;
+    const existing = await db.getSubscriberByEmail(email.trim(), TENANT_ID);
     if (existing) {
       return res.status(400).json({ error: 'Este correo ya se encuentra registrado en nuestro boletín informativo.' });
     }
@@ -751,9 +552,8 @@ app.post('/api/subscribers', async (req, res) => {
       email: email.trim(),
       date: new Date().toISOString()
     };
-    const { error } = await supabase.from('subscribers').insert(newSubscriber);
-    if (error) throw error;
-    res.status(201).json({ success: true, subscriber: newSubscriber });
+    const created = await db.createSubscriber(newSubscriber);
+    res.status(201).json({ success: true, subscriber: created });
   } catch (err: any) {
     console.error('Error adding subscriber:', err.message);
     res.status(500).json({ error: 'Error al procesar suscripción.' });
@@ -763,12 +563,7 @@ app.post('/api/subscribers', async (req, res) => {
 app.delete('/api/subscribers/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
-    const { error } = await supabase
-      .from('subscribers')
-      .delete()
-      .eq('id', id)
-      .eq('organization_id', TENANT_ID);
-    if (error) throw error;
+    await db.deleteSubscriber(id, TENANT_ID);
     res.json({ success: true, message: 'Suscripción cancelada con éxito.' });
   } catch (err: any) {
     console.error('Error deleting subscriber:', err.message);
@@ -779,78 +574,20 @@ app.delete('/api/subscribers/:id', requireAdmin, async (req, res) => {
 // RESET DATABASE UTILITY
 app.post('/api/admin/reset', requireAdmin, async (req, res) => {
   try {
-    await Promise.all([
-      supabase.from('projects').delete().eq('organization_id', TENANT_ID),
-      supabase.from('donations').delete().eq('organization_id', TENANT_ID),
-      supabase.from('messages').delete().eq('organization_id', TENANT_ID),
-      supabase.from('blog').delete().eq('organization_id', TENANT_ID),
-      supabase.from('bulletins').delete().eq('organization_id', TENANT_ID),
-      supabase.from('subscribers').delete().eq('organization_id', TENANT_ID),
-      supabase.from('about_us').delete().eq('organization_id', TENANT_ID),
-      supabase.from('carousel_slides').delete().eq('organization_id', TENANT_ID),
-      supabase.from('logo_config').delete().eq('organization_id', TENANT_ID)
-    ]);
+    const initialData = {
+      initialProjects,
+      initialBlog,
+      initialBulletins,
+      initialAboutUs,
+      initialCarouselSlides,
+      initialLogoConfig
+    };
+    await db.resetData(TENANT_ID, initialData);
 
-    await supabase.from('projects').insert(initialProjects.map(p => ({ ...p, organization_id: TENANT_ID })));
-    await supabase.from('blog').insert(initialBlog.map(b => ({
-      id: b.id,
-      organization_id: TENANT_ID,
-      title: b.title,
-      summary: b.summary,
-      content: b.content,
-      image: b.image,
-      category: b.category,
-      author: b.author,
-      date: b.date,
-      read_time: b.readTime,
-      featured: b.featured,
-      status: 'published'
-    })));
-    await supabase.from('bulletins').insert(initialBulletins.map(b => ({
-      id: b.id,
-      organization_id: TENANT_ID,
-      title: b.title,
-      summary: b.summary,
-      issue_number: b.issueNumber,
-      publish_date: b.publishDate,
-      download_url: b.downloadUrl,
-      image: b.image,
-      status: 'published'
-    })));
-    await supabase.from('about_us').insert({
-      id: 'default',
-      organization_id: TENANT_ID,
-      intro_sub: initialAboutUs.introSub,
-      intro_title: initialAboutUs.introTitle,
-      intro_text: initialAboutUs.introText,
-      mission_title: initialAboutUs.missionTitle,
-      mission_text: initialAboutUs.missionText,
-      vision_title: initialAboutUs.visionTitle,
-      vision_text: initialAboutUs.visionText,
-      image_url: initialAboutUs.imageUrl,
-      hero_image_url: initialAboutUs.heroImageUrl,
-      pillars: initialAboutUs.pillars
-    });
-    await supabase.from('carousel_slides').insert(initialCarouselSlides.map(cs => ({
-      id: cs.id,
-      organization_id: TENANT_ID,
-      image: cs.image,
-      badge: cs.badge,
-      badge_icon_name: cs.badgeIconName,
-      title: cs.title,
-      description: cs.description
-    })));
-    await supabase.from('logo_config').insert({
-      id: 'default',
-      organization_id: TENANT_ID,
-      logo_color: initialLogoConfig.logoColor,
-      logo_gold: initialLogoConfig.logoGold
-    });
-
-    res.json({ success: true, message: 'Base de datos de Supabase restaurada a valores predeterminados.' });
+    res.json({ success: true, message: 'Base de datos restaurada con los valores predeterminados.' });
   } catch (err: any) {
     console.error('Error resetting database:', err.message);
-    res.status(500).json({ error: 'Error interno al restaurar base de datos.' });
+    res.status(500).json({ error: 'Error crítico al restaurar la base de datos.' });
   }
 });
 
@@ -881,3 +618,4 @@ async function startServer() {
 if (!process.env.VERCEL) {
   startServer();
 }
+
