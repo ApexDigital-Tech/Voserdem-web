@@ -1,20 +1,24 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# VOSERDEM Web Platform
 
-# Run and deploy your AI Studio app
+Plataforma institucional para el Voluntariado de Servicio para el Desarrollo Humano y Medio Ambiente (VOSERDEM).
 
-This contains everything you need to run your app locally.
+## Stack Tecnologico
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4.
+- **Backend**: Serverless Functions alojadas en Vercel (`api/index.ts`).
+- **Base de Datos**: Supabase (PostgreSQL).
+- **Hosting**: Vercel.
 
-View your app in AI Studio: https://ai.studio/apps/d62f8d49-5b15-4293-b716-02c916a3ffcf
+## Estructura del Repositorio
+- `/src`: Codigo fuente del frontend (Componentes, Hooks, Servicios).
+- `/api`: Unico backend oficial para despliegue en Vercel (`api/index.ts`). Maneja todas las llamadas a la base de datos (Supabase).
+- `supabase_schema.sql`: Respaldo del esquema DDL aplicado en la base de datos de produccion.
+- `data-store.json`: JSON de respaldo para migraciones de datos institucionales basicos.
 
-## Run Locally
+## Desarrollo Local
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+1. Instalar dependencias: `npm install`
+2. Configurar `.env` con las credenciales de Supabase (ver `.env.example`).
+3. Para desarrollo completo, usar Vercel CLI (emula `/api` localmente):
+   ```bash
+   vercel dev
+   ```

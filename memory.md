@@ -46,3 +46,14 @@
 ### Integridad de Componentes React (Hooks Order)
 - **Problema Quir√∫rgico**: El entorno local fallaba de manera irrecuperable por un error en React: "rendered fewer hooks than expected".
 - **Soluci√≥n**: Se reubic√≥ la l√≥gica de "Early Return" empleada para los `Loading` states en `Hero.tsx` al final del documento, protegiendo todas las declaraciones de `useEffect` y garantizando que el ciclo de vida del framework sea determinista en cada render.
+
+### Saneamiento y Empaquetado para Vercel
+- **Problema**: El repositorio contenÌa scripts de pruebas antiguos (`test-api.js`, migradores), empaquetados obsoletos (`.zip`) y metadatos de plantillas heredadas en el `README.md` y `package.json`. Adem·s, coexistÌan `server.ts` y `/api/index.ts` como servidores en un esquema ambiguo.
+- **Solucion**: 
+  - Se eliminaron mas de 10 scripts de migracion, respaldos locales, y zips temporales, garantizando que el repositorio contenga unicamente codigo fuente productivo.
+  - Se definio oficialmente la ruta `/api/` como el **unico backend** para las funciones de Vercel Serverless, eliminando `server.ts`. 
+  - Se re-escribio el `README.md` a un estandar profesional de proyecto y se limpiaron metadatos en el `package.json` (`name`, `scripts`), dejando el paquete con una arquitectura de React + Vite pura.
+
+### Enrutamiento Single Page (SPA) en Produccion (Vercel)
+- **Problema**: Al intentar abrir paginas internas directo desde la URL (ej. `voserdem-web.vercel.app/blog`), el rewrite de Vercel servia el frontend pero React por defecto montaba la pestana inicial, ignorando la URL solicitada.
+- **Solucion**: Se escribio un micro-enrutador nativo en `App.tsx` capaz de leer `window.location.pathname` al arrancar. Los eventos de navegacion ahora despachan `window.history.pushState` y escuchan `popstate`, combinando exitosamente la velocidad de una SPA con la indexabilidad y enlaces profundos tradicionales requeridos para SEO.

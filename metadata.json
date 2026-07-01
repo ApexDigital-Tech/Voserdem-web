@@ -1,6 +1,0 @@
-{
-  "name": "VOSERDEM Bolivia",
-  "description": "Web corporativa full-stack de la Fundación VOSERDEM en Cochabamba, con base de datos de proyectos activos, recepción de donativos y buzón de consultas.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
