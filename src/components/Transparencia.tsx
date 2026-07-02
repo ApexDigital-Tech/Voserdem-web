@@ -1,5 +1,4 @@
 import React from 'react';
-import Blog from './Blog';
 import Bulletins from './Bulletins';
 import { Shield, FileText, CheckCircle2, Handshake } from 'lucide-react';
 
@@ -59,15 +58,6 @@ export default function Transparencia() {
           <div className="max-w-4xl mx-auto -mt-10">
             {/* Reutilizando el componente Bulletins, pero ajustando su diseño interno si es necesario */}
             <Bulletins hideHeader={true} />
-          </div>
-        </div>
-
-        <div className="pt-8 border-t border-[#C5A059]/20">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <h2 className="font-display text-3xl font-black text-[#1B3022]">Memoria Institucional</h2>
-          </div>
-          <div className="max-w-5xl mx-auto -mt-10">
-            <Blog hideHeader={true} />
           </div>
         </div>
       </section>

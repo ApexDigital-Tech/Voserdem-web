@@ -362,6 +362,47 @@ app.put('/api/about', requireAdmin, async (req, res) => {
   }
 });
 
+// ---- GENERIC PAGES CMS (Bridge Solution) ----
+app.get('/api/pages/:pageId', async (req, res) => {
+  const { pageId } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from('about')
+      .select('pillars')
+      .eq('organization_id', TENANT_ID)
+      .eq('id', pageId)
+      .maybeSingle();
+    
+    if (error) throw error;
+    // We store the generic page blocks inside the 'pillars' JSON column
+    res.json(data && data.pillars ? data.pillars : []);
+  } catch (err: any) {
+    console.error(`pages GET [${pageId}]:`, err.message);
+    res.json([]);
+  }
+});
+
+app.put('/api/pages/:pageId', requireAdmin, async (req, res) => {
+  const { pageId } = req.params;
+  const blocks = req.body.blocks || [];
+  try {
+    const { error } = await supabase.from('about').upsert({
+      id: pageId,
+      organization_id: TENANT_ID,
+      introSub: '', introTitle: '', introText: '',
+      missionTitle: '', missionText: '',
+      visionTitle: '', visionText: '',
+      imageUrl: '', heroImageUrl: '',
+      pillars: blocks
+    });
+    if (error) throw error;
+    res.json(blocks);
+  } catch (err: any) {
+    console.error(`pages PUT [${pageId}]:`, err.message);
+    res.status(500).json({ error: 'Error interno al guardar la página.' });
+  }
+});
+
 // ---- PROJECTS ----
 app.get('/api/projects', async (_req, res) => {
   try {
