@@ -159,11 +159,11 @@ const initialBulletins = [
 function mapDonationFromDb(db: any) {
   return {
     id: db.id,
-    donorName: db.donorName,
+    donorName: db.donor_name,
     email: db.email,
     amount: Number(db.amount),
-    projectId: db.projectId,
-    projectTitle: db.projectTitle,
+    projectId: db.project_id,
+    projectTitle: db.project_title,
     date: db.date,
     comment: db.comment || ''
   };
@@ -179,7 +179,7 @@ function mapBlogFromDb(db: any) {
     category: db.category,
     author: db.author,
     date: db.date,
-    readTime: db.readTime || '3 min',
+    readTime: db.read_time || '3 min',
     featured: !!db.featured,
     status: db.status || 'published'
   };
@@ -190,9 +190,9 @@ function mapBulletinFromDb(db: any) {
     id: db.id,
     title: db.title,
     summary: db.summary,
-    publishDate: db.publishDate,
-    issueNumber: db.issueNumber,
-    downloadUrl: db.downloadUrl || '',
+    publishDate: db.publish_date,
+    issueNumber: db.issue_number,
+    downloadUrl: db.download_url || '',
     image: db.image || '',
     status: db.status || 'published'
   };
@@ -219,7 +219,7 @@ function mapAboutFromDb(db: any) {
     visionTitle: db.visionTitle,
     visionText: db.visionText,
     imageUrl: db.imageUrl,
-    heroImageUrl: db.hero_imageUrl || '',
+    heroImageUrl: db.heroImageUrl || '',
     pillars: db.pillars
   };
 }
@@ -493,10 +493,10 @@ app.post('/api/donations', async (req, res) => {
     const newDonation = {
       id: `don-${Date.now()}`,
       organization_id: TENANT_ID,
-      donorName: donorName, email,
+      donor_name: donorName, email,
       amount: amountNum,
-      projectId: projectId,
-      projectTitle: proj.title,
+      project_id: projectId,
+      project_title: proj.title,
       date: new Date().toISOString(),
       comment
     };
@@ -580,7 +580,7 @@ app.post('/api/blog', requireAdmin, async (req, res) => {
     image: image || 'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=800',
     category, author,
     date: new Date().toISOString().split('T')[0],
-    readTime: readTime || '3 min',
+    read_time: readTime || '3 min',
     featured: !!featured,
     status: status || 'published'
   };
@@ -599,7 +599,7 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
   const updates: any = {};
   const fields = ['title','summary','content','image','category','author','status'];
   fields.forEach(f => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
-  if (req.body.readTime !== undefined) updates.readTime = req.body.readTime;
+  if (req.body.readTime !== undefined) updates.read_time = req.body.readTime;
   if (req.body.featured !== undefined) updates.featured = !!req.body.featured;
   try {
     // Check if record exists first (handles IDs created locally that aren't in Supabase)
@@ -626,7 +626,7 @@ app.put('/api/blog/:id', requireAdmin, async (req, res) => {
         category: req.body.category || 'Institucional',
         author: req.body.author || 'VOSERDEM',
         date: req.body.date || new Date().toISOString().split('T')[0],
-        readTime: req.body.readTime || '3 min',
+        read_time: req.body.readTime || '3 min',
         featured: !!req.body.featured,
         status: req.body.status || 'published',
         ...updates
@@ -684,9 +684,9 @@ app.post('/api/bulletins', requireAdmin, async (req, res) => {
     id: `bull-${Date.now()}`,
     organization_id: TENANT_ID,
     title, summary,
-    issueNumber: issueNumber,
-    publishDate: new Date().toISOString().split('T')[0],
-    downloadUrl: downloadUrl || '',
+    issue_number: issueNumber,
+    publish_date: new Date().toISOString().split('T')[0],
+    download_url: downloadUrl || '',
     image: image || '',
     status: status || 'published'
   };
@@ -705,8 +705,8 @@ app.put('/api/bulletins/:id', requireAdmin, async (req, res) => {
   const updates: any = {};
   const fields = ['title','summary','image','status'];
   fields.forEach(f => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
-  if (req.body.issueNumber !== undefined) updates.issueNumber = req.body.issueNumber;
-  if (req.body.downloadUrl !== undefined) updates.downloadUrl = req.body.downloadUrl;
+  if (req.body.issueNumber !== undefined) updates.issue_number = req.body.issueNumber;
+  if (req.body.downloadUrl !== undefined) updates.download_url = req.body.downloadUrl;
   try {
     const { error } = await supabase.from('bulletins').update(updates).eq('id', id).eq('organization_id', TENANT_ID);
     if (error) throw error;
@@ -801,8 +801,8 @@ app.post('/api/admin/reset', requireAdmin, async (_req, res) => {
     await supabase.from('bulletins').insert(initialBulletins.map(b => ({
       id: b.id, organization_id: TENANT_ID,
       title: b.title, summary: b.summary,
-      issueNumber: b.issueNumber, publishDate: b.publishDate,
-      downloadUrl: b.downloadUrl, image: b.image, status: 'published'
+      issue_number: b.issueNumber, publish_date: b.publishDate,
+      download_url: b.downloadUrl, image: b.image, status: 'published'
     })));
     await supabase.from('about').insert({
       id: 'default', organization_id: TENANT_ID,

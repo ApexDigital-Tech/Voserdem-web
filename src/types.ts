@@ -2,9 +2,9 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  category: 'Educación' | 'Medio Ambiente' | 'Adulto Mayor' | 'Desarrollo';
-  region?: 'Altiplano' | 'Valles' | 'Oriente' | 'Chaco';
-  area?: 'Educación' | 'Medio Ambiente' | 'Productivo' | 'Intergeneracional';
+  category: string;
+  region?: string;
+  area?: string;
   image: string;
   goal: number;
   raised: number;
