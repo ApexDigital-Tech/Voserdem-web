@@ -588,11 +588,127 @@ app.post('/api/blog', requireAdmin, async (req, res) => {
     const { error } = await supabase.from('blog').insert(newPost);
     if (error) throw error;
     res.status(201).json(mapBlogFromDb(newPost));
-  } catch (err: any) {
-    console.error('blog POST:', err.message);
-    res.status(500).json({ error: 'Error al crear el artículo.' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error saving about config' });
+    }
+  }
+);
+
+// ---------------------------------------------------------------------------
+// IMPACTO TERRITORIAL ENDPOINTS
+// ---------------------------------------------------------------------------
+const initialImpactoData = {
+  mainTitle: 'Impacto Territorial',
+  mainSubtitle: 'Presencia Nacional',
+  introText: 'Organización civil boliviana sin fines de lucro, inspirada espiritualmente y sostenida por voluntarios, ejecutando proyectos de desarrollo sostenible integral en 4 regiones clave del país.',
+  sites: [
+    {
+      id: "andino",
+      name: "Sitio Andino",
+      location: "Sacaca y Norte de Potosí",
+      description: "Intervención en zonas de extrema pobreza con infraestructura educativa y de servicio social.",
+      image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800",
+      order: 1,
+      stats: [
+        { icon: "Users", label: "Beneficiarios", value: "3,500+" },
+        { icon: "BookOpen", label: "Educación", value: "UAS UCB V" }
+      ]
+    },
+    {
+      id: "valles",
+      name: "Sitio Valles",
+      location: "Quillacollo, Cercado y Ecocampo Chocaya",
+      description: "Raíz fundacional. Agroforestería, energía solar y acompañamiento a comunidades rurales.",
+      image: "https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=800",
+      order: 2,
+      stats: [
+        { icon: "Leaf", label: "Ecocampo", value: "Activo" },
+        { icon: "Sun", label: "Energía", value: "Solar" }
+      ]
+    },
+    {
+      id: "amazonico",
+      name: "Sitio Amazónico",
+      location: "Villa Tunari y El Torno",
+      description: "Comedores escolares y descentralización de la acción educativa en el trópico boliviano.",
+      image: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&q=80&w=800",
+      order: 3,
+      stats: [
+        { icon: "Coffee", label: "Comedores", value: "2 Activos" },
+        { icon: "Users", label: "Niños", value: "850+" }
+      ]
+    },
+    {
+      id: "chaco",
+      name: "Sitio Chaco",
+      location: "Región del Chaco Boliviano",
+      description: "Nuestro polo de desarrollo en gestación. Estamos mapeando necesidades críticas de agua y desarrollo productivo para expandir nuestro modelo DSI a esta región.",
+      image: "https://images.unsplash.com/photo-1473448912268-2022ce9509d8?auto=format&fit=crop&q=80&w=800",
+      order: 4,
+      stats: [
+        { icon: "Map", label: "Fase", value: "Gestación" },
+        { icon: "Droplets", label: "Prioridad", value: "Agua" }
+      ]
+    }
+  ]
+};
+
+app.get('/api/impacto', async (_req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('impact_territorial')
+      .select('*')
+      .eq('organization_id', TENANT_ID)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (!data) {
+      return res.json(initialImpactoData);
+    }
+    
+    // Convert snake_case from DB to camelCase for the frontend
+    res.json({
+      mainTitle: data.mainTitle || initialImpactoData.mainTitle,
+      mainSubtitle: data.mainSubtitle || initialImpactoData.mainSubtitle,
+      introText: data.introText || initialImpactoData.introText,
+      sites: data.sites || initialImpactoData.sites
+    });
+  } catch (err) {
+    console.error(err);
+    res.json(initialImpactoData);
   }
 });
+
+app.put(
+  '/api/impacto',
+  requireAdmin,
+  async (req: any, res: any) => {
+    try {
+      const { mainTitle, mainSubtitle, introText, sites } = req.body;
+
+      const { data, error } = await supabase
+        .from('impact_territorial')
+        .upsert({
+          id: TENANT_ID,
+          organization_id: TENANT_ID,
+          mainTitle,
+          mainSubtitle,
+          introText,
+          sites
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      res.json(data);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error saving impacto config' });
+    }
+  }
+);
 
 app.put('/api/blog/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
