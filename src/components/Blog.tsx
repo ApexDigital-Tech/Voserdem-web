@@ -146,9 +146,12 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                           {featuredPost.title}
                         </h2>
                         
-                        <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-                          {featuredPost.summary}
-                        </p>
+                        <div className="text-xs text-[#2C2C2C] leading-relaxed font-sans space-y-3">
+                          <p className="font-bold">{featuredPost.summary}</p>
+                          <p className="line-clamp-[8] text-justify opacity-90">
+                            {featuredPost.content}
+                          </p>
+                        </div>
                       </div>
 
                       <div className="border-t border-[#C5A059]/20 pt-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
