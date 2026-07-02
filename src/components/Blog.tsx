@@ -125,13 +125,15 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                     className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] overflow-hidden shadow-none hover:border-[#1B3022]/40 transition-colors grid grid-cols-1 lg:grid-cols-12"
                   >
                     <div className="lg:col-span-7 h-64 sm:h-96 lg:h-full relative overflow-hidden bg-[#C5A059]/10">
-                      <img 
-                        src={cleanGoogleDriveUrl(featuredPost.image)} 
-                        alt={featuredPost.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]"
-                        referrerPolicy="no-referrer"
-                      />
-                      <span className="absolute top-4 left-4 bg-[#C5A059] text-[#1B3022] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-[2px] border border-[#1B3022]/20">
+                      <div className="absolute inset-0">
+                        <img 
+                          src={cleanGoogleDriveUrl(featuredPost.image)} 
+                          alt={featuredPost.title}
+                          className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]"
+                          referrerPolicy="no-referrer"
+                        />
+                      </div>
+                      <span className="absolute top-4 left-4 bg-[#C5A059] text-[#1B3022] text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-[2px] border border-[#1B3022]/20 z-10">
                         Destacado
                       </span>
                     </div>
@@ -148,7 +150,7 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                         
                         <div className="text-xs text-[#2C2C2C] leading-relaxed font-sans space-y-3">
                           <p className="font-bold">{featuredPost.summary}</p>
-                          <p className="line-clamp-[8] text-justify opacity-90">
+                          <p className="line-clamp-[10] text-justify opacity-90">
                             {featuredPost.content}
                           </p>
                         </div>
