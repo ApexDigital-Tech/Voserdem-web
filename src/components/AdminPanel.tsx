@@ -5,7 +5,13 @@ import {
   Database, RefreshCw, Layers, DollarSign, Send, ArrowRight, X, AlertOctagon, CheckSquare, Sparkles, MapPin, FileText, Users, Compass, Activity
 } from 'lucide-react';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
+import AdminDonations from './AdminDonations';
+import AdminProjects from './AdminProjects';
+import AdminBulletins from './AdminBulletins';
+import AdminCarousel from './AdminCarousel';
 import AdminPagesManager from './AdminPagesManager';
+import AdminImpacto from './AdminImpacto';
+import AdminAbout from './AdminAbout';
 
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -15,7 +21,7 @@ export default function AdminPanel() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   // Active Admin Sub-Tab
-  const [adminSubTab, setAdminSubTab] = useState<'projects' | 'donations' | 'messages' | 'blog' | 'bulletins' | 'subscribers' | 'about_config' | 'pages_config' | 'carousel_config' | 'logo_config'>('projects');
+  const [adminSubTab, setAdminSubTab] = useState<'projects' | 'donations' | 'messages' | 'blog' | 'bulletins' | 'subscribers' | 'about_config' | 'pages_config' | 'impacto_config' | 'carousel_config' | 'logo_config'>('projects');
 
   // Loaded Data States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -797,6 +803,7 @@ export default function AdminPanel() {
           { id: 'bulletins', label: 'Publicar Boletines', icon: FileText },
           { id: 'subscribers', label: 'Suscriptores', icon: Users },
           { id: 'pages_config', label: 'Gestión de Páginas', icon: Layers },
+          { id: 'impacto_config', label: 'Impacto Territorial', icon: MapPin },
           { id: 'about_config', label: 'Gestión Sobre Nosotros', icon: Compass },
           { id: 'carousel_config', label: 'Carrusel de Portada (5 Fotos)', icon: Sparkles },
           { id: 'logo_config', label: 'Branding & Logos corporativos', icon: Landmark }
@@ -1617,6 +1624,13 @@ export default function AdminPanel() {
       {adminSubTab === 'pages_config' && (
         <div className="animate-fade-in">
           <AdminPagesManager adminFetch={adminFetch} />
+        </div>
+      )}
+
+      {/* TAB CONTENT: IMPACTO TERRITORIAL */}
+      {adminSubTab === 'impacto_config' && (
+        <div className="animate-fade-in">
+          <AdminImpacto adminFetch={adminFetch} />
         </div>
       )}
 
