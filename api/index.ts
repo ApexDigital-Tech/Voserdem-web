@@ -557,7 +557,7 @@ app.get('/api/blog', async (req, res) => {
   const showAll = req.query.all === 'true' || req.query.status === 'all';
   try {
     let query = supabase.from('blog').select('*').eq('organization_id', TENANT_ID);
-    if (!showAll) query = query.neq('status', 'draft');
+    if (!showAll) query = query.or('status.neq.draft,status.is.null');
     const { data, error } = await query;
     if (error) throw error;
     res.json((data || []).map(mapBlogFromDb));

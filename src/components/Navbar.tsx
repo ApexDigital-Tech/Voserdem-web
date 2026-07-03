@@ -19,7 +19,6 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
     { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'how-to-help', label: 'Cómo Ayudar', icon: HeartHandshake },
     { id: 'contact', label: 'Contacto', icon: MessageSquare },
-    { id: 'admin', label: 'Admin Portal', icon: ShieldCheck },
   ];
 
   return (
@@ -51,7 +50,6 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
                       : 'text-[#F5F2ED]/85 hover:bg-[#C5A059]/10 hover:text-[#F5F2ED]'
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
                   <span>{item.label}</span>
                 </button>
               );
@@ -97,7 +95,6 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
                       : 'text-[#F5F2ED]/85 hover:bg-[#C5A059]/10 hover:text-white'
                   }`}
                 >
-                  <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </button>
               );

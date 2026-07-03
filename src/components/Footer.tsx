@@ -44,8 +44,7 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
               { id: 'projects', name: 'Programas de Impacto' },
               { id: 'transparencia', name: 'Transparencia y Memoria' },
               { id: 'how-to-help', name: 'Cómo Ayudar' },
-              { id: 'contact', name: 'Contacto' },
-              { id: 'admin', name: 'Portal Interno (Admin)' }
+              { id: 'contact', name: 'Contacto' }
             ].map((link, idx) => (
               <li key={`${link.id}-${idx}`}>
                 <button
@@ -87,6 +86,8 @@ export default function Footer({ setActiveTab, logoConfig }: FooterProps) {
           <button onClick={() => setActiveTab('transparencia')} className="hover:underline hover:text-[#C5A059]">Memoria Institucional</button>
           <span>•</span>
           <button onClick={() => setActiveTab('contact')} className="hover:underline hover:text-[#C5A059]">Contacto Oficial</button>
+          <span>•</span>
+          <button onClick={() => setActiveTab('admin')} className="hover:underline hover:text-[#C5A059]">Intranet</button>
         </div>
       </div>
 
