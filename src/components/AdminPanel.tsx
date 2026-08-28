@@ -1,17 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import { Project, Donation, Message, BlogPost, Bulletin, Subscriber, CarouselSlide, LogoConfig } from '../types';
-import { 
-  ShieldAlert, Landmark, Mail, BookOpen, Key, Plus, Trash2, Edit2, 
-  Database, RefreshCw, Layers, DollarSign, Send, ArrowRight, X, AlertOctagon, CheckSquare, Sparkles, MapPin, FileText, Users, Compass, Activity
+import toast from 'react-hot-toast';
+import {
+  Project,
+  Donation,
+  Message,
+  BlogPost,
+  Bulletin,
+  Subscriber,
+  CarouselSlide,
+  LogoConfig,
+} from '../types';
+import {
+  ShieldAlert,
+  Landmark,
+  Mail,
+  BookOpen,
+  Key,
+  Plus,
+  Trash2,
+  Edit2,
+  Database,
+  RefreshCw,
+  Layers,
+  DollarSign,
+  Send,
+  ArrowRight,
+  X,
+  AlertOctagon,
+  CheckSquare,
+  Sparkles,
+  MapPin,
+  FileText,
+  Users,
+  Compass,
+  Activity,
 } from 'lucide-react';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
-import AdminDonations from './AdminDonations';
-import AdminProjects from './AdminProjects';
-import AdminBulletins from './AdminBulletins';
-import AdminCarousel from './AdminCarousel';
 import AdminPagesManager from './AdminPagesManager';
 import AdminImpacto from './AdminImpacto';
-import AdminAbout from './AdminAbout';
 
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -21,7 +48,19 @@ export default function AdminPanel() {
   const [loginError, setLoginError] = useState<string | null>(null);
 
   // Active Admin Sub-Tab
-  const [adminSubTab, setAdminSubTab] = useState<'projects' | 'donations' | 'messages' | 'blog' | 'bulletins' | 'subscribers' | 'about_config' | 'pages_config' | 'impacto_config' | 'carousel_config' | 'logo_config'>('projects');
+  const [adminSubTab, setAdminSubTab] = useState<
+    | 'projects'
+    | 'donations'
+    | 'messages'
+    | 'blog'
+    | 'bulletins'
+    | 'subscribers'
+    | 'about_config'
+    | 'pages_config'
+    | 'impacto_config'
+    | 'carousel_config'
+    | 'logo_config'
+  >('projects');
 
   // Loaded Data States
   const [projects, setProjects] = useState<Project[]>([]);
@@ -45,7 +84,6 @@ export default function AdminPanel() {
 
   // Loading / Error
   const [loading, setLoading] = useState<boolean>(false);
-  const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
   // Project Editing / Creating States
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -54,9 +92,15 @@ export default function AdminPanel() {
 
   // Project Form States
   const [formTitle, setFormTitle] = useState('');
-  const [formCategory, setFormCategory] = useState<'Educación' | 'Medio Ambiente' | 'Adulto Mayor' | 'Desarrollo'>('Medio Ambiente');
-  const [formRegion, setFormRegion] = useState<'Andino' | 'Valles' | 'Amazonia' | 'Chaco'>('Andino');
-  const [formArea, setFormArea] = useState<'Educación' | 'Medio Ambiente' | 'Productivo' | 'Intergeneracional'>('Medio Ambiente');
+  const [formCategory, setFormCategory] = useState<
+    'Educación' | 'Medio Ambiente' | 'Adulto Mayor' | 'Desarrollo'
+  >('Medio Ambiente');
+  const [formRegion, setFormRegion] = useState<'Andino' | 'Valles' | 'Amazonia' | 'Chaco'>(
+    'Andino'
+  );
+  const [formArea, setFormArea] = useState<
+    'Educación' | 'Medio Ambiente' | 'Productivo' | 'Intergeneracional'
+  >('Medio Ambiente');
   const [formDescription, setFormDescription] = useState('');
   const [formDetails, setFormDetails] = useState('');
   const [formGoal, setFormGoal] = useState<number>(10000);
@@ -65,7 +109,7 @@ export default function AdminPanel() {
   const [formImpact, setFormImpact] = useState('');
   const [formImage, setFormImage] = useState('');
 
-  const ADMIN_PASSKEY = 'voserdem2026';
+  const ADMIN_PASSKEY = import.meta.env.VITE_ADMIN_PASSKEY || '';
 
   const adminFetch = (url: string, options: RequestInit = {}) => {
     const headers = new Headers(options.headers || {});
@@ -78,7 +122,9 @@ export default function AdminPanel() {
   const [isEditingBlog, setIsEditingBlog] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [blogTitle, setBlogTitle] = useState('');
-  const [blogCategory, setBlogCategory] = useState<'Ecología' | 'Comunidad' | 'Adulto Mayor' | 'Institucional'>('Ecología');
+  const [blogCategory, setBlogCategory] = useState<
+    'Ecología' | 'Comunidad' | 'Adulto Mayor' | 'Institucional'
+  >('Ecología');
   const [blogSummary, setBlogSummary] = useState('');
   const [blogContent, setBlogContent] = useState('');
   const [blogImage, setBlogImage] = useState('');
@@ -112,7 +158,7 @@ export default function AdminPanel() {
     { title: '', description: '', iconName: 'Users' },
     { title: '', description: '', iconName: 'Leaf' },
     { title: '', description: '', iconName: 'Heart' },
-    { title: '', description: '', iconName: 'GraduationCap' }
+    { title: '', description: '', iconName: 'GraduationCap' },
   ]);
 
   const resetBlogForm = () => {
@@ -152,7 +198,7 @@ export default function AdminPanel() {
     setBlogReadTime(post.readTime || '3 min');
     setBlogFeatured(!!post.featured);
     setBlogStatus(post.status || 'published');
-    
+
     setIsEditingBlog(true);
     setEditingBlogId(post.id);
     setIsCreatingBlog(true);
@@ -178,42 +224,64 @@ export default function AdminPanel() {
       return;
     }
 
+    const previousBlogPosts = [...blogPosts];
+    const payload = {
+      title: blogTitle,
+      category: blogCategory,
+      summary: blogSummary,
+      content: blogContent,
+      image: cleanGoogleDriveUrl(blogImage),
+      author: blogAuthor,
+      readTime: blogReadTime,
+      featured: blogFeatured,
+      status: blogStatus,
+    };
+    const optimisticPost: any = {
+      ...payload,
+      id: isEditingBlog ? editingBlogId! : `temp-${Date.now()}`,
+    };
+    setBlogPosts((prev) =>
+      isEditingBlog
+        ? prev.map((p) => (p.id === editingBlogId ? { ...p, ...payload } : p))
+        : [optimisticPost, ...prev]
+    );
+    showStatus('Guardando cambios...', 'success');
+    resetBlogForm();
+
     try {
       const url = isEditingBlog ? `/api/blog/${editingBlogId}` : '/api/blog';
-      const method = isEditingBlog ? 'PUT' : 'POST';
-      const res = await adminFetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: blogTitle,
-          category: blogCategory,
-          summary: blogSummary,
-          content: blogContent,
-          image: cleanGoogleDriveUrl(blogImage),
-          author: blogAuthor,
-          readTime: blogReadTime,
-          featured: blogFeatured,
-          status: blogStatus
-        })
-      });
+      const res = await (isEditingBlog ? api.put(url, payload) : api.post(url, payload));
 
-      if (res.ok) {
-        showStatus(isEditingBlog ? 'Artículo del blog actualizado con éxito.' : 'Artículo del blog creado con éxito.', 'success');
-        resetBlogForm();
+      if (res.success) {
+        showStatus(
+          isEditingBlog
+            ? 'Artículo del blog actualizado con éxito.'
+            : 'Artículo del blog creado con éxito.',
+          'success'
+        );
         loadAllAdminData();
       } else {
-        const err = await res.json();
-        showStatus(err.error || 'Error al guardar el artículo.', 'error');
+        setBlogPosts(previousBlogPosts);
+        showStatus(res.error || 'Error al guardar el artículo.', 'error');
       }
     } catch (err) {
+      setBlogPosts(previousBlogPosts);
       showStatus('Fallo de red al intentar guardar.', 'error');
     }
   };
 
   const handleDeleteBlogPost = async (id: string, name: string) => {
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente la publicación "${name}"?`)) {
+    if (
+      !window.confirm(
+        `¿Estás seguro de que deseas eliminar permanentemente la publicación "${name}"?`
+      )
+    ) {
       return;
     }
+
+    const previousBlogPosts = [...blogPosts];
+    setBlogPosts((prev) => prev.filter((p) => p.id !== id));
+    showStatus('Eliminando publicación...', 'success');
 
     try {
       const res = await adminFetch(`/api/blog/${id}`, { method: 'DELETE' });
@@ -221,9 +289,11 @@ export default function AdminPanel() {
         showStatus('Publicación eliminada con éxito del blog.', 'success');
         loadAllAdminData();
       } else {
+        setBlogPosts(previousBlogPosts);
         showStatus('Error al eliminar artículo.', 'error');
       }
     } catch (err) {
+      setBlogPosts(previousBlogPosts);
       showStatus('Error de red al intentar eliminar.', 'error');
     }
   };
@@ -238,26 +308,27 @@ export default function AdminPanel() {
     try {
       const url = isEditingBulletin ? `/api/bulletins/${editingBulletinId}` : '/api/bulletins';
       const method = isEditingBulletin ? 'PUT' : 'POST';
-      const res = await adminFetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: bulletinTitle,
-          issueNumber: bulletinIssueNumber,
-          summary: bulletinSummary,
-          downloadUrl: bulletinDownloadUrl,
-          image: cleanGoogleDriveUrl(bulletinImage),
-          status: bulletinStatus
-        })
-      });
+      const payload = {
+        title: bulletinTitle,
+        issueNumber: bulletinIssueNumber,
+        summary: bulletinSummary,
+        downloadUrl: bulletinDownloadUrl,
+        image: cleanGoogleDriveUrl(bulletinImage),
+        status: bulletinStatus,
+      };
+      const res = await (isEditingBulletin ? api.put(url, payload) : api.post(url, payload));
 
-      if (res.ok) {
-        showStatus(isEditingBulletin ? 'Boletín institucional actualizado con éxito.' : 'Boletín institucional publicado con éxito.', 'success');
+      if (res.success) {
+        showStatus(
+          isEditingBulletin
+            ? 'Boletín institucional actualizado con éxito.'
+            : 'Boletín institucional publicado con éxito.',
+          'success'
+        );
         resetBulletinForm();
         loadAllAdminData();
       } else {
-        const err = await res.json();
-        showStatus(err.error || 'Error al guardar el boletín.', 'error');
+        showStatus(res.error || 'Error al guardar el boletín.', 'error');
       }
     } catch (err) {
       showStatus('Error de red al intentar guardar el boletín.', 'error');
@@ -265,7 +336,9 @@ export default function AdminPanel() {
   };
 
   const handleDeleteBulletin = async (id: string, name: string) => {
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el boletín "${name}"?`)) {
+    if (
+      !window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el boletín "${name}"?`)
+    ) {
       return;
     }
 
@@ -283,7 +356,11 @@ export default function AdminPanel() {
   };
 
   const handleDeleteSubscriber = async (id: string, email: string) => {
-    if (!window.confirm(`¿Desea desvincular y eliminar permanentemente el correo electrónico "${email}"?`)) {
+    if (
+      !window.confirm(
+        `¿Desea desvincular y eliminar permanentemente el correo electrónico "${email}"?`
+      )
+    ) {
       return;
     }
 
@@ -321,26 +398,27 @@ export default function AdminPanel() {
   const loadAllAdminData = async () => {
     setLoading(true);
     try {
-      const [projRes, donRes, msgRes, blogRes, bullRes, subRes, aboutRes, carouselRes, logosRes] = await Promise.all([
-        adminFetch('/api/projects'),
-        adminFetch('/api/donations'),
-        adminFetch('/api/messages'),
-        adminFetch('/api/blog?status=all'),
-        adminFetch('/api/bulletins?status=all'),
-        adminFetch('/api/subscribers'),
-        adminFetch('/api/about'),
-        adminFetch('/api/carousel'),
-        adminFetch('/api/logos')
-      ]);
+      const [projRes, donRes, msgRes, blogRes, bullRes, subRes, aboutRes, carouselRes, logosRes] =
+        await Promise.all([
+          api.get<any>('/api/projects'),
+          api.get<any>('/api/donations'),
+          api.get<any>('/api/messages'),
+          api.get<any>('/api/blog?status=all'),
+          api.get<any>('/api/bulletins?status=all'),
+          api.get<any>('/api/subscribers'),
+          api.get<any>('/api/about'),
+          api.get<any>('/api/carousel'),
+          api.get<any>('/api/logos'),
+        ]);
 
-      if (projRes.ok) setProjects(await projRes.json());
-      if (donRes.ok) setDonations(await donRes.json());
-      if (msgRes.ok) setMessages(await msgRes.json());
-      if (blogRes.ok) setBlogPosts(await blogRes.json());
-      if (bullRes.ok) setBulletins(await bullRes.json());
-      if (subRes.ok) setSubscribers(await subRes.json());
-      if (aboutRes.ok) {
-        const aboutData = await aboutRes.json();
+      if (projRes.success && projRes.data) setProjects(projRes.data);
+      if (donRes.success && donRes.data) setDonations(donRes.data);
+      if (msgRes.success && msgRes.data) setMessages(msgRes.data);
+      if (blogRes.success && blogRes.data) setBlogPosts(blogRes.data);
+      if (bullRes.success && bullRes.data) setBulletins(bullRes.data);
+      if (subRes.success && subRes.data) setSubscribers(subRes.data);
+      if (aboutRes.success && aboutRes.data) {
+        const aboutData = aboutRes.data;
         setAboutIntroSub(aboutData.introSub || '');
         setAboutIntroTitle(aboutData.introTitle || '');
         setAboutIntroText(aboutData.introText || '');
@@ -354,11 +432,11 @@ export default function AdminPanel() {
           setAboutPillars(aboutData.pillars);
         }
       }
-      if (carouselRes.ok) {
-        setCarouselSlides(await carouselRes.json());
+      if (carouselRes.success && carouselRes.data) {
+        setCarouselSlides(carouselRes.data);
       }
-      if (logosRes.ok) {
-        const logoData = await logosRes.json();
+      if (logosRes.success && logosRes.data) {
+        const logoData = logosRes.data;
         if (logoData.logoColor) {
           setLogoColorBrandName(logoData.logoColor.brandName || 'VOSERDEM');
           setLogoColorSlogan(logoData.logoColor.slogan || 'Voluntarios al Servicio de los Demás');
@@ -386,24 +464,21 @@ export default function AdminPanel() {
       const cleanedImageUrl = cleanGoogleDriveUrl(aboutImageUrl);
       const cleanedHeroImageUrl = cleanGoogleDriveUrl(aboutHeroImageUrl);
 
-      const res = await adminFetch('/api/about', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          introSub: aboutIntroSub,
-          introTitle: aboutIntroTitle,
-          introText: aboutIntroText,
-          missionTitle: aboutMissionTitle,
-          missionText: aboutMissionText,
-          visionTitle: aboutVisionTitle,
-          visionText: aboutVisionText,
-          imageUrl: cleanedImageUrl,
-          heroImageUrl: cleanedHeroImageUrl,
-          pillars: aboutPillars
-        })
-      });
+      const payload = {
+        introSub: aboutIntroSub,
+        introTitle: aboutIntroTitle,
+        introText: aboutIntroText,
+        missionTitle: aboutMissionTitle,
+        missionText: aboutMissionText,
+        visionTitle: aboutVisionTitle,
+        visionText: aboutVisionText,
+        imageUrl: cleanedImageUrl,
+        heroImageUrl: cleanedHeroImageUrl,
+        pillars: aboutPillars,
+      };
+      const res = await api.put('/api/about', payload);
 
-      if (res.ok) {
+      if (res.success) {
         showStatus('Contenido de "Sobre Nosotros" guardado con éxito.', 'success');
         loadAllAdminData();
       } else {
@@ -420,15 +495,15 @@ export default function AdminPanel() {
     e.preventDefault();
     setLoading(true);
     try {
-      const sanitizedSlides = carouselSlides.map(slide => ({
+      const sanitizedSlides = carouselSlides.map((slide) => ({
         ...slide,
-        image: cleanGoogleDriveUrl(slide.image)
+        image: cleanGoogleDriveUrl(slide.image),
       }));
 
       const res = await adminFetch('/api/carousel', {
-         method: 'PUT',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(sanitizedSlides)
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sanitizedSlides),
       });
 
       if (res.ok) {
@@ -458,16 +533,16 @@ export default function AdminPanel() {
             slogan: logoColorSlogan,
             useCustomImage: logoColorUseCustomImage,
             // Save original URL — cleanGoogleDriveUrl runs only at render time in VoserdemLogo
-            imageUrl: logoColorImageUrl
+            imageUrl: logoColorImageUrl,
           },
           logoGold: {
             brandName: logoGoldBrandName,
             slogan: logoGoldSlogan,
             useCustomImage: logoGoldUseCustomImage,
             // Save original URL — cleanGoogleDriveUrl runs only at render time in VoserdemLogo
-            imageUrl: logoGoldImageUrl
-          }
-        })
+            imageUrl: logoGoldImageUrl,
+          },
+        }),
       });
 
       if (res.ok) {
@@ -531,30 +606,25 @@ export default function AdminPanel() {
     if (!formTitle.trim()) return;
 
     try {
-      const response = await adminFetch('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formTitle,
-          category: formCategory,
-          region: formRegion,
-          area: formArea,
-          description: formDescription,
-          details: formDetails || formDescription,
-          goal: formGoal,
-          location: formLocation,
-          impact: formImpact,
-          image: cleanGoogleDriveUrl(formImage)
-        })
+      const response = await api.post('/api/projects', {
+        title: formTitle,
+        category: formCategory,
+        region: formRegion,
+        area: formArea,
+        description: formDescription,
+        details: formDetails || formDescription,
+        goal: formGoal,
+        location: formLocation,
+        impact: formImpact,
+        image: cleanGoogleDriveUrl(formImage),
       });
 
-      if (response.ok) {
+      if (response.success) {
         showStatus('Proyecto creado con éxito.', 'success');
         resetForm();
         loadAllAdminData();
       } else {
-        const err = await response.json();
-        showStatus(err.error || 'Error al guardar el proyecto.', 'error');
+        showStatus(response.error || 'Error al guardar el proyecto.', 'error');
       }
     } catch (err) {
       showStatus('Fallo de red al intentar crear el proyecto.', 'error');
@@ -565,69 +635,83 @@ export default function AdminPanel() {
     e.preventDefault();
     if (!editingProjectId) return;
 
-    try {
-      const response = await adminFetch(`/api/projects/${editingProjectId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: formTitle,
-          category: formCategory,
-          region: formRegion,
-          area: formArea,
-          description: formDescription,
-          details: formDetails,
-          goal: formGoal,
-          raised: formRaised,
-          location: formLocation,
-          impact: formImpact,
-          image: cleanGoogleDriveUrl(formImage)
-        })
-      });
+    const previousProjects = [...projects];
+    const payload = {
+      title: formTitle,
+      category: formCategory,
+      region: formRegion,
+      area: formArea,
+      description: formDescription,
+      details: formDetails,
+      goal: formGoal,
+      raised: formRaised,
+      location: formLocation,
+      impact: formImpact,
+      image: cleanGoogleDriveUrl(formImage),
+    };
 
-      if (response.ok) {
+    setProjects((prev) => prev.map((p) => (p.id === editingProjectId ? { ...p, ...payload } : p)));
+    showStatus('Actualizando proyecto...', 'success');
+    resetForm();
+
+    try {
+      const response = await api.put(`/api/projects/${editingProjectId}`, payload);
+
+      if (response.success) {
         showStatus('Proyecto actualizado correctamente.', 'success');
-        resetForm();
         loadAllAdminData();
       } else {
-        showStatus('Error al modificar el proyecto.', 'error');
+        setProjects(previousProjects);
+        showStatus(response.error || 'Error al modificar el proyecto.', 'error');
       }
     } catch (err) {
+      setProjects(previousProjects);
       showStatus('Fallo en la comunicación con el servidor.', 'error');
     }
   };
 
   const handleDeleteProject = async (id: string, name: string) => {
-    if (!window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el proyecto "${name}"?`)) {
+    if (
+      !window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el proyecto "${name}"?`)
+    ) {
       return;
     }
 
+    const previousProjects = [...projects];
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+    showStatus('Eliminando proyecto...', 'success');
+
     try {
       const response = await adminFetch(`/api/projects/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       });
 
       if (response.ok) {
         showStatus('Proyecto eliminado con éxito.', 'success');
         loadAllAdminData();
       } else {
+        setProjects(previousProjects);
         showStatus('Error de rechazo al eliminar proyecto.', 'error');
       }
     } catch (err) {
+      setProjects(previousProjects);
       showStatus('Error de red al intentar eliminar.', 'error');
     }
   };
 
   const handleResetDatabase = async () => {
-    const userInput = window.prompt('ATENCIÓN PELIGRO: Esto restaurará los proyectos iniciales y borrará TODAS las donaciones, mensajes, blogs y configuraciones actuales de la base de datos de producción.\n\nPara confirmar esta acción destructiva, escribe "CONFIRMAR" en mayúsculas:');
-    
+    const userInput = window.prompt(
+      'ATENCIÓN PELIGRO: Esto restaurará los proyectos iniciales y borrará TODAS las donaciones, mensajes, blogs y configuraciones actuales de la base de datos de producción.\n\nPara confirmar esta acción destructiva, escribe "CONFIRMAR" en mayúsculas:'
+    );
+
     if (userInput !== 'CONFIRMAR') {
       showStatus('Operación de restauración cancelada. No se realizaron cambios.', 'success');
       return;
     }
 
     try {
-      const response = await adminFetch('/api/admin/reset', { method: 'POST' });
-      if (response.ok) {
+      const response = await api.post('/api/admin/reset');
+      if (response.success) {
         showStatus('Base de datos restaurada correctamente.', 'success');
         loadAllAdminData();
         resetForm();
@@ -638,10 +722,7 @@ export default function AdminPanel() {
   };
 
   const showStatus = (text: string, type: 'success' | 'error') => {
-    setStatusMsg({ text, type });
-    setTimeout(() => {
-      setStatusMsg(null);
-    }, 4000);
+    toast[type](text);
   };
 
   // Login Gate View
@@ -652,10 +733,15 @@ export default function AdminPanel() {
           <div className="w-16 h-16 bg-[#1f5f3d]/10 text-[#1f5f3d] rounded-full flex items-center justify-center mx-auto shadow-inner">
             <ShieldAlert className="h-8 w-8" />
           </div>
-          
+
           <div className="space-y-1.5">
-            <h2 className="font-display text-2xl font-extrabold text-[#1c1a17]">Portal de Administración</h2>
-            <p className="text-xs text-[#5c544b]">Reservado para directores, coordinadores de VOSERDEM Bolivia y evaluadores del sistema.</p>
+            <h2 className="font-display text-2xl font-extrabold text-[#1c1a17]">
+              Portal de Administración
+            </h2>
+            <p className="text-xs text-[#5c544b]">
+              Reservado para directores, coordinadores de VOSERDEM Bolivia y evaluadores del
+              sistema.
+            </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4 text-left">
@@ -692,9 +778,11 @@ export default function AdminPanel() {
           <div className="bg-[#faf7f2] border border-[#ebdccd]/45 p-4 rounded-xl text-xs text-left text-[#5c544b] space-y-1">
             <p className="font-bold text-[#1f5f3d] flex items-center gap-1">
               <Sparkles className="h-3.5 w-3.5" />
-              Acceso Rápido para Pruebas:
+              Acceso Administrativo:
             </p>
-            <p>Utilice la credencial preestablecida: <strong className="text-[#1c1a17] font-mono select-all px-1 bg-[#e6dfd5]/40 rounded">voserdem2026</strong> para desbloquear y comprobar la funcionalidad del backend.</p>
+            <p>
+              Utilice la credencial proporcionada por el equipo de TI para desbloquear y acceder al sistema.
+            </p>
           </div>
         </div>
       </div>
@@ -704,7 +792,6 @@ export default function AdminPanel() {
   // Dashboard Main View
   return (
     <div className="py-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-      
       {/* Admin Title Block */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[#ebdccd]/50">
         <div>
@@ -716,7 +803,8 @@ export default function AdminPanel() {
             Consola Operativa Global
           </h2>
           <p className="text-xs text-[#5c544b] mt-0.5">
-            Gestión en tiempo real de iniciativas ecológicas, donaciones y mensajería en Cochabamba, Bolivia.
+            Gestión en tiempo real de iniciativas ecológicas, donaciones y mensajería en Cochabamba,
+            Bolivia.
           </p>
         </div>
 
@@ -746,18 +834,6 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* Real-time Toast Status Notifications */}
-      {statusMsg && (
-        <div className={`p-4 rounded-2xl text-xs font-semibold flex items-center gap-2 border shadow-sm ${
-          statusMsg.type === 'success' 
-            ? 'bg-emerald-50 border-emerald-200 text-emerald-800' 
-            : 'bg-rose-50 border-rose-200 text-rose-800'
-        }`}>
-          <AlertOctagon className="h-4.5 w-4.5 shrink-0" />
-          <span>{statusMsg.text}</span>
-        </div>
-      )}
-
       {/* Summary Stat Widget Blocks */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="bg-[#fcfbf9] border border-[#ebdccd]/60 p-5 rounded-2xl flex items-center gap-4 shadow-xs">
@@ -765,8 +841,12 @@ export default function AdminPanel() {
             <Layers className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">Iniciativas del Hub</span>
-            <h4 className="text-2xl font-extrabold text-[#1c1a17] leading-tight">{projects.length}</h4>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">
+              Iniciativas del Hub
+            </span>
+            <h4 className="text-2xl font-extrabold text-[#1c1a17] leading-tight">
+              {projects.length}
+            </h4>
           </div>
         </div>
 
@@ -775,7 +855,9 @@ export default function AdminPanel() {
             <DollarSign className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">Total Donaciones</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">
+              Total Donaciones
+            </span>
             <h4 className="text-2xl font-extrabold text-[#1c1a17] leading-tight">
               ${donations.reduce((sum, d) => sum + d.amount, 0).toLocaleString()} USD
             </h4>
@@ -787,8 +869,12 @@ export default function AdminPanel() {
             <Mail className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">Buzón de Mensajes</span>
-            <h4 className="text-2xl font-extrabold text-[#1c1a17] leading-tight">{messages.length} recibidos</h4>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#5c544b]">
+              Buzón de Mensajes
+            </span>
+            <h4 className="text-2xl font-extrabold text-[#1c1a17] leading-tight">
+              {messages.length} recibidos
+            </h4>
           </div>
         </div>
       </div>
@@ -806,7 +892,7 @@ export default function AdminPanel() {
           { id: 'impacto_config', label: 'Impacto Territorial', icon: MapPin },
           { id: 'about_config', label: 'Gestión Sobre Nosotros', icon: Compass },
           { id: 'carousel_config', label: 'Carrusel de Portada (5 Fotos)', icon: Sparkles },
-          { id: 'logo_config', label: 'Branding & Logos corporativos', icon: Landmark }
+          { id: 'logo_config', label: 'Branding & Logos corporativos', icon: Landmark },
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = adminSubTab === tab.id;
@@ -818,8 +904,8 @@ export default function AdminPanel() {
                 resetForm();
               }}
               className={`flex items-center gap-1.5 py-3 px-6 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-                isSelected 
-                  ? 'border-[#1f5f3d] text-[#1f5f3d]' 
+                isSelected
+                  ? 'border-[#1f5f3d] text-[#1f5f3d]'
                   : 'border-transparent text-[#5c544b] hover:text-[#1c1a17]'
               }`}
             >
@@ -833,13 +919,18 @@ export default function AdminPanel() {
       {/* TAB CONTENT: PROJECTS MANAGEMENT */}
       {adminSubTab === 'projects' && (
         <div className="space-y-8">
-          
           {/* Header row to trigger "Add project" form */}
           <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/35">
-            <p className="text-xs text-[#5c544b] font-medium">Haga clic en un proyecto existente para editarlo de manera inmediata, o añada una nueva campaña.</p>
+            <p className="text-xs text-[#5c544b] font-medium">
+              Haga clic en un proyecto existente para editarlo de manera inmediata, o añada una
+              nueva campaña.
+            </p>
             {!isCreating && !isEditing && (
               <button
-                onClick={() => { resetForm(); setIsCreating(true); }}
+                onClick={() => {
+                  resetForm();
+                  setIsCreating(true);
+                }}
                 className="bg-[#1f5f3d] text-white hover:bg-[#15432b] text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
@@ -863,11 +954,15 @@ export default function AdminPanel() {
                 {isEditing ? 'Editar Detalles del Proyecto' : 'Crear Nueva Campaña VOSERDEM'}
               </h4>
 
-              <form onSubmit={isEditing ? handleUpdateProject : handleCreateProject} className="space-y-4">
-                
+              <form
+                onSubmit={isEditing ? handleUpdateProject : handleCreateProject}
+                className="space-y-4"
+              >
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Título del Proyecto</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Título del Proyecto
+                    </label>
                     <input
                       type="text"
                       required
@@ -879,7 +974,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Categoría</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Categoría
+                    </label>
                     <select
                       value={formCategory}
                       onChange={(e) => setFormCategory(e.target.value as any)}
@@ -893,7 +990,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Ubicación Geográfica</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Ubicación Geográfica
+                    </label>
                     <input
                       type="text"
                       placeholder="Ej. Cochabamba, Bolivia"
@@ -906,7 +1005,9 @@ export default function AdminPanel() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Región Geográfica (Bolivia)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Región Geográfica (Bolivia)
+                    </label>
                     <select
                       value={formRegion}
                       onChange={(e) => setFormRegion(e.target.value as any)}
@@ -920,7 +1021,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Área de Acción (Categorización interna)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Área de Acción (Categorización interna)
+                    </label>
                     <select
                       value={formArea}
                       onChange={(e) => setFormArea(e.target.value as any)}
@@ -929,14 +1032,18 @@ export default function AdminPanel() {
                       <option value="Educación">Educación</option>
                       <option value="Medio Ambiente">Medio Ambiente</option>
                       <option value="Productivo">Productivo</option>
-                      <option value="Intergeneracional">Intergeneracional (comedores de niños, adulto mayor, etc)</option>
+                      <option value="Intergeneracional">
+                        Intergeneracional (comedores de niños, adulto mayor, etc)
+                      </option>
                     </select>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Meta de Financiamiento (USD)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Meta de Financiamiento (USD)
+                    </label>
                     <input
                       type="number"
                       min="1"
@@ -948,7 +1055,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Recaudado (Solo editable en Cuentas Aud.)</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Recaudado (Solo editable en Cuentas Aud.)
+                    </label>
                     <input
                       type="number"
                       min="0"
@@ -960,7 +1069,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1 sm:col-span-2">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Muro de Métricas de Impacto</label>
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                      Muro de Métricas de Impacto
+                    </label>
                     <input
                       type="text"
                       placeholder="Ej. 120 abuelas atendidas diariamente."
@@ -973,7 +1084,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">URL de la Imagen Ilustrativa (Unsplash u otro servidor)</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                    URL de la Imagen Ilustrativa (Unsplash u otro servidor)
+                  </label>
                   <input
                     type="url"
                     placeholder="https://images.unsplash.com/photo-..."
@@ -984,7 +1097,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Breve Introducción de Tarjeta</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                    Breve Introducción de Tarjeta
+                  </label>
                   <input
                     placeholder="Máximo 150 caracteres para la vista resumida principal."
                     required
@@ -995,7 +1110,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">Descripción Detallada (Cuerpo del Modal)</label>
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
+                    Descripción Detallada (Cuerpo del Modal)
+                  </label>
                   <textarea
                     rows={4}
                     placeholder="Describe de manera profunda los objetivos específicos, beneficiarios y necesidades financieras..."
@@ -1021,7 +1138,6 @@ export default function AdminPanel() {
                     {isEditing ? 'Confirmar Cambios' : 'Crear Proyecto'}
                   </button>
                 </div>
-
               </form>
             </div>
           )}
@@ -1051,8 +1167,12 @@ export default function AdminPanel() {
                             referrerPolicy="no-referrer"
                           />
                           <div>
-                            <span className="font-bold text-[#1c1a17] hover:underline cursor-pointer block">{proj.title}</span>
-                            <span className="text-[10px] text-[#5c544b] line-clamp-1">{proj.description}</span>
+                            <span className="font-bold text-[#1c1a17] hover:underline cursor-pointer block">
+                              {proj.title}
+                            </span>
+                            <span className="text-[10px] text-[#5c544b] line-clamp-1">
+                              {proj.description}
+                            </span>
                           </div>
                         </div>
                       </td>
@@ -1073,7 +1193,8 @@ export default function AdminPanel() {
                         </div>
                       </td>
                       <td className="py-4 px-6 text-right font-mono font-bold">
-                        <span className="text-[#1f5f3d]">${proj.raised.toLocaleString()}</span> / <span className="text-[#7d756b]">${proj.goal.toLocaleString()}</span>
+                        <span className="text-[#1f5f3d]">${proj.raised.toLocaleString()}</span> /{' '}
+                        <span className="text-[#7d756b]">${proj.goal.toLocaleString()}</span>
                       </td>
                       <td className="py-4 px-6 text-center">
                         <div className="flex justify-center gap-2">
@@ -1099,7 +1220,6 @@ export default function AdminPanel() {
               </table>
             </div>
           </div>
-
         </div>
       )}
 
@@ -1128,9 +1248,15 @@ export default function AdminPanel() {
                       <tr key={don.id} className="hover:bg-[#fbfaf7]">
                         <td className="py-4 px-6 font-bold">{don.donorName}</td>
                         <td className="py-4 px-6 font-medium text-[#4e4842]">{don.email}</td>
-                        <td className="py-4 px-6 text-[#1f5f3d] font-semibold">{don.projectTitle}</td>
-                        <td className="py-4 px-6 text-[#5c544b] font-mono">{new Date(don.date).toLocaleString()}</td>
-                        <td className="py-4 px-6 text-right font-mono font-bold text-[#d95c2b]">${don.amount.toLocaleString()} USD</td>
+                        <td className="py-4 px-6 text-[#1f5f3d] font-semibold">
+                          {don.projectTitle}
+                        </td>
+                        <td className="py-4 px-6 text-[#5c544b] font-mono">
+                          {new Date(don.date).toLocaleString()}
+                        </td>
+                        <td className="py-4 px-6 text-right font-mono font-bold text-[#d95c2b]">
+                          ${don.amount.toLocaleString()} USD
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1151,7 +1277,10 @@ export default function AdminPanel() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {messages.map((msg) => (
-                <div key={msg.id} className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-2xl p-6 shadow-xs flex flex-col justify-between hover:border-[#1f5f3d]/40 transition-colors">
+                <div
+                  key={msg.id}
+                  className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-2xl p-6 shadow-xs flex flex-col justify-between hover:border-[#1f5f3d]/40 transition-colors"
+                >
                   <div className="space-y-4">
                     <div className="flex justify-between items-start border-b border-[#ebdccd]/35 pb-2">
                       <div>
@@ -1164,13 +1293,15 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold text-[#d95c2b] uppercase tracking-wide">Asunto: {msg.subject}</span>
+                      <span className="text-[10px] font-bold text-[#d95c2b] uppercase tracking-wide">
+                        Asunto: {msg.subject}
+                      </span>
                       <p className="text-xs text-[#4e4842] leading-relaxed whitespace-pre-line bg-[#ebdccd]/10 p-3 rounded-lg border border-[#ebdccd]/20">
                         {msg.message}
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="pt-4 flex justify-end">
                     <a
                       href={`mailto:${msg.email}?subject=Respuesta VOSERDEM: ${msg.subject}`}
@@ -1192,8 +1323,12 @@ export default function AdminPanel() {
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
             <div>
-              <h3 className="font-display text-lg font-bold text-[#1c1a17]">Historias en el Blog de VOSERDEM</h3>
-              <p className="text-xs text-[#5c544b]">Restaura la voz de la comunidad publicando y editando vivencias reales de Bolivia.</p>
+              <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+                Historias en el Blog de VOSERDEM
+              </h3>
+              <p className="text-xs text-[#5c544b]">
+                Restaura la voz de la comunidad publicando y editando vivencias reales de Bolivia.
+              </p>
             </div>
             <button
               onClick={() => setIsCreatingBlog(!isCreatingBlog)}
@@ -1205,14 +1340,19 @@ export default function AdminPanel() {
           </div>
 
           {isCreatingBlog && (
-            <form onSubmit={handleCreateBlogPost} className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in">
+            <form
+              onSubmit={handleCreateBlogPost}
+              className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in"
+            >
               <h4 className="font-display font-bold text-base text-[#1c1a17] border-b border-[#ebdccd]/40 pb-2">
                 {isEditingBlog ? 'Editar Publicación' : 'Nueva Publicación'}
               </h4>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título del Artículo *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Título del Artículo *
+                  </label>
                   <input
                     type="text"
                     required
@@ -1223,7 +1363,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Categoría *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Categoría *
+                  </label>
                   <select
                     value={blogCategory}
                     onChange={(e) => setBlogCategory(e.target.value as any)}
@@ -1236,7 +1378,9 @@ export default function AdminPanel() {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Autor/a *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Autor/a *
+                  </label>
                   <input
                     type="text"
                     required
@@ -1247,7 +1391,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Tiempo de lectura estimado</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Tiempo de lectura estimado
+                  </label>
                   <input
                     type="text"
                     placeholder="Ej: 4 min"
@@ -1257,7 +1403,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Estado de Publicación *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Estado de Publicación *
+                  </label>
                   <select
                     value={blogStatus}
                     onChange={(e) => setBlogStatus(e.target.value as 'draft' | 'published')}
@@ -1270,7 +1418,9 @@ export default function AdminPanel() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de Imagen de Portada</label>
+                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                  URL de Imagen de Portada
+                </label>
                 <input
                   type="text"
                   placeholder="https://images.unsplash.com/photo-..."
@@ -1281,7 +1431,9 @@ export default function AdminPanel() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">Resumen Corto *</label>
+                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                  Resumen Corto *
+                </label>
                 <input
                   type="text"
                   required
@@ -1293,7 +1445,9 @@ export default function AdminPanel() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">Cuerpo del Artículo *</label>
+                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                  Cuerpo del Artículo *
+                </label>
                 <textarea
                   required
                   rows={6}
@@ -1312,7 +1466,10 @@ export default function AdminPanel() {
                   onChange={(e) => setBlogFeatured(e.target.checked)}
                   className="rounded text-[#1f5f3d] focus:ring-[#1f5f3d]"
                 />
-                <label htmlFor="formFeatured" className="text-xs font-semibold text-[#1c1a17] select-none">
+                <label
+                  htmlFor="formFeatured"
+                  className="text-xs font-semibold text-[#1c1a17] select-none"
+                >
                   Marcar este artículo como Destacado (aparecerá en la parte superior del Blog)
                 </label>
               </div>
@@ -1338,7 +1495,9 @@ export default function AdminPanel() {
           {/* List of articles */}
           <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
             {blogPosts.length === 0 ? (
-              <div className="p-12 text-center text-xs text-[#5c544b]">Aún no hay publicaciones en el blog registradas en data-store.json</div>
+              <div className="p-12 text-center text-xs text-[#5c544b]">
+                Aún no hay publicaciones en el blog registradas en data-store.json
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -1362,14 +1521,20 @@ export default function AdminPanel() {
                         <td className="py-4 px-6 italic text-[#4e4842]">{post.author}</td>
                         <td className="py-4 px-6">
                           {post.status === 'draft' ? (
-                            <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">Borrador</span>
+                            <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">
+                              Borrador
+                            </span>
                           ) : (
-                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">Publicado</span>
+                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">
+                              Publicado
+                            </span>
                           )}
                         </td>
                         <td className="py-4 px-6">
                           {post.featured ? (
-                            <span className="bg-[#d95c2b]/10 text-[#d95c2b] text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide">Sí</span>
+                            <span className="bg-[#d95c2b]/10 text-[#d95c2b] text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide">
+                              Sí
+                            </span>
                           ) : (
                             <span className="text-[#8e897e] text-[9px]">No</span>
                           )}
@@ -1407,8 +1572,13 @@ export default function AdminPanel() {
         <div className="space-y-6">
           <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
             <div>
-              <h3 className="font-display text-lg font-bold text-[#1c1a17]">Boletines de Difusión Institucional</h3>
-              <p className="text-xs text-[#5c544b]">Publica descargables PDF para que los donantes auditen iniciativas andinas en Cochabamba.</p>
+              <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+                Boletines de Difusión Institucional
+              </h3>
+              <p className="text-xs text-[#5c544b]">
+                Publica descargables PDF para que los donantes auditen iniciativas andinas en
+                Cochabamba.
+              </p>
             </div>
             <button
               onClick={() => setIsCreatingBulletin(!isCreatingBulletin)}
@@ -1420,14 +1590,19 @@ export default function AdminPanel() {
           </div>
 
           {isCreatingBulletin && (
-            <form onSubmit={handleCreateBulletin} className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in">
+            <form
+              onSubmit={handleCreateBulletin}
+              className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in"
+            >
               <h4 className="font-display font-bold text-base text-[#1c1a17] border-b border-[#ebdccd]/40 pb-2">
                 {isEditingBulletin ? 'Editar Boletín' : 'Nuevo Boletín Digital'}
               </h4>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título del Boletín *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Título del Boletín *
+                  </label>
                   <input
                     type="text"
                     required
@@ -1438,7 +1613,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Edición / N° de Edición *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Edición / N° de Edición *
+                  </label>
                   <input
                     type="text"
                     required
@@ -1452,7 +1629,9 @@ export default function AdminPanel() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Soporte de Descarga (URL del PDF) o Enlace de Lectura</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Soporte de Descarga (URL del PDF) o Enlace de Lectura
+                  </label>
                   <input
                     type="text"
                     placeholder="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf"
@@ -1462,7 +1641,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de Foto de Portada / Ilustración del Boletín</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    URL de Foto de Portada / Ilustración del Boletín
+                  </label>
                   <input
                     type="text"
                     placeholder="https://images.unsplash.com/photo-... o enlace de red"
@@ -1472,7 +1653,9 @@ export default function AdminPanel() {
                   />
                 </div>
                 <div className="space-y-1 col-span-1 md:col-span-2">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Estado de Publicación *</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Estado de Publicación *
+                  </label>
                   <select
                     value={bulletinStatus}
                     onChange={(e) => setBulletinStatus(e.target.value as 'draft' | 'published')}
@@ -1485,7 +1668,9 @@ export default function AdminPanel() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">Resumen de Contenido *</label>
+                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                  Resumen de Contenido *
+                </label>
                 <textarea
                   required
                   rows={3}
@@ -1517,7 +1702,9 @@ export default function AdminPanel() {
           {/* List of bulletins */}
           <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
             {bulletins.length === 0 ? (
-              <div className="p-12 text-center text-xs text-[#5c544b]">No hay boletines listados en data-store.json</div>
+              <div className="p-12 text-center text-xs text-[#5c544b]">
+                No hay boletines listados en data-store.json
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -1539,12 +1726,18 @@ export default function AdminPanel() {
                         <td className="py-4 px-6 text-[#5c544b]">{bull.publishDate}</td>
                         <td className="py-4 px-6">
                           {bull.status === 'draft' ? (
-                            <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">Borrador</span>
+                            <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">
+                              Borrador
+                            </span>
                           ) : (
-                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">Publicado</span>
+                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">
+                              Publicado
+                            </span>
                           )}
                         </td>
-                        <td className="py-4 px-6 text-[#5c544b] truncate max-w-xs">{bull.summary}</td>
+                        <td className="py-4 px-6 text-[#5c544b] truncate max-w-xs">
+                          {bull.summary}
+                        </td>
                         <td className="py-4 px-6 text-center">
                           <div className="flex items-center justify-center gap-1.5">
                             <button
@@ -1577,13 +1770,20 @@ export default function AdminPanel() {
       {adminSubTab === 'subscribers' && (
         <div className="space-y-4">
           <div className="bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
-            <h3 className="font-display text-lg font-bold text-[#1c1a17]">Lista de Suscriptores Oficiales</h3>
-            <p className="text-xs text-[#5c544b]">Útiles para campañas directas de mercadeo social, envío de memorias semestrales y boletines de transparencia civil.</p>
+            <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+              Lista de Suscriptores Oficiales
+            </h3>
+            <p className="text-xs text-[#5c544b]">
+              Útiles para campañas directas de mercadeo social, envío de memorias semestrales y
+              boletines de transparencia civil.
+            </p>
           </div>
 
           <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
             {subscribers.length === 0 ? (
-              <div className="p-12 text-center text-xs text-[#5c544b]">Por el momento no hay usuarios suscritos a las novedades de VOSERDEM.</div>
+              <div className="p-12 text-center text-xs text-[#5c544b]">
+                Por el momento no hay usuarios suscritos a las novedades de VOSERDEM.
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -1598,9 +1798,13 @@ export default function AdminPanel() {
                   <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
                     {subscribers.map((sub, idx) => (
                       <tr key={sub.id} className="hover:bg-[#fbfaf7]">
-                        <td className="py-4 px-6 font-mono font-semibold text-[#8e897e]">{idx + 1}</td>
+                        <td className="py-4 px-6 font-mono font-semibold text-[#8e897e]">
+                          {idx + 1}
+                        </td>
                         <td className="py-4 px-6 font-bold text-[#1c1a17]">{sub.email}</td>
-                        <td className="py-4 px-6 text-[#5c544b] font-mono">{new Date(sub.date).toLocaleString()}</td>
+                        <td className="py-4 px-6 text-[#5c544b] font-mono">
+                          {new Date(sub.date).toLocaleString()}
+                        </td>
                         <td className="py-4 px-6 text-center">
                           <button
                             onClick={() => handleDeleteSubscriber(sub.id, sub.email)}
@@ -1623,27 +1827,31 @@ export default function AdminPanel() {
       {/* TAB CONTENT: GESTIÓN DE PÁGINAS CMS */}
       {adminSubTab === 'pages_config' && (
         <div className="animate-fade-in">
-          <AdminPagesManager adminFetch={adminFetch} />
+          <AdminPagesManager />
         </div>
       )}
 
       {/* TAB CONTENT: IMPACTO TERRITORIAL */}
       {adminSubTab === 'impacto_config' && (
         <div className="animate-fade-in">
-          <AdminImpacto adminFetch={adminFetch} />
+          <AdminImpacto />
         </div>
       )}
 
       {/* TAB CONTENT: ABOUT US CONFIGURATION & PREVIEWS */}
       {adminSubTab === 'about_config' && (
         <div className="space-y-8 animate-fade-in">
-          
           <div className="bg-[#ebdccd]/15 p-6 rounded-2xl border border-[#ebdccd]/50 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h3 className="font-display text-lg font-bold text-[#1c1a17]">Gestión de Sobre Nosotros</h3>
-              <p className="text-xs text-[#5c544b]">Personaliza los copys estratégicos, visiones generales y la principal imagen ilustrativa del portal.</p>
+              <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+                Gestión de Sobre Nosotros
+              </h3>
+              <p className="text-xs text-[#5c544b]">
+                Personaliza los copys estratégicos, visiones generales y la principal imagen
+                ilustrativa del portal.
+              </p>
             </div>
-            
+
             <button
               onClick={handleUpdateAboutUs}
               className="bg-[#1f5f3d] hover:bg-[#15462b] text-white py-2.5 px-5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-all shrink-0 shadow-sm"
@@ -1655,7 +1863,6 @@ export default function AdminPanel() {
 
           <form onSubmit={handleUpdateAboutUs} className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 space-y-6">
-              
               <div className="bg-white border border-[#ebdccd]/60 p-6 sm:p-8 rounded-2xl space-y-4 shadow-xs">
                 <h4 className="font-display font-bold text-sm text-[#1b3022] pb-2 border-b border-[#ebdccd]/30 flex items-center gap-2">
                   <Activity className="h-4.5 w-4.5 text-[#1f5f3d]" />
@@ -1664,7 +1871,9 @@ export default function AdminPanel() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">Sub-encabezado de Introducción</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Sub-encabezado de Introducción
+                    </label>
                     <input
                       type="text"
                       required
@@ -1676,7 +1885,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título de Introducción Principal</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Título de Introducción Principal
+                    </label>
                     <input
                       type="text"
                       required
@@ -1689,7 +1900,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Texto de Introducción Detallado</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Texto de Introducción Detallado
+                  </label>
                   <textarea
                     required
                     rows={4}
@@ -1709,7 +1922,9 @@ export default function AdminPanel() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de Imagen de Presentación (Sobre Nosotros)</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      URL de Imagen de Presentación (Sobre Nosotros)
+                    </label>
                     <input
                       type="url"
                       required
@@ -1720,7 +1935,9 @@ export default function AdminPanel() {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de la Foto de Portada Principal (Página de Inicio / Hero)</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      URL de la Foto de Portada Principal (Página de Inicio / Hero)
+                    </label>
                     <input
                       type="url"
                       required
@@ -1735,7 +1952,9 @@ export default function AdminPanel() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título de Misión</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Título de Misión
+                      </label>
                       <input
                         type="text"
                         required
@@ -1745,7 +1964,9 @@ export default function AdminPanel() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Cuerpo de Misión</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Cuerpo de Misión
+                      </label>
                       <textarea
                         required
                         rows={5}
@@ -1758,7 +1979,9 @@ export default function AdminPanel() {
 
                   <div className="space-y-3">
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título de Visión</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Título de Visión
+                      </label>
                       <input
                         type="text"
                         required
@@ -1768,7 +1991,9 @@ export default function AdminPanel() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Cuerpo de Visión</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Cuerpo de Visión
+                      </label>
                       <textarea
                         required
                         rows={5}
@@ -1789,11 +2014,18 @@ export default function AdminPanel() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
                   {aboutPillars.map((pillar, idx) => (
-                    <div key={idx} className="p-4 bg-[#fbfaf7] border border-[#ebdccd]/40 rounded-xl space-y-3">
+                    <div
+                      key={idx}
+                      className="p-4 bg-[#fbfaf7] border border-[#ebdccd]/40 rounded-xl space-y-3"
+                    >
                       <div className="flex justify-between items-center">
-                        <span className="text-[10px] uppercase font-mono font-bold text-[#d95c2b]">BLOQUE N° {idx + 1}</span>
+                        <span className="text-[10px] uppercase font-mono font-bold text-[#d95c2b]">
+                          BLOQUE N° {idx + 1}
+                        </span>
                         <div className="flex items-center gap-1">
-                          <label className="text-[9px] font-bold uppercase tracking-tight text-[#5c544b]">Icono:</label>
+                          <label className="text-[9px] font-bold uppercase tracking-tight text-[#5c544b]">
+                            Icono:
+                          </label>
                           <select
                             value={pillar.iconName}
                             onChange={(e) => {
@@ -1814,7 +2046,9 @@ export default function AdminPanel() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] uppercase font-bold text-[#4e4842]">Título del Pilar</label>
+                        <label className="text-[9px] uppercase font-bold text-[#4e4842]">
+                          Título del Pilar
+                        </label>
                         <input
                           type="text"
                           required
@@ -1829,7 +2063,9 @@ export default function AdminPanel() {
                       </div>
 
                       <div className="space-y-1">
-                        <label className="text-[9px] uppercase font-bold text-[#4e4842]">Descripción pilar</label>
+                        <label className="text-[9px] uppercase font-bold text-[#4e4842]">
+                          Descripción pilar
+                        </label>
                         <textarea
                           required
                           rows={3}
@@ -1846,40 +2082,50 @@ export default function AdminPanel() {
                   ))}
                 </div>
               </div>
-
             </div>
 
             <div className="lg:col-span-4 space-y-6">
-              
               {aboutImageUrl && (
                 <div className="bg-white border border-[#ebdccd]/60 p-4 rounded-2xl text-center space-y-3 shadow-xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c544b] block">Imagen de Presentación</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c544b] block">
+                    Imagen de Presentación
+                  </span>
                   <img
                     src={cleanGoogleDriveUrl(aboutImageUrl)}
                     alt=""
                     className="w-full h-44 object-cover rounded-xl border border-[#ebdccd] shadow-xs bg-neutral-100"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=800';
+                      (e.target as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=800';
                     }}
                   />
-                  <p className="text-[9px] text-[#5c544b] leading-tight font-sans">La imagen se adaptará automáticamente a la faja derecha del propósito institucional.</p>
+                  <p className="text-[9px] text-[#5c544b] leading-tight font-sans">
+                    La imagen se adaptará automáticamente a la faja derecha del propósito
+                    institucional.
+                  </p>
                 </div>
               )}
 
               {aboutHeroImageUrl && (
                 <div className="bg-white border border-[#ebdccd]/60 p-4 rounded-2xl text-center space-y-3 shadow-xs">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c544b] block">Imagen de Portada (Hero)</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5c544b] block">
+                    Imagen de Portada (Hero)
+                  </span>
                   <img
                     src={cleanGoogleDriveUrl(aboutHeroImageUrl)}
                     alt=""
                     className="w-full h-44 object-cover rounded-xl border border-[#ebdccd] shadow-xs bg-neutral-100"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=600';
+                      (e.target as HTMLImageElement).src =
+                        'https://images.unsplash.com/photo-1469571486040-7a30d1de314a?auto=format&fit=crop&q=80&w=600';
                     }}
                   />
-                  <p className="text-[9px] text-[#5c544b] leading-tight font-sans">Esta imagen se mostrará como el fondo principal de la portada superior (Hero) de la web.</p>
+                  <p className="text-[9px] text-[#5c544b] leading-tight font-sans">
+                    Esta imagen se mostrará como el fondo principal de la portada superior (Hero) de
+                    la web.
+                  </p>
                 </div>
               )}
 
@@ -1889,21 +2135,30 @@ export default function AdminPanel() {
                   Previsualización Pública Activa
                 </span>
                 <p className="text-[11px] text-[#2c2c2c] leading-relaxed">
-                  Las novedades de <strong>Blog</strong>, <strong>Proyectos</strong> y <strong>Boletines</strong> se generan automáticamente en el pie de página de "Sobre Nosotros". Esto incrementa la tracción orgánica de visitas y descargas de PDFs con enlaces activos.
+                  Las novedades de <strong>Blog</strong>, <strong>Proyectos</strong> y{' '}
+                  <strong>Boletines</strong> se generan automáticamente en el pie de página de
+                  "Sobre Nosotros". Esto incrementa la tracción orgánica de visitas y descargas de
+                  PDFs con enlaces activos.
                 </p>
 
                 <div className="border-t border-[#1f5f3d]/15 pt-3 space-y-3 text-[11px] text-[#5c544b]">
                   <div className="flex justify-between items-center">
                     <span>Proyectos Dinámicos:</span>
-                    <span className="font-mono font-bold text-[#1f5f3d]">{projects.length} activos</span>
+                    <span className="font-mono font-bold text-[#1f5f3d]">
+                      {projects.length} activos
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Artículos de Trazabilidad:</span>
-                    <span className="font-mono font-bold text-[#1f5f3d]">{blogPosts.length} publicados</span>
+                    <span className="font-mono font-bold text-[#1f5f3d]">
+                      {blogPosts.length} publicados
+                    </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span>Boletines de Transparencia:</span>
-                    <span className="font-mono font-bold text-[#1f5f3d]">{bulletins.length} enlistados</span>
+                    <span className="font-mono font-bold text-[#1f5f3d]">
+                      {bulletins.length} enlistados
+                    </span>
                   </div>
                 </div>
 
@@ -1912,8 +2167,12 @@ export default function AdminPanel() {
                   <div className="flex gap-2 items-center text-left bg-white p-2 rounded border border-[#ebdccd]/30">
                     <FileText className="h-5 w-5 text-[#d95c2b]" />
                     <div className="truncate">
-                      <div className="font-bold truncate text-[#1b3022]">{bulletins[0]?.title || 'Boletín de Invierno'}</div>
-                      <div className="text-[8px] text-[#5c544b] font-mono">{bulletins[0]?.issueNumber || 'N° 12'}</div>
+                      <div className="font-bold truncate text-[#1b3022]">
+                        {bulletins[0]?.title || 'Boletín de Invierno'}
+                      </div>
+                      <div className="text-[8px] text-[#5c544b] font-mono">
+                        {bulletins[0]?.issueNumber || 'N° 12'}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1926,10 +2185,8 @@ export default function AdminPanel() {
                 <Compass className="h-4 w-4" />
                 <span>Aplicar Cambios Globales</span>
               </button>
-
             </div>
           </form>
-
         </div>
       )}
 
@@ -1942,16 +2199,25 @@ export default function AdminPanel() {
               Gestión Integral del Carrusel de Portada (Muro de 5 Fotografías)
             </h3>
             <p className="text-xs text-[#5c544b] leading-relaxed">
-              Gestione las 5 diapositivas deslizantes que los visitantes verán en la página de inicio. Puede personalizar el distintivo de categoría (badge), la imagen de fondo, el título y la descripción.
+              Gestione las 5 diapositivas deslizantes que los visitantes verán en la página de
+              inicio. Puede personalizar el distintivo de categoría (badge), la imagen de fondo, el
+              título y la descripción.
               <br />
-              <strong className="text-[#d95c2b]">Truco de Estilo:</strong> Envuelva las palabras importantes en asteriscos, por ejemplo: <code className="bg-[#ebdccd]/40 px-1.5 py-0.5 rounded text-xs font-mono select-all">*Sostenibilidad*</code> para resaltarlas magníficamente en cursiva y amarillo dorado corporativo.
+              <strong className="text-[#d95c2b]">Truco de Estilo:</strong> Envuelva las palabras
+              importantes en asteriscos, por ejemplo:{' '}
+              <code className="bg-[#ebdccd]/40 px-1.5 py-0.5 rounded text-xs font-mono select-all">
+                *Sostenibilidad*
+              </code>{' '}
+              para resaltarlas magníficamente en cursiva y amarillo dorado corporativo.
             </p>
           </div>
 
           <div className="space-y-6">
             {carouselSlides.map((slide, idx) => (
-              <div key={slide.id || idx} className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-3xl p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-6 hover:border-[#1f5f3d]/30 transition-all">
-                
+              <div
+                key={slide.id || idx}
+                className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-3xl p-6 sm:p-8 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-6 hover:border-[#1f5f3d]/30 transition-all"
+              >
                 {/* Inputs settings col */}
                 <div className="lg:col-span-8 space-y-4">
                   <div className="flex items-center gap-2 pb-2 border-b border-[#ebdccd]/30">
@@ -1965,7 +2231,9 @@ export default function AdminPanel() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Etiqueta / Distintivo (Badge)</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Etiqueta / Distintivo (Badge)
+                      </label>
                       <input
                         type="text"
                         required
@@ -1981,7 +2249,9 @@ export default function AdminPanel() {
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">Selección de Icono del Distintivo</label>
+                      <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                        Selección de Icono del Distintivo
+                      </label>
                       <select
                         value={slide.badgeIconName || 'Trees'}
                         onChange={(e) => {
@@ -2002,7 +2272,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de la Fotografía (Unsplash o servidor de imágenes)</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      URL de la Fotografía (Unsplash o servidor de imágenes)
+                    </label>
                     <input
                       type="url"
                       required
@@ -2018,7 +2290,10 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">Título Principal (Use asteriscos para destacar palabras, Ej: Sembrando *Sostenibilidad*)</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Título Principal (Use asteriscos para destacar palabras, Ej: Sembrando
+                      *Sostenibilidad*)
+                    </label>
                     <input
                       type="text"
                       required
@@ -2034,7 +2309,9 @@ export default function AdminPanel() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">Texto Descriptivo Secundario</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Texto Descriptivo Secundario
+                    </label>
                     <textarea
                       required
                       rows={3}
@@ -2055,7 +2332,7 @@ export default function AdminPanel() {
                   <span className="text-[10px] uppercase font-sans font-bold text-[#5c544b] mb-3 block">
                     Previsualización de Imagen N° {idx + 1}
                   </span>
-                  
+
                   <div className="w-full h-40 bg-neutral-100 rounded-xl overflow-hidden border border-[#ebdccd] shadow-xs relative">
                     {slide.image ? (
                       <img
@@ -2064,7 +2341,8 @@ export default function AdminPanel() {
                         className="w-full h-full object-cover"
                         referrerPolicy="no-referrer"
                         onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=300';
+                          (e.target as HTMLImageElement).src =
+                            'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=300';
                         }}
                       />
                     ) : (
@@ -2073,12 +2351,12 @@ export default function AdminPanel() {
                       </div>
                     )}
                   </div>
-                  
+
                   <p className="text-[9px] text-[#5c544b] leading-tight mt-3">
-                    La imagen se escalará fluidamente y se mezclará orgánicamente bajo el efecto de la portada.
+                    La imagen se escalará fluidamente y se mezclará orgánicamente bajo el efecto de
+                    la portada.
                   </p>
                 </div>
-
               </div>
             ))}
           </div>
@@ -2104,12 +2382,14 @@ export default function AdminPanel() {
               Gestión Integral de Logos y Branding VOSERDEM
             </h3>
             <p className="text-xs text-[#5c544b] leading-relaxed">
-              Personalice y gestione de manera integral las firmas visuales de la organización. Puede sustituir los nombres publicitarios, lemas de cabecera/pie, o decidir sustituir los emblemas vectoriales clásicos por archivos de imagen personalizados (ej. logos oficiales cargados).
+              Personalice y gestione de manera integral las firmas visuales de la organización.
+              Puede sustituir los nombres publicitarios, lemas de cabecera/pie, o decidir sustituir
+              los emblemas vectoriales clásicos por archivos de imagen personalizados (ej. logos
+              oficiales cargados).
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
             {/* 1. LIGHT HEADER COLOR LOGO */}
             <div className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-3xl p-6 sm:p-8 space-y-6">
               <h4 className="font-display font-extrabold text-[#1c1a17] text-sm pb-2 border-b border-[#ebdccd]/30 flex items-center gap-2 uppercase tracking-wide">
@@ -2119,7 +2399,9 @@ export default function AdminPanel() {
 
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Nombre de Marca Principal</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Nombre de Marca Principal
+                  </label>
                   <input
                     type="text"
                     required
@@ -2130,7 +2412,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Slogan de Barra / Lemas de Voluntariado</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Slogan de Barra / Lemas de Voluntariado
+                  </label>
                   <input
                     type="text"
                     required
@@ -2141,7 +2425,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842] block">Modo Gráfico del Logotipo</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842] block">
+                    Modo Gráfico del Logotipo
+                  </label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 text-xs text-[#1c1a17] font-semibold cursor-pointer">
                       <input
@@ -2168,7 +2454,9 @@ export default function AdminPanel() {
 
                 {logoColorUseCustomImage && (
                   <div className="space-y-1 animate-fade-in">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de la Imagen del Logotipo Oficial</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      URL de la Imagen del Logotipo Oficial
+                    </label>
                     <input
                       type="url"
                       required
@@ -2183,8 +2471,10 @@ export default function AdminPanel() {
 
               {/* Previsualizacion interna */}
               <div className="bg-[#1b3022] p-5 rounded-2xl flex flex-col items-center justify-center border border-[#ebdccd]/30 relative text-center">
-                <span className="text-[9px] uppercase font-bold text-[#FFE5A3] absolute top-3 left-4">Previsualización (Ejemplo Cabecera Oscura/Verde)</span>
-                
+                <span className="text-[9px] uppercase font-bold text-[#FFE5A3] absolute top-3 left-4">
+                  Previsualización (Ejemplo Cabecera Oscura/Verde)
+                </span>
+
                 <div className="pt-4 pb-1">
                   <div className="flex items-center gap-3">
                     {logoColorUseCustomImage && logoColorImageUrl ? (
@@ -2195,16 +2485,21 @@ export default function AdminPanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-12 h-12 bg-[#ebdccd]/20 rounded-full flex items-center justify-center text-xs font-bold text-[#FFE5A3]">SVG</div>
+                      <div className="w-12 h-12 bg-[#ebdccd]/20 rounded-full flex items-center justify-center text-xs font-bold text-[#FFE5A3]">
+                        SVG
+                      </div>
                     )}
                     <div className="text-left font-sans text-[#F5F2ED]">
-                      <span className="text-xl font-black block leading-none">{logoColorBrandName}</span>
-                      <span className="text-[8px] uppercase tracking-wide text-[#C5A059] font-bold block mt-1 leading-tight">{logoColorSlogan}</span>
+                      <span className="text-xl font-black block leading-none">
+                        {logoColorBrandName}
+                      </span>
+                      <span className="text-[8px] uppercase tracking-wide text-[#C5A059] font-bold block mt-1 leading-tight">
+                        {logoColorSlogan}
+                      </span>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
 
             {/* 2. CORPORATE GOLD FOOTER LOGO */}
@@ -2216,7 +2511,9 @@ export default function AdminPanel() {
 
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Nombre de Marca Principal</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Nombre de Marca Principal
+                  </label>
                   <input
                     type="text"
                     required
@@ -2227,7 +2524,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">Subtítulo del Corporativo / Una Bolivia mejor es posible</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Subtítulo del Corporativo / Una Bolivia mejor es posible
+                  </label>
                   <input
                     type="text"
                     required
@@ -2238,7 +2537,9 @@ export default function AdminPanel() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842] block">Modo Gráfico del Logotipo</label>
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842] block">
+                    Modo Gráfico del Logotipo
+                  </label>
                   <div className="flex gap-4">
                     <label className="flex items-center gap-2 text-xs text-[#1c1a17] font-semibold cursor-pointer">
                       <input
@@ -2265,7 +2566,9 @@ export default function AdminPanel() {
 
                 {logoGoldUseCustomImage && (
                   <div className="space-y-1 animate-fade-in">
-                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">URL de la Imagen Corporativa Dorada</label>
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      URL de la Imagen Corporativa Dorada
+                    </label>
                     <input
                       type="url"
                       required
@@ -2280,8 +2583,10 @@ export default function AdminPanel() {
 
               {/* Previsualizacion interna */}
               <div className="bg-[#111e15] p-5 rounded-2xl flex flex-col items-center justify-center border border-[#ebdccd]/35 relative text-center">
-                <span className="text-[9px] uppercase font-bold text-[#C5A059] absolute top-3 left-4">Previsualización (Ejemplo Pie de Página)</span>
-                
+                <span className="text-[9px] uppercase font-bold text-[#C5A059] absolute top-3 left-4">
+                  Previsualización (Ejemplo Pie de Página)
+                </span>
+
                 <div className="pt-4 pb-1">
                   <div className="flex flex-col items-center gap-2">
                     {logoGoldUseCustomImage && logoGoldImageUrl ? (
@@ -2292,18 +2597,22 @@ export default function AdminPanel() {
                         referrerPolicy="no-referrer"
                       />
                     ) : (
-                      <div className="w-12 h-8 bg-[#C5A059]/10 border border-[#C5A059]/30 rounded flex items-center justify-center text-[10px] font-bold text-[#C5A059]">SVG Dor.</div>
+                      <div className="w-12 h-8 bg-[#C5A059]/10 border border-[#C5A059]/30 rounded flex items-center justify-center text-[10px] font-bold text-[#C5A059]">
+                        SVG Dor.
+                      </div>
                     )}
                     <div className="space-y-1 text-center font-sans">
-                      <h3 className="text-xl font-black text-[#FFE5A3] bg-gradient-to-r from-[#FFF0C2] via-[#C5A059] to-[#8C6612] bg-clip-text text-transparent">{logoGoldBrandName}</h3>
-                      <p className="text-[8px] uppercase tracking-widest text-[#C5A059] font-bold">{logoGoldSlogan}</p>
+                      <h3 className="text-xl font-black text-[#FFE5A3] bg-gradient-to-r from-[#FFF0C2] via-[#C5A059] to-[#8C6612] bg-clip-text text-transparent">
+                        {logoGoldBrandName}
+                      </h3>
+                      <p className="text-[8px] uppercase tracking-widest text-[#C5A059] font-bold">
+                        {logoGoldSlogan}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-
             </div>
-
           </div>
 
           <div className="flex justify-end pt-4">
@@ -2317,7 +2626,6 @@ export default function AdminPanel() {
           </div>
         </form>
       )}
-
     </div>
   );
 }

@@ -1,18 +1,23 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import AboutUs from './components/AboutUs';
-import Projects from './components/Projects';
-import DonationForm from './components/DonationForm';
-import Contact from './components/Contact';
-import AdminPanel from './components/AdminPanel';
-import HowToHelp from './components/HowToHelp';
 import Footer from './components/Footer';
-import NuestraObra from './components/NuestraObra';
-import ImpactoTerritorial from './components/ImpactoTerritorial';
-import Transparencia from './components/Transparencia';
-import Blog from './components/Blog';
 import { LogoConfig } from './types';
+import { api } from './services/api';
+import { Toaster } from 'react-hot-toast';
+
+const AboutUs = React.lazy(() => import('./components/AboutUs'));
+const Projects = React.lazy(() => import('./components/Projects'));
+const DonationForm = React.lazy(() => import('./components/DonationForm'));
+const Contact = React.lazy(() => import('./components/Contact'));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel'));
+const HowToHelp = React.lazy(() => import('./components/HowToHelp'));
+const NuestraObra = React.lazy(() => import('./components/NuestraObra'));
+const ImpactoTerritorial = React.lazy(() => import('./components/ImpactoTerritorial'));
+const Transparencia = React.lazy(() => import('./components/Transparencia'));
+const Blog = React.lazy(() => import('./components/Blog'));
 
 // Default logo config used before the first API response arrives (avoids flash)
 const defaultLogoConfig: LogoConfig = {
@@ -20,43 +25,31 @@ const defaultLogoConfig: LogoConfig = {
     brandName: 'VOSERDEM',
     slogan: 'Voluntarios al Servicio de los Dem\u00e1s',
     useCustomImage: false,
-    imageUrl: ''
+    imageUrl: '',
   },
   logoGold: {
     brandName: 'VOSERDEM',
     slogan: 'Una Bolivia mejor es posible',
     useCustomImage: false,
-    imageUrl: ''
-  }
+    imageUrl: '',
+  },
 };
 
 export default function App() {
-  const getInitialTab = () => {
-    const path = window.location.pathname.replace(/^\/|\/$/g, '');
-    let tab = path;
-    if (tab === 'sobre-nosotros' || tab === 'home' || tab === '') tab = 'home';
-    if (tab === 'nuestra-obra') tab = 'nuestra-obra';
-    if (tab === 'impacto') tab = 'impacto';
-    if (tab === 'como-ayudar') tab = 'how-to-help';
-    if (tab === 'contacto') tab = 'contact';
-    if (tab === 'proyectos' || tab === 'programas') tab = 'projects';
-    if (tab === 'transparencia') tab = 'transparencia';
-    if (tab === 'donar') tab = 'donate';
-    
-    const validTabs = ['home', 'nuestra-obra', 'impacto', 'projects', 'transparencia', 'blog', 'donate', 'contact', 'admin', 'how-to-help'];
-    return validTabs.includes(tab) ? tab : 'home';
-  };
-
-  const [activeTab, setActiveTab] = useState<string>(getInitialTab());
+  const navigate = useNavigate();
+  const location = useLocation();
   const [preselectedProjectId, setPreselectedProjectId] = useState<string>('');
+
   // Logos loaded once at app level — prevents flash-of-SVG in Navbar/Footer
   const [logoConfig, setLogoConfig] = useState<LogoConfig>(defaultLogoConfig);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   const refreshLogos = useCallback(() => {
-    fetch('/api/logos')
-      .then(res => res.json())
-      .then(data => setLogoConfig(data))
+    api
+      .get<LogoConfig>('/api/logos')
+      .then((res) => {
+        if (res.success && res.data) setLogoConfig(res.data);
+      })
       .catch(() => {}) // silently keep defaults
       .finally(() => setIsInitialLoading(false));
   }, []);
@@ -69,35 +62,18 @@ export default function App() {
   }, [refreshLogos]);
 
   // Scroll to top instantly on every navigation
-  const navigate = useCallback((tab: string) => {
-    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
-    setActiveTab(tab);
-    
-    let path = tab;
-    if (tab === 'home') path = '';
-    if (tab === 'how-to-help') path = 'como-ayudar';
-    if (tab === 'contact') path = 'contacto';
-    if (tab === 'projects') path = 'programas';
-    if (tab === 'donate') path = 'donar';
-    if (tab === 'blog') path = 'blog';
-    
-    window.history.pushState({}, '', `/${path}`);
-  }, []);
-
   useEffect(() => {
-    const handlePopState = () => setActiveTab(getInitialTab());
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [location.pathname]);
 
   const navigateToDonateWithProject = (projectId: string) => {
     setPreselectedProjectId(projectId);
-    navigate('donate');
+    navigate('/donar');
   };
 
   const handleSuccessRedirect = () => {
     setPreselectedProjectId('');
-    navigate('projects');
+    navigate('/programas');
   };
 
   if (isInitialLoading) {
@@ -110,99 +86,196 @@ export default function App() {
 
   return (
     <div className="flex flex-col min-h-screen font-sans">
+      <Toaster position="top-right" />
       {/* Top sticky Navigation Header */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={(tab) => {
-          if (tab !== 'donate') setPreselectedProjectId('');
-          navigate(tab);
-        }}
-        logoConfig={logoConfig}
-      />
+      <Navbar logoConfig={logoConfig} />
 
       {/* Main Tab Render Flow */}
       <main className="flex-grow">
-        {activeTab === 'home' && (
-          <div className="animate-fade-in">
-            <Hero 
-              onLearnMore={() => setActiveTab('projects')} 
-              onDonate={() => setActiveTab('donate')} 
-            />
-            <AboutUs 
-              onDonateClick={() => navigate('donate')}
-              onProjectsClick={() => navigate('projects')}
-              onBlogClick={() => navigate('blog')}
-              onBulletinsClick={() => navigate('transparencia')}
-            />
-          </div>
-        )}
-
-        {activeTab === 'nuestra-obra' && (
-          <div className="animate-fade-in">
-            <NuestraObra />
-          </div>
-        )}
-
-        {activeTab === 'impacto' && (
-          <div className="animate-fade-in">
-            <ImpactoTerritorial />
-          </div>
-        )}
-
-        {activeTab === 'projects' && (
-          <div className="animate-fade-in">
-            <Projects onDonateSelect={navigateToDonateWithProject} />
-          </div>
-        )}
-
-        {activeTab === 'transparencia' && (
-          <div className="animate-fade-in animate-duration-300">
-            <Transparencia />
-          </div>
-        )}
-
-        {activeTab === 'donate' && (
-          <div className="animate-fade-in">
-            <DonationForm 
-              preselectedProjectId={preselectedProjectId} 
-              onSuccessRedirect={handleSuccessRedirect} 
-            />
-          </div>
-        )}
-
-        {activeTab === 'how-to-help' && (
-          <div className="animate-fade-in">
-            <HowToHelp 
-              onDonateClick={() => setActiveTab('donate')}
-              onContactClick={() => setActiveTab('contact')}
-            />
-          </div>
-        )}
-
-        {activeTab === 'contact' && (
-          <div className="animate-fade-in">
-            <Contact />
-          </div>
-        )}
-
-        {activeTab === 'blog' && (
-          <div className="animate-fade-in">
-            <Blog />
-          </div>
-        )}
-
-        {activeTab === 'admin' && (
-          <div className="animate-fade-in">
-            <AdminPanel />
-          </div>
-        )}
+        <Suspense
+          fallback={
+            <div className="flex min-h-[50vh] w-full items-center justify-center">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#1B3022]"></div>
+            </div>
+          }
+        >
+          <AnimatePresence mode="wait">
+            {/* @ts-expect-error React Router v7 Props typings omit key for AnimatePresence */}
+            <Routes location={location} key={location.pathname}>
+              <Route
+                path="/"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Hero
+                      onLearnMore={() => navigate('/programas')}
+                      onDonate={() => navigate('/donar')}
+                    />
+                    <AboutUs
+                      onDonateClick={() => navigate('/donar')}
+                      onProjectsClick={() => navigate('/programas')}
+                      onBlogClick={() => navigate('/blog')}
+                      onBulletinsClick={() => navigate('/transparencia')}
+                    />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/nuestra-obra"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <NuestraObra />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/impacto"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <ImpactoTerritorial />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/programas"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Projects onDonateSelect={navigateToDonateWithProject} />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/transparencia"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Transparencia />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/donar"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <DonationForm
+                      preselectedProjectId={preselectedProjectId}
+                      onSuccessRedirect={handleSuccessRedirect}
+                    />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/como-ayudar"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <HowToHelp
+                      onDonateClick={() => navigate('/donar')}
+                      onContactClick={() => navigate('/contacto')}
+                    />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/contacto"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Contact />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/blog"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <Blog />
+                  </motion.div>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                  >
+                    <AdminPanel />
+                  </motion.div>
+                }
+              />
+              {/* Fallback route */}
+              <Route
+                path="*"
+                element={
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex flex-col items-center justify-center min-h-[50vh] text-[#1B3022]"
+                  >
+                    <h2 className="text-2xl font-bold font-display mb-4">Página no encontrada</h2>
+                    <button
+                      onClick={() => navigate('/')}
+                      className="text-[#C5A059] underline font-semibold cursor-pointer"
+                      aria-label="Volver a la página de inicio"
+                    >
+                      Volver al inicio
+                    </button>
+                  </motion.div>
+                }
+              />
+            </Routes>
+          </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Global Branded Footer */}
-      <Footer
-        setActiveTab={navigate}
-        logoConfig={logoConfig}
-      />
+      <Footer logoConfig={logoConfig} />
     </div>
   );
 }
