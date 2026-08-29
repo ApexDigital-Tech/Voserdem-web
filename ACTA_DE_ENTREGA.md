@@ -5,11 +5,11 @@ Este documento certifica la entrega técnica del *Frente 1* (Fases 0 a 4) de la 
 
 ### Módulos Entregados:
 - **Arquitectura Base**: React + Vite + TypeScript.
-- **Backend Serverless**: Endpoints unificados bajo Express/Vercel (/api/*).
+- **Backend Serverless**: Endpoints unificados bajo Express/Vercel (`/api/*`).
 - **Seguridad y Robustez (Fase 3 & 4)**: 
   - *Rate Limiting* (Prevención de ataques DDoS / Spam).
   - *Server-Side Validation* con Zod.
-  - *Row Level Security (RLS)* cerrado por defecto. Todo acceso administrativo utiliza autenticación asimétrica (ADMIN_PASSKEY).
+  - *Row Level Security (RLS)* cerrado por defecto. Todo acceso administrativo utiliza autenticación asimétrica (`ADMIN_PASSKEY`).
 - **Performance**: Code-Splitting total del panel administrativo (React.lazy), resultando en un bundle inicial menor a 500 KB.
 - **Limpieza (Clean Code)**: Purga total de dependencias fantasma e imports sin utilizar (ESLint flat config configurado de forma estricta).
 
@@ -19,13 +19,19 @@ A continuación, se detallan las credenciales requeridas para el entorno product
 > **⚠️ ATENCIÓN AL CLIENTE**: Conservar esta información en un lugar seguro.
 
 ### 2.1 Contraseña de Administrador del Panel (CMS)
-- **Contraseña:** \VSD_adm2026_XyZ9qP!- *Nota: Esta contraseña reemplaza a la utilizada durante la etapa de desarrollo. Debe insertarse en Vercel bajo las claves \VITE_ADMIN_PASSKEY\ y \ADMIN_PASSKEY\.*
+- **Contraseña:** [Será entregada al cliente por un canal separado y seguro (Ej. Gestor de Contraseñas), NUNCA por escrito en repositorios]
+- *Nota: Esta contraseña debe insertarse en Vercel bajo las claves `VITE_ADMIN_PASSKEY` y `ADMIN_PASSKEY`.*
 
 ### 2.2 Variables de Entorno de Base de Datos (Supabase)
 Como medida final de seguridad, se ha instado al equipo a rotar las claves del proyecto en Supabase (debido a rastros en el historial público de desarrollo).
 Deben configurar las siguientes variables en **Vercel** con las **claves rotadas recién generadas** en el Dashboard de Supabase (Project Settings -> API):
 
-- \VITE_SUPABASE_URL\ = \https://[YOUR_PROJECT_REF].supabase.co- \SUPABASE_URL\ = \https://[YOUR_PROJECT_REF].supabase.co- \VITE_SUPABASE_ANON_KEY\ = \[INGRESAR CLAVE ANON ROTADA AQUÍ]- \SUPABASE_ANON_KEY\ = \[INGRESAR CLAVE ANON ROTADA AQUÍ]- \SUPABASE_SERVICE_ROLE_KEY\ = \[INGRESAR SERVICE_ROLE_KEY ROTADA AQUÍ]
+- `VITE_SUPABASE_URL` = `https://[YOUR_PROJECT_REF].supabase.co`
+- `SUPABASE_URL` = `https://[YOUR_PROJECT_REF].supabase.co`
+- `VITE_SUPABASE_ANON_KEY` = `[INGRESAR CLAVE ANON ROTADA AQUÍ]`
+- `SUPABASE_ANON_KEY` = `[INGRESAR CLAVE ANON ROTADA AQUÍ]`
+- `SUPABASE_SERVICE_ROLE_KEY` = `[INGRESAR SERVICE_ROLE_KEY ROTADA AQUÍ]`
+
 ## 3. Entornos
 - **Repositorio**: [Repositorio en GitHub]
 - **Producción**: [Dominio Oficial] (Pendiente de redirección DNS en el Frente 2)
