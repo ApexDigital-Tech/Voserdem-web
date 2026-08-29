@@ -9,6 +9,8 @@
  */
 import 'dotenv/config';
 import express from 'express';
+import rateLimit from 'express-rate-limit';
+import { z } from 'zod';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
@@ -40,7 +42,25 @@ const supabase = createClient(supabaseUrl, activeKey);
 const app = express();
 const TENANT_ID = 'voserdem-bolivia';
 
+// Required for Vercel/proxies to extract real client IP for rate limiting
+app.set('trust proxy', 1);
+
 app.use(express.json());
+
+// ---- Rate Limiters ----
+const publicLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: { error: 'Demasiadas solicitudes. Por favor intente más tarde.' }
+});
+
+const strictLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 15, // limit each IP to 15 requests per windowMs
+  message: { error: 'Demasiadas solicitudes. Por favor intente más tarde.' }
+});
+
+app.use('/api/', publicLimiter);
 
 // ---- Auth middleware ----
 function requireAdmin(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -50,7 +70,7 @@ function requireAdmin(req: express.Request, res: express.Response, next: express
 }
 
 // ---- Dedicated auth endpoint (no DB queries) ----
-app.post('/api/auth/verify', (req, res) => {
+app.post('/api/auth/verify', strictLimiter, (req, res) => {
   const adminPassword = req.headers['x-admin-password'];
 
   if (!adminPassword || adminPassword !== ADMIN_PASSKEY) {
@@ -568,13 +588,21 @@ app.delete('/api/projects/:id', requireAdmin, async (req, res) => {
 });
 
 // ---- DONATIONS ----
-app.post('/api/donations', async (req, res) => {
-  const { donorName, email, amount, projectId, comment } = req.body;
-  if (!donorName || !email || !amount || !projectId)
-    return res.status(400).json({ error: 'Faltan campos obligatorios.' });
-  const amountNum = Number(amount);
-  if (isNaN(amountNum) || amountNum <= 0)
-    return res.status(400).json({ error: 'El monto debe ser un número positivo.' });
+app.post('/api/donations', strictLimiter, async (req, res) => {
+  const donationSchema = z.object({
+    donorName: z.string().min(1, 'El nombre es requerido').max(150),
+    email: z.string().email('Correo inválido').max(200),
+    amount: z.union([z.string(), z.number()]).transform((val) => Number(val)).refine((val) => !isNaN(val) && val > 0, 'El monto debe ser un número positivo'),
+    projectId: z.string().min(1, 'Proyecto requerido'),
+    comment: z.string().max(1000).optional().nullable(),
+  });
+
+  const parsed = donationSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.issues[0].message });
+  }
+
+  const { donorName, email, amount: amountNum, projectId, comment } = parsed.data;
   try {
     const { data: proj, error: projErr } = await supabase
       .from('projects')
@@ -626,10 +654,20 @@ app.get('/api/donations', requireAdmin, async (_req, res) => {
 });
 
 // ---- MESSAGES ----
-app.post('/api/messages', async (req, res) => {
-  const { name, email, subject, message } = req.body;
-  if (!name || !email || !subject || !message)
-    return res.status(400).json({ error: 'Rellene todos los campos.' });
+app.post('/api/messages', strictLimiter, async (req, res) => {
+  const messageSchema = z.object({
+    name: z.string().min(1, 'Nombre requerido').max(150),
+    email: z.string().email('Correo inválido').max(200),
+    subject: z.string().min(1, 'Asunto requerido').max(200),
+    message: z.string().min(1, 'Mensaje requerido').max(2500),
+  });
+
+  const parsed = messageSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: parsed.error.issues[0].message });
+  }
+
+  const { name, email, subject, message } = parsed.data;
   const newMessage = {
     id: `msg-${Date.now()}`,
     organization_id: TENANT_ID,

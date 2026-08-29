@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import toast from 'react-hot-toast';
 import {
   Project,
@@ -32,13 +32,15 @@ import {
 } from 'lucide-react';
 import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
-import AdminPagesManager from './AdminPagesManager';
-import AdminImpacto from './AdminImpacto';
-import AdminDonations from './AdminDonations';
-import AdminBulletins from './AdminBulletins';
-import AdminCarousel from './AdminCarousel';
-import AdminAbout from './AdminAbout';
-import AdminProjects from './AdminProjects';
+
+// Lazy loaded Admin Modules (Code-Splitting)
+const AdminPagesManager = lazy(() => import('./AdminPagesManager'));
+const AdminImpacto = lazy(() => import('./AdminImpacto'));
+const AdminDonations = lazy(() => import('./AdminDonations'));
+const AdminBulletins = lazy(() => import('./AdminBulletins'));
+const AdminCarousel = lazy(() => import('./AdminCarousel'));
+const AdminAbout = lazy(() => import('./AdminAbout'));
+const AdminProjects = lazy(() => import('./AdminProjects'));
 
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -573,421 +575,423 @@ export default function AdminPanel() {
       </div>
 
       {/* TAB CONTENT: PROJECTS MANAGEMENT */}
-      {adminSubTab === 'projects' && (
-        <AdminProjects 
-          projects={projects} 
-          setProjects={setProjects} 
-          loadAllAdminData={loadAllAdminData} 
-          adminFetch={adminFetch} 
-        />
-      )}
-      {/* TAB CONTENT: AUDITED DONATIONS */}
-      {adminSubTab === 'donations' && (
-        <AdminDonations donations={donations} />
-      )}
+      <Suspense fallback={<div className="py-24 text-center animate-pulse text-[#5c544b] font-medium text-sm flex items-center justify-center gap-3"><div className="w-5 h-5 border-2 border-[#1f5f3d] border-t-transparent rounded-full animate-spin"></div>Cargando módulo...</div>}>
+        {adminSubTab === 'projects' && (
+          <AdminProjects 
+            projects={projects} 
+            setProjects={setProjects} 
+            loadAllAdminData={loadAllAdminData} 
+            adminFetch={adminFetch} 
+          />
+        )}
+        {/* TAB CONTENT: AUDITED DONATIONS */}
+        {adminSubTab === 'donations' && (
+          <AdminDonations donations={donations} />
+        )}
 
-      {/* TAB CONTENT: CONTACT MAILBOX CHAT */}
-      {adminSubTab === 'messages' && (
-        <div className="space-y-6">
-          {messages.length === 0 ? (
-            <div className="bg-[#fcfbf9] border border-[#ebdccd]/65 p-12 rounded-3xl text-center text-[#5c544b]">
-              No hay mensajes entrantes en el buzón de correo.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-2xl p-6 shadow-xs flex flex-col justify-between hover:border-[#1f5f3d]/40 transition-colors"
-                >
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-start border-b border-[#ebdccd]/35 pb-2">
-                      <div>
-                        <h4 className="font-bold text-[#1c1a17] text-sm">{msg.name}</h4>
-                        <span className="text-[10px] text-[#5c544b] font-medium">{msg.email}</span>
-                      </div>
-                      <span className="text-[9px] font-mono text-[#5c544b] font-semibold bg-[#ebdccd]/30 px-2 py-0.5 rounded-md">
-                        {new Date(msg.date).toLocaleDateString()}
-                      </span>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <span className="text-[10px] font-bold text-[#d95c2b] uppercase tracking-wide">
-                        Asunto: {msg.subject}
-                      </span>
-                      <p className="text-xs text-[#4e4842] leading-relaxed whitespace-pre-line bg-[#ebdccd]/10 p-3 rounded-lg border border-[#ebdccd]/20">
-                        {msg.message}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="pt-4 flex justify-end">
-                    <a
-                      href={`mailto:${msg.email}?subject=Respuesta VOSERDEM: ${msg.subject}`}
-                      className="text-[10px] text-[#1f5f3d] font-bold uppercase tracking-wider flex items-center gap-1 hover:underline hover:translate-x-0.5 transition-all"
-                    >
-                      Responder por Correo
-                      <ArrowRight className="h-3 w-3" />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* TAB CONTENT: BLOG ARTICLES CRUD */}
-      {adminSubTab === 'blog' && (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
-            <div>
-              <h3 className="font-display text-lg font-bold text-[#1c1a17]">
-                Historias en el Blog de VOSERDEM
-              </h3>
-              <p className="text-xs text-[#5c544b]">
-                Restaura la voz de la comunidad publicando y editando vivencias reales de Bolivia.
-              </p>
-            </div>
-            <button
-              onClick={() => setIsCreatingBlog(!isCreatingBlog)}
-              className="bg-[#1f5f3d] hover:bg-[#15462b] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all"
-            >
-              <Plus className="h-4 w-4" />
-              <span>{isCreatingBlog ? 'Cerrar Formulario' : 'Crear Artículo'}</span>
-            </button>
-          </div>
-
-          {isCreatingBlog && (
-            <form
-              onSubmit={handleCreateBlogPost}
-              className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in"
-            >
-              <h4 className="font-display font-bold text-base text-[#1c1a17] border-b border-[#ebdccd]/40 pb-2">
-                {isEditingBlog ? 'Editar Publicación' : 'Nueva Publicación'}
-              </h4>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                    Título del Artículo *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej: Nuevos viveros de queñua en Chocaya"
-                    value={blogTitle}
-                    onChange={(e) => setBlogTitle(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                    Categoría *
-                  </label>
-                  <select
-                    value={blogCategory}
-                    onChange={(e) => setBlogCategory(e.target.value as any)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-2 py-2 text-xs text-[#1c1a17]"
-                  >
-                    <option value="Ecología">Ecología</option>
-                    <option value="Comunidad">Comunidad</option>
-                    <option value="Adulto Mayor">Adulto Mayor</option>
-                    <option value="Institucional">Institucional</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                    Autor/a *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej: Lic. Clara Salazar, Trabajo Social"
-                    value={blogAuthor}
-                    onChange={(e) => setBlogAuthor(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                    Tiempo de lectura estimado
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Ej: 4 min"
-                    value={blogReadTime}
-                    onChange={(e) => setBlogReadTime(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                    Estado de Publicación *
-                  </label>
-                  <select
-                    value={blogStatus}
-                    onChange={(e) => setBlogStatus(e.target.value as 'draft' | 'published')}
-                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-2 py-2 text-xs text-[#1c1a17]"
-                  >
-                    <option value="published">🟢 Publicado (Visible en la web)</option>
-                    <option value="draft">🟡 Borrador (Solo visible en administrador)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                  URL de Imagen de Portada
-                </label>
-                <input
-                  type="text"
-                  placeholder="https://images.unsplash.com/photo-..."
-                  value={blogImage}
-                  onChange={(e) => setBlogImage(e.target.value)}
-                  className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                  Resumen Corto *
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ej: Resumen breve de la publicación para tarjetas en la página principal..."
-                  value={blogSummary}
-                  onChange={(e) => setBlogSummary(e.target.value)}
-                  className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-[#4e4842]">
-                  Cuerpo del Artículo *
-                </label>
-                <textarea
-                  required
-                  rows={6}
-                  placeholder="Escribe el artículo completo aquí..."
-                  value={blogContent}
-                  onChange={(e) => setBlogContent(e.target.value)}
-                  className="w-full bg-white border border-[#ebdccd] rounded-xl p-3 text-xs text-[#1c1a17]"
-                />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="formFeatured"
-                  checked={blogFeatured}
-                  onChange={(e) => setBlogFeatured(e.target.checked)}
-                  className="rounded text-[#1f5f3d] focus:ring-[#1f5f3d]"
-                />
-                <label
-                  htmlFor="formFeatured"
-                  className="text-xs font-semibold text-[#1c1a17] select-none"
-                >
-                  Marcar este artículo como Destacado (aparecerá en la parte superior del Blog)
-                </label>
-              </div>
-
-              <div className="flex gap-2.5 justify-end">
-                <button
-                  type="button"
-                  onClick={resetBlogForm}
-                  className="px-5 py-2.5 bg-[#ebdccd]/50 hover:bg-[#ebdccd]/70 text-[#1c1a17] rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-[#1f5f3d] hover:bg-[#15462b] text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
-                >
-                  {isEditingBlog ? 'Actualizar Artículo' : 'Guardar Publicación'}
-                </button>
-              </div>
-            </form>
-          )}
-
-          {/* List of articles */}
-          <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
-            {blogPosts.length === 0 ? (
-              <div className="p-12 text-center text-xs text-[#5c544b]">
-                Aún no hay publicaciones en el blog registradas en data-store.json
+        {/* TAB CONTENT: CONTACT MAILBOX CHAT */}
+        {adminSubTab === 'messages' && (
+          <div className="space-y-6">
+            {messages.length === 0 ? (
+              <div className="bg-[#fcfbf9] border border-[#ebdccd]/65 p-12 rounded-3xl text-center text-[#5c544b]">
+                No hay mensajes entrantes en el buzón de correo.
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#ebdccd]/15 text-[10px] font-bold uppercase tracking-wider text-[#5c544b] border-b border-[#ebdccd]/30">
-                      <th className="py-4 px-6">Título</th>
-                      <th className="py-4 px-6">Categoría</th>
-                      <th className="py-4 px-6">Fecha</th>
-                      <th className="py-4 px-6">Autor / Redactor</th>
-                      <th className="py-4 px-6">Estado</th>
-                      <th className="py-4 px-6">Destacado</th>
-                      <th className="py-4 px-6 text-center">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
-                    {blogPosts.map((post) => (
-                      <tr key={post.id} className="hover:bg-[#fbfaf7]">
-                        <td className="py-4 px-6 font-bold truncate max-w-xs">{post.title}</td>
-                        <td className="py-4 px-6 text-[#1f5f3d] font-semibold">{post.category}</td>
-                        <td className="py-4 px-6 text-[#5c544b]">{post.date}</td>
-                        <td className="py-4 px-6 italic text-[#4e4842]">{post.author}</td>
-                        <td className="py-4 px-6">
-                          {post.status === 'draft' ? (
-                            <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">
-                              Borrador
-                            </span>
-                          ) : (
-                            <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">
-                              Publicado
-                            </span>
-                          )}
-                        </td>
-                        <td className="py-4 px-6">
-                          {post.featured ? (
-                            <span className="bg-[#d95c2b]/10 text-[#d95c2b] text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide">
-                              Sí
-                            </span>
-                          ) : (
-                            <span className="text-[#8e897e] text-[9px]">No</span>
-                          )}
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <div className="flex items-center justify-center gap-1.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className="bg-[#fcfbf9] border border-[#ebdccd]/60 rounded-2xl p-6 shadow-xs flex flex-col justify-between hover:border-[#1f5f3d]/40 transition-colors"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-start border-b border-[#ebdccd]/35 pb-2">
+                        <div>
+                          <h4 className="font-bold text-[#1c1a17] text-sm">{msg.name}</h4>
+                          <span className="text-[10px] text-[#5c544b] font-medium">{msg.email}</span>
+                        </div>
+                        <span className="text-[9px] font-mono text-[#5c544b] font-semibold bg-[#ebdccd]/30 px-2 py-0.5 rounded-md">
+                          {new Date(msg.date).toLocaleDateString()}
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <span className="text-[10px] font-bold text-[#d95c2b] uppercase tracking-wide">
+                          Asunto: {msg.subject}
+                        </span>
+                        <p className="text-xs text-[#4e4842] leading-relaxed whitespace-pre-line bg-[#ebdccd]/10 p-3 rounded-lg border border-[#ebdccd]/20">
+                          {msg.message}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex justify-end">
+                      <a
+                        href={`mailto:${msg.email}?subject=Respuesta VOSERDEM: ${msg.subject}`}
+                        className="text-[10px] text-[#1f5f3d] font-bold uppercase tracking-wider flex items-center gap-1 hover:underline hover:translate-x-0.5 transition-all"
+                      >
+                        Responder por Correo
+                        <ArrowRight className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB CONTENT: BLOG ARTICLES CRUD */}
+        {adminSubTab === 'blog' && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
+              <div>
+                <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+                  Historias en el Blog de VOSERDEM
+                </h3>
+                <p className="text-xs text-[#5c544b]">
+                  Restaura la voz de la comunidad publicando y editando vivencias reales de Bolivia.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsCreatingBlog(!isCreatingBlog)}
+                className="bg-[#1f5f3d] hover:bg-[#15462b] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center gap-1 cursor-pointer transition-all"
+              >
+                <Plus className="h-4 w-4" />
+                <span>{isCreatingBlog ? 'Cerrar Formulario' : 'Crear Artículo'}</span>
+              </button>
+            </div>
+
+            {isCreatingBlog && (
+              <form
+                onSubmit={handleCreateBlogPost}
+                className="bg-white border border-[#ebdccd]/55 rounded-3xl p-6 sm:p-8 space-y-4 animate-fade-in"
+              >
+                <h4 className="font-display font-bold text-base text-[#1c1a17] border-b border-[#ebdccd]/40 pb-2">
+                  {isEditingBlog ? 'Editar Publicación' : 'Nueva Publicación'}
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Título del Artículo *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej: Nuevos viveros de queñua en Chocaya"
+                      value={blogTitle}
+                      onChange={(e) => setBlogTitle(e.target.value)}
+                      className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Categoría *
+                    </label>
+                    <select
+                      value={blogCategory}
+                      onChange={(e) => setBlogCategory(e.target.value as any)}
+                      className="w-full bg-white border border-[#ebdccd] rounded-xl px-2 py-2 text-xs text-[#1c1a17]"
+                    >
+                      <option value="Ecología">Ecología</option>
+                      <option value="Comunidad">Comunidad</option>
+                      <option value="Adulto Mayor">Adulto Mayor</option>
+                      <option value="Institucional">Institucional</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Autor/a *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ej: Lic. Clara Salazar, Trabajo Social"
+                      value={blogAuthor}
+                      onChange={(e) => setBlogAuthor(e.target.value)}
+                      className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Tiempo de lectura estimado
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ej: 4 min"
+                      value={blogReadTime}
+                      onChange={(e) => setBlogReadTime(e.target.value)}
+                      className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                      Estado de Publicación *
+                    </label>
+                    <select
+                      value={blogStatus}
+                      onChange={(e) => setBlogStatus(e.target.value as 'draft' | 'published')}
+                      className="w-full bg-white border border-[#ebdccd] rounded-xl px-2 py-2 text-xs text-[#1c1a17]"
+                    >
+                      <option value="published">🟢 Publicado (Visible en la web)</option>
+                      <option value="draft">🟡 Borrador (Solo visible en administrador)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    URL de Imagen de Portada
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://images.unsplash.com/photo-..."
+                    value={blogImage}
+                    onChange={(e) => setBlogImage(e.target.value)}
+                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Resumen Corto *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej: Resumen breve de la publicación para tarjetas en la página principal..."
+                    value={blogSummary}
+                    onChange={(e) => setBlogSummary(e.target.value)}
+                    className="w-full bg-white border border-[#ebdccd] rounded-xl px-3 py-2 text-xs text-[#1c1a17]"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[10px] uppercase font-bold text-[#4e4842]">
+                    Cuerpo del Artículo *
+                  </label>
+                  <textarea
+                    required
+                    rows={6}
+                    placeholder="Escribe el artículo completo aquí..."
+                    value={blogContent}
+                    onChange={(e) => setBlogContent(e.target.value)}
+                    className="w-full bg-white border border-[#ebdccd] rounded-xl p-3 text-xs text-[#1c1a17]"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="formFeatured"
+                    checked={blogFeatured}
+                    onChange={(e) => setBlogFeatured(e.target.checked)}
+                    className="rounded text-[#1f5f3d] focus:ring-[#1f5f3d]"
+                  />
+                  <label
+                    htmlFor="formFeatured"
+                    className="text-xs font-semibold text-[#1c1a17] select-none"
+                  >
+                    Marcar este artículo como Destacado (aparecerá en la parte superior del Blog)
+                  </label>
+                </div>
+
+                <div className="flex gap-2.5 justify-end">
+                  <button
+                    type="button"
+                    onClick={resetBlogForm}
+                    className="px-5 py-2.5 bg-[#ebdccd]/50 hover:bg-[#ebdccd]/70 text-[#1c1a17] rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 bg-[#1f5f3d] hover:bg-[#15462b] text-white rounded-xl text-xs font-bold uppercase tracking-wider cursor-pointer"
+                  >
+                    {isEditingBlog ? 'Actualizar Artículo' : 'Guardar Publicación'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* List of articles */}
+            <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
+              {blogPosts.length === 0 ? (
+                <div className="p-12 text-center text-xs text-[#5c544b]">
+                  Aún no hay publicaciones en el blog registradas en data-store.json
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#ebdccd]/15 text-[10px] font-bold uppercase tracking-wider text-[#5c544b] border-b border-[#ebdccd]/30">
+                        <th className="py-4 px-6">Título</th>
+                        <th className="py-4 px-6">Categoría</th>
+                        <th className="py-4 px-6">Fecha</th>
+                        <th className="py-4 px-6">Autor / Redactor</th>
+                        <th className="py-4 px-6">Estado</th>
+                        <th className="py-4 px-6">Destacado</th>
+                        <th className="py-4 px-6 text-center">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
+                      {blogPosts.map((post) => (
+                        <tr key={post.id} className="hover:bg-[#fbfaf7]">
+                          <td className="py-4 px-6 font-bold truncate max-w-xs">{post.title}</td>
+                          <td className="py-4 px-6 text-[#1f5f3d] font-semibold">{post.category}</td>
+                          <td className="py-4 px-6 text-[#5c544b]">{post.date}</td>
+                          <td className="py-4 px-6 italic text-[#4e4842]">{post.author}</td>
+                          <td className="py-4 px-6">
+                            {post.status === 'draft' ? (
+                              <span className="bg-amber-100 text-amber-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-amber-200">
+                                Borrador
+                              </span>
+                            ) : (
+                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide border border-emerald-200">
+                                Publicado
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6">
+                            {post.featured ? (
+                              <span className="bg-[#d95c2b]/10 text-[#d95c2b] text-[9px] font-bold px-2 py-0.5 rounded-sm uppercase tracking-wide">
+                                Sí
+                              </span>
+                            ) : (
+                              <span className="text-[#8e897e] text-[9px]">No</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 text-center">
+                            <div className="flex items-center justify-center gap-1.5">
+                              <button
+                                onClick={() => startEditBlogPost(post)}
+                                title="Editar Artículo"
+                                className="p-2 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-emerald-50 text-emerald-700 hover:border-emerald-200 transition-colors cursor-pointer"
+                              >
+                                <Edit2 className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteBlogPost(post.id, post.title)}
+                                title="Eliminar del Blog"
+                                className="p-2 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-rose-50 text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* TAB CONTENT: BULLETINS CRUD */}
+        {adminSubTab === 'bulletins' && (
+          <AdminBulletins 
+            bulletins={bulletins} 
+            loadAllAdminData={loadAllAdminData} 
+            adminFetch={adminFetch} 
+          />
+        )}
+
+        {/* TAB CONTENT: NEWSLETTER SUBSCRIBERS ROSTER */}
+        {adminSubTab === 'subscribers' && (
+          <div className="space-y-4">
+            <div className="bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
+              <h3 className="font-display text-lg font-bold text-[#1c1a17]">
+                Lista de Suscriptores Oficiales
+              </h3>
+              <p className="text-xs text-[#5c544b]">
+                Útiles para campañas directas de mercadeo social, envío de memorias semestrales y
+                boletines de transparencia civil.
+              </p>
+            </div>
+
+            <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
+              {subscribers.length === 0 ? (
+                <div className="p-12 text-center text-xs text-[#5c544b]">
+                  Por el momento no hay usuarios suscritos a las novedades de VOSERDEM.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="bg-[#ebdccd]/15 text-[10px] font-bold uppercase tracking-wider text-[#5c544b] border-b border-[#ebdccd]/30">
+                        <th className="py-4 px-6">N° de Fila</th>
+                        <th className="py-4 px-6">Dirección de Correo Electrónico</th>
+                        <th className="py-4 px-6">Fecha de Suscripción Registro</th>
+                        <th className="py-4 px-6 text-center">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
+                      {subscribers.map((sub, idx) => (
+                        <tr key={sub.id} className="hover:bg-[#fbfaf7]">
+                          <td className="py-4 px-6 font-mono font-semibold text-[#8e897e]">
+                            {idx + 1}
+                          </td>
+                          <td className="py-4 px-6 font-bold text-[#1c1a17]">{sub.email}</td>
+                          <td className="py-4 px-6 text-[#5c544b] font-mono">
+                            {new Date(sub.date).toLocaleString()}
+                          </td>
+                          <td className="py-4 px-6 text-center">
                             <button
-                              onClick={() => startEditBlogPost(post)}
-                              title="Editar Artículo"
-                              className="p-2 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-emerald-50 text-emerald-700 hover:border-emerald-200 transition-colors cursor-pointer"
-                            >
-                              <Edit2 className="h-3.5 w-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteBlogPost(post.id, post.title)}
-                              title="Eliminar del Blog"
+                              onClick={() => handleDeleteSubscriber(sub.id, sub.email)}
+                              title="Desinscribir Correo"
                               className="p-2 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-rose-50 text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB CONTENT: BULLETINS CRUD */}
-      {adminSubTab === 'bulletins' && (
-        <AdminBulletins 
-          bulletins={bulletins} 
-          loadAllAdminData={loadAllAdminData} 
-          adminFetch={adminFetch} 
-        />
-      )}
-
-      {/* TAB CONTENT: NEWSLETTER SUBSCRIBERS ROSTER */}
-      {adminSubTab === 'subscribers' && (
-        <div className="space-y-4">
-          <div className="bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/50">
-            <h3 className="font-display text-lg font-bold text-[#1c1a17]">
-              Lista de Suscriptores Oficiales
-            </h3>
-            <p className="text-xs text-[#5c544b]">
-              Útiles para campañas directas de mercadeo social, envío de memorias semestrales y
-              boletines de transparencia civil.
-            </p>
+        {/* TAB CONTENT: GESTIÓN DE PÁGINAS CMS */}
+        {adminSubTab === 'pages_config' && (
+          <div className="animate-fade-in">
+            <AdminPagesManager />
           </div>
+        )}
 
-          <div className="bg-white border border-[#ebdccd]/60 rounded-3xl overflow-hidden shadow-xs">
-            {subscribers.length === 0 ? (
-              <div className="p-12 text-center text-xs text-[#5c544b]">
-                Por el momento no hay usuarios suscritos a las novedades de VOSERDEM.
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[#ebdccd]/15 text-[10px] font-bold uppercase tracking-wider text-[#5c544b] border-b border-[#ebdccd]/30">
-                      <th className="py-4 px-6">N° de Fila</th>
-                      <th className="py-4 px-6">Dirección de Correo Electrónico</th>
-                      <th className="py-4 px-6">Fecha de Suscripción Registro</th>
-                      <th className="py-4 px-6 text-center">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
-                    {subscribers.map((sub, idx) => (
-                      <tr key={sub.id} className="hover:bg-[#fbfaf7]">
-                        <td className="py-4 px-6 font-mono font-semibold text-[#8e897e]">
-                          {idx + 1}
-                        </td>
-                        <td className="py-4 px-6 font-bold text-[#1c1a17]">{sub.email}</td>
-                        <td className="py-4 px-6 text-[#5c544b] font-mono">
-                          {new Date(sub.date).toLocaleString()}
-                        </td>
-                        <td className="py-4 px-6 text-center">
-                          <button
-                            onClick={() => handleDeleteSubscriber(sub.id, sub.email)}
-                            title="Desinscribir Correo"
-                            className="p-2 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-rose-50 text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        {/* TAB CONTENT: IMPACTO TERRITORIAL */}
+        {adminSubTab === 'impacto_config' && (
+          <div className="animate-fade-in">
+            <AdminImpacto />
           </div>
-        </div>
-      )}
+        )}
 
-      {/* TAB CONTENT: GESTIÓN DE PÁGINAS CMS */}
-      {adminSubTab === 'pages_config' && (
-        <div className="animate-fade-in">
-          <AdminPagesManager />
-        </div>
-      )}
+        {/* TAB CONTENT: ABOUT US CONFIGURATION & PREVIEWS */}
+        {adminSubTab === 'about_config' && (
+          <AdminAbout 
+            loadAllAdminData={loadAllAdminData} 
+            setLoading={setLoading} 
+            projects={projects}
+            blogPosts={blogPosts}
+            bulletins={bulletins}
+          />
+        )}
 
-      {/* TAB CONTENT: IMPACTO TERRITORIAL */}
-      {adminSubTab === 'impacto_config' && (
-        <div className="animate-fade-in">
-          <AdminImpacto />
-        </div>
-      )}
-
-      {/* TAB CONTENT: ABOUT US CONFIGURATION & PREVIEWS */}
-      {adminSubTab === 'about_config' && (
-        <AdminAbout 
-          loadAllAdminData={loadAllAdminData} 
-          setLoading={setLoading} 
-          projects={projects}
-          blogPosts={blogPosts}
-          bulletins={bulletins}
-        />
-      )}
-
-      {/* TAB CONTENT: CAROUSEL SLIDES CONFIG (5 PHOTOS) */}
-      {adminSubTab === 'carousel_config' && (
-        <AdminCarousel 
-          carouselSlides={carouselSlides} 
-          setCarouselSlides={setCarouselSlides} 
-          loadAllAdminData={loadAllAdminData} 
-          adminFetch={adminFetch} 
-          setLoading={setLoading} 
-        />
-      )}
+        {/* TAB CONTENT: CAROUSEL SLIDES CONFIG (5 PHOTOS) */}
+        {adminSubTab === 'carousel_config' && (
+          <AdminCarousel 
+            carouselSlides={carouselSlides} 
+            setCarouselSlides={setCarouselSlides} 
+            loadAllAdminData={loadAllAdminData} 
+            adminFetch={adminFetch} 
+            setLoading={setLoading} 
+          />
+        )}
+      </Suspense>
 
       {/* TAB CONTENT: LOGOS & BRANDING CONFIGURATION */}
       {adminSubTab === 'logo_config' && (
