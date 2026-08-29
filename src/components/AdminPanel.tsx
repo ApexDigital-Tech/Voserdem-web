@@ -40,6 +40,7 @@ import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 import AdminPagesManager from './AdminPagesManager';
 import AdminImpacto from './AdminImpacto';
 import AdminDonations from './AdminDonations';
+import AdminProjects from './AdminProjects';
 
 export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -85,30 +86,6 @@ export default function AdminPanel() {
 
   // Loading / Error
   const [loading, setLoading] = useState<boolean>(false);
-
-  // Project Editing / Creating States
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
-  const [isCreating, setIsCreating] = useState<boolean>(false);
-
-  // Project Form States
-  const [formTitle, setFormTitle] = useState('');
-  const [formCategory, setFormCategory] = useState<
-    'Educación' | 'Medio Ambiente' | 'Adulto Mayor' | 'Desarrollo'
-  >('Medio Ambiente');
-  const [formRegion, setFormRegion] = useState<'Andino' | 'Valles' | 'Amazonia' | 'Chaco'>(
-    'Andino'
-  );
-  const [formArea, setFormArea] = useState<
-    'Educación' | 'Medio Ambiente' | 'Productivo' | 'Intergeneracional'
-  >('Medio Ambiente');
-  const [formDescription, setFormDescription] = useState('');
-  const [formDetails, setFormDetails] = useState('');
-  const [formGoal, setFormGoal] = useState<number>(10000);
-  const [formRaised, setFormRaised] = useState<number>(0);
-  const [formLocation, setFormLocation] = useState('Cochabamba, Bolivia');
-  const [formImpact, setFormImpact] = useState('');
-  const [formImage, setFormImage] = useState('');
 
   const ADMIN_PASSKEY = import.meta.env.VITE_ADMIN_PASSKEY || '';
 
@@ -568,138 +545,6 @@ export default function AdminPanel() {
     }
   }, [isAuthenticated]);
 
-  const resetForm = () => {
-    setFormTitle('');
-    setFormCategory('Medio Ambiente');
-    setFormRegion('Valles');
-    setFormArea('Medio Ambiente');
-    setFormDescription('');
-    setFormDetails('');
-    setFormGoal(10000);
-    setFormRaised(0);
-    setFormLocation('Cochabamba, Bolivia');
-    setFormImpact('');
-    setFormImage('');
-    setIsEditing(false);
-    setEditingProjectId(null);
-    setIsCreating(false);
-  };
-
-  const selectForEdit = (proj: Project) => {
-    resetForm();
-    setIsEditing(true);
-    setEditingProjectId(proj.id);
-    setFormTitle(proj.title);
-    setFormCategory(proj.category);
-    setFormRegion(proj.region || 'Valles');
-    setFormArea(proj.area || 'Medio Ambiente');
-    setFormDescription(proj.description || '');
-    setFormDetails(proj.details || '');
-    setFormGoal(proj.goal);
-    setFormRaised(proj.raised);
-    setFormLocation(proj.location || 'Cochabamba, Bolivia');
-    setFormImpact(proj.impact || '');
-    setFormImage(proj.image || '');
-  };
-
-  const handleCreateProject = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formTitle.trim()) return;
-
-    try {
-      const response = await api.post('/api/projects', {
-        title: formTitle,
-        category: formCategory,
-        region: formRegion,
-        area: formArea,
-        description: formDescription,
-        details: formDetails || formDescription,
-        goal: formGoal,
-        location: formLocation,
-        impact: formImpact,
-        image: cleanGoogleDriveUrl(formImage),
-      });
-
-      if (response.success) {
-        showStatus('Proyecto creado con éxito.', 'success');
-        resetForm();
-        loadAllAdminData();
-      } else {
-        showStatus(response.error || 'Error al guardar el proyecto.', 'error');
-      }
-    } catch (err) {
-      showStatus('Fallo de red al intentar crear el proyecto.', 'error');
-    }
-  };
-
-  const handleUpdateProject = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingProjectId) return;
-
-    const previousProjects = [...projects];
-    const payload = {
-      title: formTitle,
-      category: formCategory,
-      region: formRegion,
-      area: formArea,
-      description: formDescription,
-      details: formDetails,
-      goal: formGoal,
-      raised: formRaised,
-      location: formLocation,
-      impact: formImpact,
-      image: cleanGoogleDriveUrl(formImage),
-    };
-
-    setProjects((prev) => prev.map((p) => (p.id === editingProjectId ? { ...p, ...payload } : p)));
-    showStatus('Actualizando proyecto...', 'success');
-    resetForm();
-
-    try {
-      const response = await api.put(`/api/projects/${editingProjectId}`, payload);
-
-      if (response.success) {
-        showStatus('Proyecto actualizado correctamente.', 'success');
-        loadAllAdminData();
-      } else {
-        setProjects(previousProjects);
-        showStatus(response.error || 'Error al modificar el proyecto.', 'error');
-      }
-    } catch (err) {
-      setProjects(previousProjects);
-      showStatus('Fallo en la comunicación con el servidor.', 'error');
-    }
-  };
-
-  const handleDeleteProject = async (id: string, name: string) => {
-    if (
-      !window.confirm(`¿Estás seguro de que deseas eliminar permanentemente el proyecto "${name}"?`)
-    ) {
-      return;
-    }
-
-    const previousProjects = [...projects];
-    setProjects((prev) => prev.filter((p) => p.id !== id));
-    showStatus('Eliminando proyecto...', 'success');
-
-    try {
-      const response = await adminFetch(`/api/projects/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        showStatus('Proyecto eliminado con éxito.', 'success');
-        loadAllAdminData();
-      } else {
-        setProjects(previousProjects);
-        showStatus('Error de rechazo al eliminar proyecto.', 'error');
-      }
-    } catch (err) {
-      setProjects(previousProjects);
-      showStatus('Error de red al intentar eliminar.', 'error');
-    }
-  };
-
   const handleResetDatabase = async () => {
     const userInput = window.prompt(
       'ATENCIÓN PELIGRO: Esto restaurará los proyectos iniciales y borrará TODAS las donaciones, mensajes, blogs y configuraciones actuales de la base de datos de producción.\n\nPara confirmar esta acción destructiva, escribe "CONFIRMAR" en mayúsculas:'
@@ -715,7 +560,7 @@ export default function AdminPanel() {
       if (response.success) {
         showStatus('Base de datos restaurada correctamente.', 'success');
         loadAllAdminData();
-        resetForm();
+        
       }
     } catch (err) {
       showStatus('Error de red al intentar restaurar.', 'error');
@@ -902,7 +747,7 @@ export default function AdminPanel() {
               key={tab.id}
               onClick={() => {
                 setAdminSubTab(tab.id as any);
-                resetForm();
+                
               }}
               className={`flex items-center gap-1.5 py-3 px-6 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
                 isSelected
@@ -919,311 +764,13 @@ export default function AdminPanel() {
 
       {/* TAB CONTENT: PROJECTS MANAGEMENT */}
       {adminSubTab === 'projects' && (
-        <div className="space-y-8">
-          {/* Header row to trigger "Add project" form */}
-          <div className="flex justify-between items-center bg-[#ebdccd]/15 p-4 rounded-2xl border border-[#ebdccd]/35">
-            <p className="text-xs text-[#5c544b] font-medium">
-              Haga clic en un proyecto existente para editarlo de manera inmediata, o añada una
-              nueva campaña.
-            </p>
-            {!isCreating && !isEditing && (
-              <button
-                onClick={() => {
-                  resetForm();
-                  setIsCreating(true);
-                }}
-                className="bg-[#1f5f3d] text-white hover:bg-[#15432b] text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
-              >
-                <Plus className="h-4 w-4" />
-                Añadir Proyecto
-              </button>
-            )}
-          </div>
-
-          {/* Create or Edit Form Box */}
-          {(isCreating || isEditing) && (
-            <div className="bg-[#fcfbf9] border-2 border-[#1f5f3d]/30 rounded-3xl p-6 sm:p-8 shadow-md relative space-y-6">
-              <button
-                onClick={resetForm}
-                className="absolute top-4 right-4 text-[#5c544b] hover:text-[#1c1a17]"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              <h4 className="font-display text-lg font-bold text-[#1c1a17] flex items-center gap-1.5">
-                <BookOpen className="h-5 w-5 text-[#1f5f3d]" />
-                {isEditing ? 'Editar Detalles del Proyecto' : 'Crear Nueva Campaña VOSERDEM'}
-              </h4>
-
-              <form
-                onSubmit={isEditing ? handleUpdateProject : handleCreateProject}
-                className="space-y-4"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Título del Proyecto
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Ej. Bosque Tunari Protegido"
-                      value={formTitle}
-                      onChange={(e) => setFormTitle(e.target.value)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:ring-1 focus:ring-[#1f5f3d]/20 focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Categoría
-                    </label>
-                    <select
-                      value={formCategory}
-                      onChange={(e) => setFormCategory(e.target.value as any)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                    >
-                      <option value="Medio Ambiente">Medio Ambiente</option>
-                      <option value="Adulto Mayor">Adulto Mayor</option>
-                      <option value="Educación">Educación</option>
-                      <option value="Desarrollo">Desarrollo</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Ubicación Geográfica
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ej. Cochabamba, Bolivia"
-                      value={formLocation}
-                      onChange={(e) => setFormLocation(e.target.value)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none animate-fade-in"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Región Geográfica (Bolivia)
-                    </label>
-                    <select
-                      value={formRegion}
-                      onChange={(e) => setFormRegion(e.target.value as any)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                    >
-                      <option value="Altiplano">Altiplano</option>
-                      <option value="Valles">Valles</option>
-                      <option value="Oriente">Oriente</option>
-                      <option value="Chaco">Chaco</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Área de Acción (Categorización interna)
-                    </label>
-                    <select
-                      value={formArea}
-                      onChange={(e) => setFormArea(e.target.value as any)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                    >
-                      <option value="Educación">Educación</option>
-                      <option value="Medio Ambiente">Medio Ambiente</option>
-                      <option value="Productivo">Productivo</option>
-                      <option value="Intergeneracional">
-                        Intergeneracional (comedores de niños, adulto mayor, etc)
-                      </option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Meta de Financiamiento (USD)
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      required
-                      value={formGoal}
-                      onChange={(e) => setFormGoal(Number(e.target.value))}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                    />
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Recaudado (Solo editable en Cuentas Aud.)
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      disabled={!isEditing}
-                      value={formRaised}
-                      onChange={(e) => setFormRaised(Number(e.target.value))}
-                      className="w-full bg-[#f4f3f0] border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none disabled:text-[#7d756b]"
-                    />
-                  </div>
-
-                  <div className="space-y-1 sm:col-span-2">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                      Muro de Métricas de Impacto
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ej. 120 abuelas atendidas diariamente."
-                      required
-                      value={formImpact}
-                      onChange={(e) => setFormImpact(e.target.value)}
-                      className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                    URL de la Imagen Ilustrativa (Unsplash u otro servidor)
-                  </label>
-                  <input
-                    type="url"
-                    placeholder="https://images.unsplash.com/photo-..."
-                    value={formImage}
-                    onChange={(e) => setFormImage(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                    Breve Introducción de Tarjeta
-                  </label>
-                  <input
-                    placeholder="Máximo 150 caracteres para la vista resumida principal."
-                    required
-                    value={formDescription}
-                    onChange={(e) => setFormDescription(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#4e4842]">
-                    Descripción Detallada (Cuerpo del Modal)
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Describe de manera profunda los objetivos específicos, beneficiarios y necesidades financieras..."
-                    required
-                    value={formDetails}
-                    onChange={(e) => setFormDetails(e.target.value)}
-                    className="w-full bg-white border border-[#ebdccd] rounded-lg py-2 px-3 text-xs focus:outline-none resize-none"
-                  />
-                </div>
-
-                <div className="pt-2 flex gap-2 justify-end">
-                  <button
-                    type="button"
-                    onClick={resetForm}
-                    className="px-4 py-2 border border-[#ebdccd] rounded-lg text-xs font-semibold text-[#4e4842] hover:bg-[#e6dfd5]/40 cursor-pointer"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-[#1f5f3d] text-white hover:bg-[#16442b] px-5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer"
-                  >
-                    {isEditing ? 'Confirmar Cambios' : 'Crear Proyecto'}
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* Master Table of projects */}
-          <div className="bg-[#fcfbf9] border border-[#ebdccd]/65 rounded-3xl overflow-hidden shadow-xs">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[#ebdccd]/20 text-[10px] font-bold uppercase tracking-wider text-[#5c544b] border-b border-[#ebdccd]/30">
-                    <th className="py-4 px-6">Detalle Proyecto</th>
-                    <th className="py-4 px-6">Región / Área</th>
-                    <th className="py-4 px-6">Ubicación</th>
-                    <th className="py-4 px-6 text-right">Avance (USD)</th>
-                    <th className="py-4 px-6 text-center">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#ebdccd]/30 text-xs text-[#1c1a17]">
-                  {projects.map((proj) => (
-                    <tr key={proj.id} className="hover:bg-[#fbfaf7]">
-                      <td className="py-4 px-6 font-medium">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={cleanGoogleDriveUrl(proj.image)}
-                            alt=""
-                            className="w-10 h-10 rounded-lg object-cover bg-neutral-200"
-                            referrerPolicy="no-referrer"
-                          />
-                          <div>
-                            <span className="font-bold text-[#1c1a17] hover:underline cursor-pointer block">
-                              {proj.title}
-                            </span>
-                            <span className="text-[10px] text-[#5c544b] line-clamp-1">
-                              {proj.description}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6">
-                        <div className="flex flex-col gap-1">
-                          <span className="bg-[#1f5f3d]/10 px-2 py-0.5 rounded-full font-bold text-[9px] uppercase tracking-wide text-[#1f5f3d] w-fit">
-                            {proj.region || 'Valles'}
-                          </span>
-                          <span className="bg-[#ebdccd]/40 px-2 py-0.5 rounded-full font-semibold text-[9px] uppercase tracking-wide text-[#5c544b] w-fit">
-                            {proj.area || 'Medio Ambiente'}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-[#5c544b] uppercase tracking-tight font-medium">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5 text-[#d95c2b]" />
-                          <span>{proj.location}</span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-6 text-right font-mono font-bold">
-                        <span className="text-[#1f5f3d]">${proj.raised.toLocaleString()}</span> /{' '}
-                        <span className="text-[#7d756b]">${proj.goal.toLocaleString()}</span>
-                      </td>
-                      <td className="py-4 px-6 text-center">
-                        <div className="flex justify-center gap-2">
-                          <button
-                            onClick={() => selectForEdit(proj)}
-                            title="Editar"
-                            className="p-1.5 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-emerald-50 text-[#1f5f3d] hover:border-emerald-200 transition-colors cursor-pointer"
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProject(proj.id, proj.title)}
-                            title="Eliminar"
-                            className="p-1.5 rounded-lg border border-[#ebdccd]/60 bg-white hover:bg-rose-50 text-rose-600 hover:border-rose-200 transition-colors cursor-pointer"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+        <AdminProjects 
+          projects={projects} 
+          setProjects={setProjects} 
+          loadAllAdminData={loadAllAdminData} 
+          adminFetch={adminFetch} 
+        />
       )}
-
       {/* TAB CONTENT: AUDITED DONATIONS */}
       {adminSubTab === 'donations' && (
         <AdminDonations donations={donations} />
