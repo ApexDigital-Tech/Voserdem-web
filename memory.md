@@ -80,11 +80,30 @@
 - **Problema**: La aplicación carecía de estados de foco claros para navegación por teclado, y el cambio de rutas se sentía estático y abrupto.
 - **Solución**: Se implementó `AnimatePresence` de `framer-motion` para transiciones suaves de página (fade-in de 0.3s) en `App.tsx`. Se añadieron anillos de foco visibles (`focus-visible:ring-[#C5A059]`) y atributos semánticos ARIA (`aria-label`, `aria-pressed`, `aria-expanded`, `aria-hidden`) a componentes interactivos como `Navbar`, `Footer`, `Projects` y `DonationForm`, garantizando el cumplimiento de estándares web premium.
 
-## 2. Tareas Pendientes (Próxima Sesión)
+### Limpieza de Cdigo y Vercel Deployment (Fase 0)
 
-1. **Configuración de Herramientas de Calidad del Código:**
-   - Integrar y configurar formalmente ESLint y Prettier en el pipeline de desarrollo para asegurar consistencia y calidad.
-2. **Revisión del Backend en Producción (Vercel):**
-   - Asegurar que la lógica del servidor API (ahora en `server.ts`) esté correctamente abstraída o configurada como funciones Serverless (`api/index.ts`) para que las peticiones del panel administrativo no arrojen errores 500 al desplegarse en Vercel.
-3. **Auditoría Final de SEO y Rendimiento:**
-   - Evaluar Core Web Vitals (LCP, INP, CLS) utilizando las herramientas de Lighthouse.
+- **Problema**: El despliegue de Vercel fallaba porque se incluyeron mdulos externos no registrados en package.json y hubo fallos de typecheck (tsc).
+- **Solucin**:
+  - Restablecimos el enrutamiento a la lgica nativa del proyecto (props a Navbar y Footer), revirtiendo dependencias no instaladas.
+  - Aseguramos las polticas de seguridad en el backend (Fase 0 CERRADA): RLS estricto configurado en Supabase, movimos la contrasea del admin a variables de entorno (\process.env.ADMIN_PASSKEY\) y eliminamos el endpoint inseguro \/api/admin/reset\.
+  - Pasamos px tsc --noEmit\ y pm run build\ consistentemente.
+
+### Desmantelamiento del Monolito Admin (Fase 1)
+
+- **Problema**: \AdminPanel.tsx\ era un archivo monoltico con estados y lgica para todas las pestaas del panel administrativo, lo que lo volva inmantenible.
+- **Solucin**: Extrajimos 5 mdulos clave en sus propios componentes. Los 5 mdulos extrados y verificados son:
+  1. \AdminDonations  2. \AdminProjects  3. \AdminBulletins  4. \AdminCarousel  5. \AdminAbout- Fase 1 CERRADA. Todos han sido verificados pasando tsc y build sin errores.
+
+## 2. Tareas Pendientes (Prxima Sesin)
+
+1. **Fase 2: Clean Code (Limpieza Profunda):**
+   - Instalar y configurar un setup de ESLint real (con reglas para react-hooks).
+   - Purgar todos los imports no utilizados en los archivos del frontend.
+   - Eliminar o archivar archivos obsoletos en la raz del proyecto.
+2. **Fase 3: Performance & Robustness:**
+   - Implementar code-splitting (\React.lazy\) para el panel de administracin.
+   - Aadir estados de carga y manejo de errores ms robustos para las llamadas a la API.
+   - Agregar rate limiting en los endpoints pblicos.
+   - Aadir validacin de inputs del lado del servidor en \pi/index.ts\.
+3. **Fase 4: Verificacin Final:**
+   - Prueba manual del rechazo RLS, verificacin de las 9 pestaas, build size < 500 KB, y comprobacin de fallo con passwords antiguos.
