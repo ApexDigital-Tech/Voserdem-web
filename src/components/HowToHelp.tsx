@@ -19,37 +19,44 @@ export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpPr
   const options = [
     {
       title: 'Voluntariado',
-      description: 'Únete a las jornadas de fin de semana para riego, deshierbe, plantación de árboles nativos y preparación de tierra orgánica para nuestro vivero comunal, o comparte tiempo con los adultos mayores.',
+      description:
+        'Únete a las jornadas de fin de semana para riego, deshierbe, plantación de árboles nativos y preparación de tierra orgánica para nuestro vivero comunal, o comparte tiempo con los adultos mayores.',
       icon: Sprout,
-      benefits: 'Capacitación certificada, contacto directo con la naturaleza y apoyo social activo.'
+      benefits:
+        'Capacitación certificada, contacto directo con la naturaleza y apoyo social activo.',
     },
     {
       title: 'Donación Institucional',
-      description: 'Aporta recursos económicos directos que se transforman en sistemas de riego por goteo, infraestructura educativa o raciones nutricionales en los comedores.',
+      description:
+        'Aporta recursos económicos directos que se transforman en sistemas de riego por goteo, infraestructura educativa o raciones nutricionales en los comedores.',
       icon: Heart,
-      benefits: 'Transparencia total con informes verificables y deducción fiscal oportuna.'
+      benefits: 'Transparencia total con informes verificables y deducción fiscal oportuna.',
     },
     {
       title: 'Alianzas y Cooperación',
-      description: 'Acuerdos estratégicos con gremios, responsabilidad social empresarial (RSE) o red de parroquias para potenciar el impacto en nuestros sitios piloto.',
+      description:
+        'Acuerdos estratégicos con gremios, responsabilidad social empresarial (RSE) o red de parroquias para potenciar el impacto en nuestros sitios piloto.',
       icon: Users,
-      benefits: 'Multiplicación del impacto social y cumplimiento de Objetivos de Desarrollo Sostenible (ODS).'
+      benefits:
+        'Multiplicación del impacto social y cumplimiento de Objetivos de Desarrollo Sostenible (ODS).',
     },
   ];
 
   return (
     <div className="py-16 bg-[#F5F2ED] min-h-screen space-y-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
         {/* Heading */}
         <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
-          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">Súmate a la causa</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
+            Súmate a la causa
+          </span>
           <h2 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
             ¿Cómo puedes ayudar a VOSERDEM?
           </h2>
           <SignatureDivider />
           <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-            Creemos que toda contribución es sumamente valiosa. Hay múltiples formas de generar progreso ecológico y social en Cochabamba de forma activa.
+            Creemos que toda contribución es sumamente valiosa. Hay múltiples formas de generar
+            progreso ecológico y social en Cochabamba de forma activa.
           </p>
         </div>
 
@@ -73,12 +80,15 @@ export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpPr
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="font-display text-lg font-bold text-[#1B3022]">{opt.title}</h3>
-                  <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">{opt.description}</p>
-                  
+                  <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
+                    {opt.description}
+                  </p>
+
                   {/* Thin Heritage Gold Divider */}
                   <div className="border-t border-[#C5A059]/25 pt-4">
                     <p className="text-[10px] text-[#2C2C2C] leading-relaxed font-sans">
-                      <strong className="text-[#1B3022] font-sans">Beneficios:</strong> {opt.benefits}
+                      <strong className="text-[#1B3022] font-sans">Beneficios:</strong>{' '}
+                      {opt.benefits}
                     </p>
                   </div>
                 </div>
@@ -90,9 +100,14 @@ export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpPr
         {/* Proposal / Suggestion Core Accentuated Block */}
         <div className="bg-[#FCF9F8] rounded-[8px] p-8 sm:p-12 border border-[#C5A059]/35 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <h3 className="font-display text-2xl font-black text-[#1B3022] tracking-tight">¿Tienes alguna propuesta o sugerencia?</h3>
+            <h3 className="font-display text-2xl font-black text-[#1B3022] tracking-tight">
+              ¿Tienes alguna propuesta o sugerencia?
+            </h3>
             <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-              Estamos dispuestos a realizar convenios estratégicos con gremios profesionales, instituciones corporativas comprometidas con planes de Responsabilidad Social Empresarial (RSE), y redes ecologistas internacionales. Conversemos sobre tus ideas de impacto hoy.
+              Estamos dispuestos a realizar convenios estratégicos con gremios profesionales,
+              instituciones corporativas comprometidas con planes de Responsabilidad Social
+              Empresarial (RSE), y redes ecologistas internacionales. Conversemos sobre tus ideas de
+              impacto hoy.
             </p>
             <div className="flex flex-wrap gap-4 pt-2">
               <button
@@ -112,7 +127,9 @@ export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpPr
 
           <div className="lg:col-span-5 flex justify-center">
             <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] p-6 shadow-none w-full max-w-sm space-y-4">
-              <span className="text-[10px] uppercase font-bold tracking-widest text-[#C5A059] font-sans block">Requisitos para Voluntariado</span>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-[#C5A059] font-sans block">
+                Requisitos para Voluntariado
+              </span>
               <ul className="space-y-3.5 text-[11px] text-[#2C2C2C] font-sans">
                 <li className="flex items-center gap-2 font-sans">
                   <FileText className="h-4 w-4 shrink-0 text-[#C5A059]" />
@@ -130,7 +147,6 @@ export default function HowToHelp({ onDonateClick, onContactClick }: HowToHelpPr
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Project } from '../types';
-import { Heart, Gift, Mail, Smile, HelpCircle, AlertCircle, Sparkles, Compass, Check } from 'lucide-react';
+import {
+  Heart,
+  Gift,
+  Mail,
+  Smile,
+  HelpCircle,
+  AlertCircle,
+  Sparkles,
+  Compass,
+  Check,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { api } from '../services/api';
 
 interface DonationFormProps {
   preselectedProjectId?: string;
@@ -23,17 +38,21 @@ const QRCodeSimpleVisual = ({ amount }: { amount: number }) => (
     </div>
     {/* Stylized geometric representation of a complex, legal QR node canvas */}
     <div className="p-1 px-2.5 border border-[#007A5A]/35 rounded-[6px]">
-      <svg className="w-32 h-32 text-[#1B3022] select-none" viewBox="0 0 100 100" fill="currentColor">
+      <svg
+        className="w-32 h-32 text-[#1B3022] select-none"
+        viewBox="0 0 100 100"
+        fill="currentColor"
+      >
         {/* Outer Top-Left Target */}
         <path d="M5,5 h22 v6 h-16 v16 h-6 z" />
         <rect x="11" y="11" width="10" height="10" />
         <rect x="14" y="14" width="4" height="4" fill="white" />
-        
+
         {/* Outer Top-Right Target */}
         <path d="M73,5 h22 v22 h-6 v-16 h-16 z" />
         <rect x="79" y="11" width="10" height="10" />
         <rect x="82" y="14" width="4" height="4" fill="white" />
-        
+
         {/* Outer Bottom-Left Target */}
         <path d="M5,73 h6 v16 h16 v6 h-22 z" />
         <rect x="11" y="79" width="10" height="10" />
@@ -45,12 +64,12 @@ const QRCodeSimpleVisual = ({ amount }: { amount: number }) => (
         <rect x="58" y="8" width="4" height="10" />
         <rect x="38" y="22" width="12" height="4" />
         <rect x="52" y="20" width="6" height="8" />
-        
+
         <rect x="8" y="38" width="6" height="12" />
         <rect x="20" y="44" width="14" height="4" />
         <rect x="80" y="38" width="12" height="6" />
         <rect x="84" y="48" width="6" height="14" />
-        
+
         <rect x="38" y="78" width="14" height="6" />
         <rect x="56" y="84" width="10" height="4" />
         <rect x="80" y="80" width="12" height="12" />
@@ -59,7 +78,9 @@ const QRCodeSimpleVisual = ({ amount }: { amount: number }) => (
 
         <rect x="38" y="38" width="24" height="24" fill="#007A5A" rx="4" />
         <rect x="41" y="41" width="18" height="18" fill="white" rx="2" />
-        <text x="46" y="55" fontSize="14" fontWeight="900" fill="#007A5A" fontFamily="sans-serif">QS</text>
+        <text x="46" y="55" fontSize="14" fontWeight="900" fill="#007A5A" fontFamily="sans-serif">
+          QS
+        </text>
       </svg>
     </div>
     <div className="space-y-1">
@@ -76,7 +97,9 @@ const QRCodeSimpleVisual = ({ amount }: { amount: number }) => (
 const BancoBisaCard = ({ amount }: { amount: number }) => (
   <div className="bg-[#FCF9F8] p-5 rounded-xl border border-[#C5A059]/40 shadow-sm text-left text-[#1B3022] space-y-4 max-w-sm sm:max-w-md mx-auto">
     <div className="flex justify-between items-center border-b border-[#C5A059]/20 pb-2.5">
-      <span className="text-[9px] uppercase font-black text-[#C5A059] tracking-widest">Coordenadas de Transferencia USD</span>
+      <span className="text-[9px] uppercase font-black text-[#C5A059] tracking-widest">
+        Coordenadas de Transferencia USD
+      </span>
       <span className="bg-[#1B3022] text-[#F5F2ED] text-[7.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-[2px] border border-[#C5A059]/20">
         BANCO BISA
       </span>
@@ -84,31 +107,45 @@ const BancoBisaCard = ({ amount }: { amount: number }) => (
     <div className="space-y-2.5 text-xs font-sans text-[#2C2C2C]">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
         <div>
-          <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">Entidad Recutora</span>
+          <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">
+            Entidad Recutora
+          </span>
           <span className="font-bold text-[#1B3022] text-xs">Banco BISA S.A.</span>
         </div>
         <div>
-          <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">Tipo de Cuenta</span>
+          <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">
+            Tipo de Cuenta
+          </span>
           <span className="font-semibold text-[#1B3022] text-[11px]">Cuenta Corriente ($)</span>
         </div>
       </div>
       <div>
-        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">Número de Cuenta Corriente</span>
+        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">
+          Número de Cuenta Corriente
+        </span>
         <span className="font-mono font-black text-sm sm:text-base text-[#1B3022] block bg-[#1B3022]/5 p-1.5 rounded select-all border border-[#C5A059]/10">
           104523-402-3
         </span>
       </div>
       <div>
-        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">Nombre del Titular</span>
-        <span className="font-semibold text-[#1B3022] text-xs">Voluntarios al Servicio de los Demás (VOSERDEM)</span>
+        <span className="text-[8.5px] uppercase font-bold tracking-wider text-[#C5A059] block">
+          Nombre del Titular
+        </span>
+        <span className="font-semibold text-[#1B3022] text-xs">
+          Voluntarios al Servicio de los Demás (VOSERDEM)
+        </span>
       </div>
       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#C5A059]/15 mt-1">
         <div>
-          <span className="text-[8px] uppercase font-bold text-[#2C2C2C]/75 block">NIT del Titular</span>
+          <span className="text-[8px] uppercase font-bold text-[#2C2C2C]/75 block">
+            NIT del Titular
+          </span>
           <span className="font-mono text-xs font-bold text-[#1B3022]">1028374029</span>
         </div>
         <div>
-          <span className="text-[8px] uppercase font-bold text-[#2C2C2C]/75 block">Swift internacional</span>
+          <span className="text-[8px] uppercase font-bold text-[#2C2C2C]/75 block">
+            Swift internacional
+          </span>
           <span className="font-mono text-xs font-bold text-[#1B3022]">BISABO2B</span>
         </div>
       </div>
@@ -119,129 +156,144 @@ const BancoBisaCard = ({ amount }: { amount: number }) => (
   </div>
 );
 
-export default function DonationForm({ preselectedProjectId, onSuccessRedirect }: DonationFormProps) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [projectId, setProjectId] = useState<string>('');
-  const [donorName, setDonorName] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  
-  const [currency, setCurrency] = useState<'USD' | 'BOB'>('USD');
-  const [amount, setAmount] = useState<number>(25);
-  const [customAmount, setCustomAmount] = useState<string>('');
-  
+const fetchProjects = async () => {
+  const res = await api.get<Project[]>('/api/projects');
+  if (!res.success) throw new Error(res.error || 'Failed to fetch projects');
+  return res.data || [];
+};
+
+const donationSchema = z
+  .object({
+    projectId: z.string().min(1, 'Por favor selecciona un proyecto de destino'),
+    currency: z.enum(['USD', 'BOB']),
+    amountType: z.enum(['preset', 'custom']),
+    presetAmount: z.number().optional(),
+    customAmount: z.string().optional(),
+    donorName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
+    email: z.string().email('Por favor ingresa un correo electrónico válido'),
+    comment: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.amountType === 'custom') {
+        const val = parseFloat(data.customAmount || '0');
+        return !isNaN(val) && val > 0;
+      }
+      return !!data.presetAmount;
+    },
+    {
+      message: 'Por favor introduce un monto de donación válido.',
+      path: ['customAmount'],
+    }
+  );
+
+type DonationFormData = z.infer<typeof donationSchema>;
+
+export default function DonationForm({
+  preselectedProjectId,
+  onSuccessRedirect,
+}: DonationFormProps) {
+  const { data: projects = [], isLoading } = useQuery({
+    queryKey: ['projectsDropdown'],
+    queryFn: fetchProjects,
+  });
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<DonationFormData>({
+    resolver: zodResolver(donationSchema),
+    defaultValues: {
+      projectId: preselectedProjectId || '',
+      currency: 'USD',
+      amountType: 'preset',
+      presetAmount: 25,
+      customAmount: '',
+      donorName: '',
+      email: '',
+      comment: '',
+    },
+  });
+
+  const currency = watch('currency');
+  const amountType = watch('amountType');
+  const presetAmount = watch('presetAmount');
+  const customAmount = watch('customAmount');
+  const projectId = watch('projectId');
+  const donorName = watch('donorName');
+  const email = watch('email');
+
+  useEffect(() => {
+    if (projects.length > 0 && !projectId && !preselectedProjectId) {
+      setValue('projectId', projects[0].id);
+    }
+  }, [projects, projectId, preselectedProjectId, setValue]);
+
   const [registeredAmount, setRegisteredAmount] = useState<number>(25);
   const [registeredCurrency, setRegisteredCurrency] = useState<'USD' | 'BOB'>('USD');
-  
-  const [comment, setComment] = useState<string>('');
-  
-  const [submitting, setSubmitting] = useState<boolean>(false);
   const [submited, setSubmited] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const presetAmounts = currency === 'USD' ? [10, 25, 50, 100, 250] : [50, 100, 250, 500, 1000];
 
-  useEffect(() => {
-    // Fetch projects for the dropdown select list
-    const fetchProj = async () => {
-      try {
-        const res = await fetch('/api/projects');
-        if (res.ok) {
-          const data = await res.json();
-          setProjects(data);
-          
-          // Determine starting selection
-          if (preselectedProjectId) {
-            setProjectId(preselectedProjectId);
-          } else if (data.length > 0) {
-            setProjectId(data[0].id);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching project options:', err);
-      }
-    };
-    fetchProj();
-  }, [preselectedProjectId]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
+  const onSubmit = async (data: DonationFormData) => {
     setErrorMsg(null);
 
-    const finalAmountRaw = customAmount ? parseFloat(customAmount) : amount;
-    
-    // Convert to equivalent USD amount if campaign was committed in Bolivianos
-    const finalAmountUSD = currency === 'BOB'
-      ? Math.round((finalAmountRaw / 6.96) * 100) / 100
-      : finalAmountRaw;
+    const finalAmountRaw =
+      data.amountType === 'custom' && data.customAmount
+        ? parseFloat(data.customAmount)
+        : data.presetAmount || 0;
 
-    if (!donorName.trim() || !email.trim()) {
-      setErrorMsg('Por favor introduce tu nombre y correo electrónico.');
-      setSubmitting(false);
-      return;
-    }
+    const finalAmountUSD =
+      data.currency === 'BOB' ? Math.round((finalAmountRaw / 6.96) * 100) / 100 : finalAmountRaw;
 
-    if (!projectId) {
-      setErrorMsg('Por favor selecciona un proyecto de destino.');
-      setSubmitting(false);
-      return;
-    }
-
-    if (isNaN(finalAmountRaw) || finalAmountRaw <= 0) {
-      setErrorMsg('Por favor introduce un monto de donación válido.');
-      setSubmitting(false);
-      return;
-    }
-
-    const finalComment = comment 
-      ? `${comment} [Donado en: ${finalAmountRaw} ${currency}]`
-      : `[Donado en: ${finalAmountRaw} ${currency}]`;
+    const finalComment = data.comment
+      ? `${data.comment} [Donado en: ${finalAmountRaw} ${data.currency}]`
+      : `[Donado en: ${finalAmountRaw} ${data.currency}]`;
 
     try {
-      const response = await fetch('/api/donations', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          donorName,
-          email,
-          amount: finalAmountUSD,
-          projectId,
-          comment: finalComment
-        })
+      const response = await api.post('/api/donations', {
+        donorName: data.donorName,
+        email: data.email,
+        amount: finalAmountUSD,
+        projectId: data.projectId,
+        comment: finalComment,
       });
 
-      const resData = await response.json();
-      if (!response.ok) {
-        throw new Error(resData.error || 'No se pudo realizar la donación.');
+      if (!response.success) {
+        throw new Error(response.error || 'No se pudo realizar la donación.');
       }
 
       setRegisteredAmount(finalAmountRaw);
-      setRegisteredCurrency(currency);
+      setRegisteredCurrency(data.currency);
       setSubmited(true);
     } catch (err: any) {
       setErrorMsg(err.message || 'Falló la conexión con el servidor. Por favor intenta más tarde.');
-    } finally {
-      setSubmitting(false);
     }
   };
 
   const getSelectedProjectTitle = () => {
-    const proj = projects.find(p => p.id === projectId);
+    const proj = projects.find((p) => p.id === projectId);
     return proj ? proj.title : 'VOSERDEM Bolivia';
   };
 
   return (
     <div className="py-16 bg-[#F5F2ED] min-h-screen">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        
         <div className="text-center space-y-3 mb-10">
-          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">Cambia una vida hoy</span>
+          <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
+            Cambia una vida hoy
+          </span>
           <h2 className="font-display text-3xl sm:text-4.5xl font-black text-[#1B3022] tracking-tight">
             Tu Apoyo Semilla Multiplica Impacto
           </h2>
           <SignatureDivider />
           <p className="text-xs text-[#2C2C2C] max-w-xl mx-auto font-sans">
-            Cada dólar donado se asigna íntegramente a insumos operativos del programa elegido. Recibirás informes transparentes semanales sobre el avance.
+            Cada dólar donado se asigna íntegramente a insumos operativos del programa elegido.
+            Recibirás informes transparentes semanales sobre el avance.
           </p>
         </div>
 
@@ -253,8 +305,7 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
               exit={{ opacity: 0, y: -10 }}
               className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-5 sm:p-10 shadow-none space-y-6"
             >
-              <form onSubmit={handleSubmit} className="space-y-6">
-                
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 {/* 1. Target Project Dropdown */}
                 <div className="space-y-1.5">
                   <label className="text-[10px] uppercase font-bold tracking-widest text-[#2C2C2C] flex items-center gap-1.5 font-sans">
@@ -262,17 +313,21 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                     Seleccionar Proyecto de Destino
                   </label>
                   <select
-                    value={projectId}
-                    onChange={(e) => setProjectId(e.target.value)}
-                    className="w-full bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] focus:border-[#1B3022] transition-all cursor-pointer font-sans"
+                    {...register('projectId')}
+                    className={`w-full bg-[#FCF9F8] border ${errors.projectId ? 'border-red-500' : 'border-[#C5A059]/30'} rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] focus:border-[#1B3022] transition-all cursor-pointer font-sans`}
                   >
-                    <option value="" disabled>Seleccione un proyecto...</option>
+                    <option value="" disabled>
+                      {isLoading ? 'Cargando proyectos...' : 'Seleccione un proyecto...'}
+                    </option>
                     {projects.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.title} (Meta: ${p.goal} | Recaudado: ${p.raised})
                       </option>
                     ))}
                   </select>
+                  {errors.projectId && (
+                    <p className="text-red-500 text-[10px]">{errors.projectId.message}</p>
+                  )}
                 </div>
 
                 {/* 2. Currency Selection Toggle */}
@@ -285,11 +340,13 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                     <button
                       type="button"
                       onClick={() => {
-                        setCurrency('USD');
-                        setAmount(25);
-                        setCustomAmount('');
+                        setValue('currency', 'USD');
+                        setValue('amountType', 'preset');
+                        setValue('presetAmount', 25);
+                        setValue('customAmount', '');
                       }}
-                      className={`py-3 px-3 rounded-[4px] border font-bold text-[10.5px] sm:text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                      aria-pressed={currency === 'USD'}
+                      className={`py-3 px-3 rounded-[4px] border font-bold text-[10.5px] sm:text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] ${
                         currency === 'USD'
                           ? 'bg-[#1B3022] border-[#1B3022] text-[#F5F2ED]'
                           : 'bg-[#FCF9F8] border-[#C5A059]/30 text-[#2C2C2C] hover:bg-[#C5A059]/10'
@@ -300,11 +357,13 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                     <button
                       type="button"
                       onClick={() => {
-                        setCurrency('BOB');
-                        setAmount(100);
-                        setCustomAmount('');
+                        setValue('currency', 'BOB');
+                        setValue('amountType', 'preset');
+                        setValue('presetAmount', 100);
+                        setValue('customAmount', '');
                       }}
-                      className={`py-3 px-3 rounded-[4px] border font-bold text-[10.5px] sm:text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                      aria-pressed={currency === 'BOB'}
+                      className={`py-3 px-3 rounded-[4px] border font-bold text-[10.5px] sm:text-xs tracking-wider uppercase transition-all flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] ${
                         currency === 'BOB'
                           ? 'bg-[#1B3022] border-[#1B3022] text-[#F5F2ED]'
                           : 'bg-[#FCF9F8] border-[#C5A059]/30 text-[#2C2C2C] hover:bg-[#C5A059]/10'
@@ -329,16 +388,19 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                         key={amt}
                         type="button"
                         onClick={() => {
-                          setAmount(amt);
-                          setCustomAmount('');
+                          setValue('amountType', 'preset');
+                          setValue('presetAmount', amt);
+                          setValue('customAmount', '');
                         }}
-                        className={`py-2 px-1 rounded-[4px] font-black text-[10.5px] tracking-wider transition-all border cursor-pointer ${
-                          amount === amt && !customAmount
+                        aria-pressed={amountType === 'preset' && presetAmount === amt}
+                        className={`py-2 px-1 rounded-[4px] font-black text-[10.5px] tracking-wider transition-all border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] ${
+                          amountType === 'preset' && presetAmount === amt
                             ? 'bg-[#1B3022] border-[#1B3022] text-[#F5F2ED]'
                             : 'bg-[#FCF9F8] border-[#C5A059]/30 text-[#2C2C2C] hover:bg-[#C5A059]/10'
                         }`}
                       >
-                        {currency === 'USD' ? '$' : 'Bs.'}{amt}
+                        {currency === 'USD' ? '$' : 'Bs.'}
+                        {amt}
                       </button>
                     ))}
                   </div>
@@ -352,17 +414,20 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                       type="number"
                       min="1"
                       placeholder="Otro monto personalizado..."
-                      value={customAmount}
+                      {...register('customAmount')}
                       onChange={(e) => {
-                        setCustomAmount(e.target.value);
-                        setAmount(0); // reset presets
+                        setValue('customAmount', e.target.value);
+                        setValue('amountType', e.target.value ? 'custom' : 'preset');
                       }}
-                      className="w-full bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] py-3 pl-10 pr-12 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] focus:border-[#1B3022] transition-all font-sans"
+                      className={`w-full bg-[#FCF9F8] border ${errors.customAmount ? 'border-red-500' : 'border-[#C5A059]/30'} rounded-[4px] py-3 pl-10 pr-12 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] focus:border-[#1B3022] transition-all font-sans`}
                     />
                     <span className="absolute inset-y-0 right-0 pr-4 flex items-center text-[10px] text-[#2C2C2C]/70 font-bold uppercase tracking-wider font-sans">
                       {currency}
                     </span>
                   </div>
+                  {errors.customAmount && (
+                    <p className="text-red-500 text-[10px]">{errors.customAmount.message}</p>
+                  )}
                 </div>
 
                 {/* User Fields Grid */}
@@ -374,12 +439,13 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                     </label>
                     <input
                       type="text"
-                      required
                       placeholder="Ej. María Elena Rojas"
-                      value={donorName}
-                      onChange={(e) => setDonorName(e.target.value)}
-                      className="w-full bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] font-sans"
+                      {...register('donorName')}
+                      className={`w-full bg-[#FCF9F8] border ${errors.donorName ? 'border-red-500' : 'border-[#C5A059]/30'} rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] font-sans`}
                     />
+                    {errors.donorName && (
+                      <p className="text-red-500 text-[10px]">{errors.donorName.message}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -389,12 +455,13 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                     </label>
                     <input
                       type="email"
-                      required
                       placeholder="maria@ejemplo.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] font-sans"
+                      {...register('email')}
+                      className={`w-full bg-[#FCF9F8] border ${errors.email ? 'border-red-500' : 'border-[#C5A059]/30'} rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] font-sans`}
                     />
+                    {errors.email && (
+                      <p className="text-red-500 text-[10px]">{errors.email.message}</p>
+                    )}
                   </div>
                 </div>
 
@@ -407,8 +474,7 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                   <textarea
                     rows={3}
                     placeholder="Escribe un mensaje de apoyo para los voluntarios o beneficiarios..."
-                    value={comment}
-                    onChange={(e) => setComment(e.target.value)}
+                    {...register('comment')}
                     className="w-full bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[4px] py-3 px-4 text-xs text-[#2C2C2C] focus:outline-none focus:ring-1 focus:ring-[#1B3022] resize-none font-sans"
                   />
                 </div>
@@ -424,13 +490,14 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={submitting}
-                  className="w-full bg-[#C5A059] text-[#1B3022] hover:bg-[#C5A059]/95 border-b border-[#1B3022] py-4 rounded-[4px] text-xs font-black uppercase tracking-widest transition-all shadow-none flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={isSubmitting}
+                  className="w-full bg-[#C5A059] text-[#1B3022] hover:bg-[#C5A059]/95 border-b border-[#1B3022] py-4 rounded-[4px] text-xs font-black uppercase tracking-widest transition-all shadow-none flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1B3022]"
                 >
                   <Heart className="h-4.5 w-4.5 fill-current text-[#1B3022]" />
-                  <span>{submitting ? 'Registrando Donación...' : 'Proceder a Comprometer Donación'}</span>
+                  <span>
+                    {isSubmitting ? 'Registrando Donación...' : 'Proceder a Comprometer Donación'}
+                  </span>
                 </button>
-
               </form>
             </motion.div>
           ) : (
@@ -444,10 +511,14 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
               </div>
 
               <div className="space-y-3">
-                <h3 className="font-display text-2xl sm:text-3.5xl font-black tracking-tight text-white">¡Muchísimas Gracias, {donorName}!</h3>
+                <h3 className="font-display text-2xl sm:text-3.5xl font-black tracking-tight text-white">
+                  ¡Muchísimas Gracias, {donorName}!
+                </h3>
                 <p className="text-white/85 text-xs sm:text-sm leading-relaxed font-sans px-2">
-                  Hemos registrado con profundo agradecimiento tu valioso compromiso en favor del proyecto <strong className="text-[#C5A059]">"{getSelectedProjectTitle()}"</strong>. 
-                  Tu generosidad estimula el trabajo incansable de los voluntarios de VOSERDEM en Bolivia.
+                  Hemos registrado con profundo agradecimiento tu valioso compromiso en favor del
+                  proyecto <strong className="text-[#C5A059]">"{getSelectedProjectTitle()}"</strong>
+                  . Tu generosidad estimula el trabajo incansable de los voluntarios de VOSERDEM en
+                  Bolivia.
                 </p>
               </div>
 
@@ -460,7 +531,12 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                         Donación vía Transferencia QR Simple
                       </h4>
                       <p className="text-white/85 text-[11px] font-sans leading-relaxed">
-                        Escanea el siguiente QR oficial Simple desde la app móvil de tu banco en Bolivia para realizar tu transferencia directa por el monto de <strong className="text-[#C5A059]">Bs. {registeredAmount.toLocaleString()} BOB</strong>.
+                        Escanea el siguiente QR oficial Simple desde la app móvil de tu banco en
+                        Bolivia para realizar tu transferencia directa por el monto de{' '}
+                        <strong className="text-[#C5A059]">
+                          Bs. {registeredAmount.toLocaleString()} BOB
+                        </strong>
+                        .
                       </p>
                     </div>
                     <QRCodeSimpleVisual amount={registeredAmount} />
@@ -472,7 +548,11 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                         Donación vía Transferencia Banco BISA
                       </h4>
                       <p className="text-white/85 text-[11px] font-sans leading-relaxed">
-                        Realiza tu depósito en dólares estadounidenses por un monto de <strong className="text-[#C5A059]">${registeredAmount.toLocaleString()} USD</strong> en nuestra cuenta corporativa oficial:
+                        Realiza tu depósito en dólares estadounidenses por un monto de{' '}
+                        <strong className="text-[#C5A059]">
+                          ${registeredAmount.toLocaleString()} USD
+                        </strong>{' '}
+                        en nuestra cuenta corporativa oficial:
                       </p>
                     </div>
                     <BancoBisaCard amount={registeredAmount} />
@@ -485,25 +565,32 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
                   <Sparkles className="h-4 w-4" />
                   Siguiente paso administrativo:
                 </p>
-                <p>Hemos enviado una confirmación formal a tu correo <span className="text-[#C5A059] font-bold">{email}</span>. Una vez realizada tu transferencia bancaria o escaneo QR, por favor reenvíanos el comprobante electrónico para la emisión de tu certificado de canje de impacto deducible de impuestos.</p>
+                <p>
+                  Hemos enviado una confirmación formal a tu correo{' '}
+                  <span className="text-[#C5A059] font-bold">{email}</span>. Una vez realizada tu
+                  transferencia bancaria o escaneo QR, por favor reenvíanos el comprobante
+                  electrónico para la emisión de tu certificado de canje de impacto deducible de
+                  impuestos.
+                </p>
               </div>
 
               <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center items-center">
                 <button
                   onClick={() => {
                     setSubmited(false);
-                    setDonorName('');
-                    setComment('');
-                    setCustomAmount('');
+                    setValue('donorName', '');
+                    setValue('comment', '');
+                    setValue('customAmount', '');
+                    setValue('amountType', 'preset');
                   }}
-                  className="w-full sm:w-auto bg-[#C5A059] text-[#1B3022] hover:bg-[#C5A059]/90 px-6 py-3 rounded-[4px] font-bold text-[10px] uppercase tracking-widest transition-all cursor-pointer border-b border-[#1B3022]"
+                  className="w-full sm:w-auto bg-[#C5A059] text-[#1B3022] hover:bg-[#C5A059]/90 px-6 py-3 rounded-[4px] font-bold text-[10px] uppercase tracking-widest transition-all cursor-pointer border-b border-[#1B3022] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] focus-visible:ring-offset-2 focus-visible:ring-offset-[#1B3022]"
                 >
                   Hacer otra Donación
                 </button>
                 {onSuccessRedirect && (
                   <button
                     onClick={onSuccessRedirect}
-                    className="w-full sm:w-auto bg-transparent text-[#F5F2ED] border border-[#C5A059]/40 hover:bg-white/10 px-6 py-3 rounded-[4px] font-bold text-[10px] uppercase tracking-widest transition-all cursor-pointer"
+                    className="w-full sm:w-auto bg-transparent text-[#F5F2ED] border border-[#C5A059]/40 hover:bg-white/10 px-6 py-3 rounded-[4px] font-bold text-[10px] uppercase tracking-widest transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059]"
                   >
                     Volver a Proyectos
                   </button>
@@ -512,7 +599,6 @@ export default function DonationForm({ preselectedProjectId, onSuccessRedirect }
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </div>
   );

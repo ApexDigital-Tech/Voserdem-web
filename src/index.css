@@ -1,20 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Manrope:wght@200..800&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Playfair Display", Georgia, serif;
-  
-  --color-brand-green: #1B3022;
-  --color-brand-gold: #C5A059;
-  --color-brand-parchment: #F5F2ED;
-  --color-brand-obsidian: #2C2C2C;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Playfair Display', Georgia, serif;
+
+  --color-brand-green: #1b3022;
+  --color-brand-gold: #c5a059;
+  --color-brand-parchment: #f5f2ed;
+  --color-brand-obsidian: #2c2c2c;
 }
 
 body {
   font-family: var(--font-sans);
-  background-color: #F5F2ED; /* Parchment: main background */
-  color: #2C2C2C; /* Obsidian: primary body text */
+  background-color: #f5f2ed; /* Parchment: main background */
+  color: #2c2c2c; /* Obsidian: primary body text */
 }
 
 /* Custom styles for professional scrollbars matching natural craft */
@@ -24,15 +24,35 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5F2ED;
+  background: #f5f2ed;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C5A059;
+  background: #c5a059;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1B3022;
+  background: #1b3022;
 }
 
+/* Glassmorphism Utilities */
+.glass {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+.glass-dark {
+  background-color: rgba(27, 48, 34, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.2),
+    0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}

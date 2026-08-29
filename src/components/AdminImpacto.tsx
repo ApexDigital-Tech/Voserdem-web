@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import { Save, Plus, Trash2, MoveUp, MoveDown, Map, CheckCircle2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { api } from '../services/api';
 
-export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string, options?: RequestInit) => Promise<Response> }) {
+export default function AdminImpacto() {
   const [data, setData] = useState<{
     mainTitle: string;
     mainSubtitle: string;
@@ -11,12 +12,14 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
     mainTitle: 'Impacto Territorial',
     mainSubtitle: 'Presencia Nacional',
     introText: '',
-    sites: []
+    sites: [],
   });
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMsg, setStatusMsg] = useState<{text: string, type: 'success'|'error'} | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(
+    null
+  );
 
   useEffect(() => {
     loadData();
@@ -25,10 +28,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await adminFetch('/api/impacto');
-      if (res.ok) {
-        const json = await res.json();
-        setData(json);
+      const res = await api.get<any>('/api/impacto');
+      if (res.success && res.data) {
+        setData(res.data);
       }
     } catch (err) {
       console.error(err);
@@ -43,12 +45,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
       const payload = { ...data };
       payload.sites = payload.sites.map((s, idx) => ({ ...s, order: idx + 1 }));
 
-      const res = await adminFetch('/api/impacto', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
+      const res = await api.put('/api/impacto', payload);
+
+      if (res.success) {
         setStatusMsg({ text: 'Página guardada exitosamente.', type: 'success' });
         setTimeout(() => setStatusMsg(null), 3000);
       } else {
@@ -63,7 +62,7 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
   };
 
   const updateField = (field: string, value: string) => {
-    setData(prev => ({ ...prev, [field]: value }));
+    setData((prev) => ({ ...prev, [field]: value }));
   };
 
   const updateSite = (idx: number, field: string, value: any) => {
@@ -83,7 +82,11 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
   const addStat = (siteIdx: number) => {
     const newSites = [...data.sites];
     if (!newSites[siteIdx].stats) newSites[siteIdx].stats = [];
-    newSites[siteIdx].stats.push({ icon: 'Leaf', label: 'Nuevo Logro', value: 'Descripción corta' });
+    newSites[siteIdx].stats.push({
+      icon: 'Leaf',
+      label: 'Nuevo Logro',
+      value: 'Descripción corta',
+    });
     setData({ ...data, sites: newSites });
   };
 
@@ -117,9 +120,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
           description: 'Descripción detallada',
           image: '',
           order: data.sites.length + 1,
-          stats: []
-        }
-      ]
+          stats: [],
+        },
+      ],
     });
   };
 
@@ -146,7 +149,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">Título Principal</label>
+            <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">
+              Título Principal
+            </label>
             <input
               type="text"
               className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-3 text-sm focus:ring-2 focus:ring-[#C5A059] focus:border-transparent outline-none transition-all"
@@ -155,7 +160,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
             />
           </div>
           <div>
-            <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">Subtítulo (Top)</label>
+            <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">
+              Subtítulo (Top)
+            </label>
             <input
               type="text"
               className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-3 text-sm focus:ring-2 focus:ring-[#C5A059] focus:border-transparent outline-none transition-all"
@@ -164,9 +171,11 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
             />
           </div>
         </div>
-        
+
         <div>
-          <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">Texto Introductorio (Soporta HTML básico)</label>
+          <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-2">
+            Texto Introductorio (Soporta HTML básico)
+          </label>
           <textarea
             rows={4}
             className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-3 text-sm focus:ring-2 focus:ring-[#C5A059] focus:border-transparent outline-none transition-all resize-y"
@@ -187,10 +196,18 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
         </div>
 
         {statusMsg && (
-          <div className={`mt-4 p-3 rounded-[6px] flex items-center gap-2 text-sm font-bold ${
-            statusMsg.type === 'success' ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
-          }`}>
-            {statusMsg.type === 'success' ? <CheckCircle2 className="w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
+          <div
+            className={`mt-4 p-3 rounded-[6px] flex items-center gap-2 text-sm font-bold ${
+              statusMsg.type === 'success'
+                ? 'bg-green-100 text-green-800 border border-green-200'
+                : 'bg-red-100 text-red-800 border border-red-200'
+            }`}
+          >
+            {statusMsg.type === 'success' ? (
+              <CheckCircle2 className="w-4 h-4" />
+            ) : (
+              <Trash2 className="w-4 h-4" />
+            )}
             {statusMsg.text}
           </div>
         )}
@@ -199,7 +216,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
       {/* Sitios Piloto */}
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-display font-black text-[#1B3022]">Sitios Piloto ({data.sites.length})</h2>
+          <h2 className="text-xl font-display font-black text-[#1B3022]">
+            Sitios Piloto ({data.sites.length})
+          </h2>
           <button
             onClick={addSite}
             className="flex items-center gap-2 text-sm font-bold text-[#1565C0] hover:text-[#0D47A1] bg-[#1565C0]/10 px-4 py-2 rounded-[6px] transition-colors"
@@ -209,11 +228,13 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
         </div>
 
         {data.sites.map((site, idx) => (
-          <div key={site.id} className="bg-white rounded-[12px] shadow-sm border border-[#E5E0D8] p-6 relative group">
-            
+          <div
+            key={site.id}
+            className="bg-white rounded-[12px] shadow-sm border border-[#E5E0D8] p-6 relative group"
+          >
             {/* Controles de orden y eliminación */}
             <div className="absolute top-4 right-4 flex items-center gap-2">
-              <button 
+              <button
                 onClick={() => moveSite(idx, 'up')}
                 disabled={idx === 0}
                 className="p-1.5 text-gray-400 hover:text-[#1B3022] hover:bg-gray-100 rounded-[4px] transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -221,7 +242,7 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
               >
                 <MoveUp className="w-4 h-4" />
               </button>
-              <button 
+              <button
                 onClick={() => moveSite(idx, 'down')}
                 disabled={idx === data.sites.length - 1}
                 className="p-1.5 text-gray-400 hover:text-[#1B3022] hover:bg-gray-100 rounded-[4px] transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
@@ -230,7 +251,7 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                 <MoveDown className="w-4 h-4" />
               </button>
               <div className="w-px h-4 bg-gray-200 mx-1"></div>
-              <button 
+              <button
                 onClick={() => removeSite(idx)}
                 className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-[4px] transition-colors"
                 title="Eliminar sitio"
@@ -243,13 +264,17 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
               <div className="bg-[#1B3022] text-[#C5A059] font-bold w-8 h-8 rounded-full flex items-center justify-center text-sm">
                 {idx + 1}
               </div>
-              <h3 className="font-display font-black text-lg text-[#1B3022]">{site.name || 'Sin Nombre'}</h3>
+              <h3 className="font-display font-black text-lg text-[#1B3022]">
+                {site.name || 'Sin Nombre'}
+              </h3>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">Nombre del Sitio</label>
+                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">
+                    Nombre del Sitio
+                  </label>
                   <input
                     type="text"
                     className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-2 text-sm focus:ring-2 focus:ring-[#C5A059] outline-none"
@@ -258,7 +283,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">Ubicación / Región</label>
+                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">
+                    Ubicación / Región
+                  </label>
                   <input
                     type="text"
                     className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-2 text-sm focus:ring-2 focus:ring-[#C5A059] outline-none"
@@ -267,7 +294,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">URL de Imagen</label>
+                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">
+                    URL de Imagen
+                  </label>
                   <input
                     type="text"
                     className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-2 text-sm focus:ring-2 focus:ring-[#C5A059] outline-none"
@@ -277,7 +306,9 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">Descripción</label>
+                  <label className="block text-xs font-bold text-[#1B3022] uppercase tracking-wider mb-1">
+                    Descripción
+                  </label>
                   <textarea
                     rows={3}
                     className="w-full bg-[#FCF9F8] border border-[#E5E0D8] rounded-[6px] p-2 text-sm focus:ring-2 focus:ring-[#C5A059] outline-none resize-y"
@@ -290,13 +321,23 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
               {/* Estadísticas/Logros */}
               <div className="bg-[#FCF9F8] rounded-[8px] p-4 border border-[#E5E0D8]">
                 <div className="flex justify-between items-center mb-4 border-b border-[#E5E0D8] pb-2">
-                  <h4 className="text-xs font-bold text-[#1B3022] uppercase tracking-wider">Logros Clave</h4>
-                  <button onClick={() => addStat(idx)} className="text-xs font-bold text-[#C5A059] hover:text-[#8C6612]">+ Añadir Logro</button>
+                  <h4 className="text-xs font-bold text-[#1B3022] uppercase tracking-wider">
+                    Logros Clave
+                  </h4>
+                  <button
+                    onClick={() => addStat(idx)}
+                    className="text-xs font-bold text-[#C5A059] hover:text-[#8C6612]"
+                  >
+                    + Añadir Logro
+                  </button>
                 </div>
-                
+
                 <div className="space-y-3">
                   {site.stats?.map((stat: any, sIdx: number) => (
-                    <div key={sIdx} className="flex items-start gap-2 bg-white p-2 rounded-[6px] border border-[#E5E0D8] relative group/stat">
+                    <div
+                      key={sIdx}
+                      className="flex items-start gap-2 bg-white p-2 rounded-[6px] border border-[#E5E0D8] relative group/stat"
+                    >
                       <div className="w-1/4">
                         <input
                           type="text"
@@ -322,7 +363,7 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                           onChange={(e) => updateStat(idx, sIdx, 'value', e.target.value)}
                         />
                       </div>
-                      <button 
+                      <button
                         onClick={() => removeStat(idx, sIdx)}
                         className="absolute -right-2 -top-2 bg-red-100 text-red-600 rounded-full p-1 opacity-0 group-hover/stat:opacity-100 transition-opacity"
                       >
@@ -331,12 +372,13 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
                     </div>
                   ))}
                   {(!site.stats || site.stats.length === 0) && (
-                    <p className="text-xs text-gray-500 italic">No hay logros configurados para este sitio.</p>
+                    <p className="text-xs text-gray-500 italic">
+                      No hay logros configurados para este sitio.
+                    </p>
                   )}
                 </div>
               </div>
             </div>
-
           </div>
         ))}
 
@@ -344,14 +386,18 @@ export default function AdminImpacto({ adminFetch }: { adminFetch: (url: string,
           <div className="bg-white rounded-[12px] shadow-sm border border-dashed border-[#C5A059] p-12 text-center">
             <Map className="w-12 h-12 text-[#C5A059]/40 mx-auto mb-4" />
             <p className="text-[#2C2C2C] font-bold">No hay Sitios Piloto configurados.</p>
-            <p className="text-sm text-gray-500 mb-4">Añade tu primer sitio para comenzar a construir el mapa de impacto.</p>
-            <button onClick={addSite} className="bg-[#C5A059] text-white px-6 py-2 rounded-[6px] text-sm font-bold shadow hover:bg-[#C5A059]/90 transition">
+            <p className="text-sm text-gray-500 mb-4">
+              Añade tu primer sitio para comenzar a construir el mapa de impacto.
+            </p>
+            <button
+              onClick={addSite}
+              className="bg-[#C5A059] text-white px-6 py-2 rounded-[6px] text-sm font-bold shadow hover:bg-[#C5A059]/90 transition"
+            >
               Crear Sitio Piloto
             </button>
           </div>
         )}
       </div>
-
     </div>
   );
 }

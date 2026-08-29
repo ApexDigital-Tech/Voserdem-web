@@ -1,7 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, Calendar, User, Clock, ArrowRight, BookOpen, ChevronRight, X, AlertCircle } from 'lucide-react';
+import {
+  Search,
+  Calendar,
+  User,
+  Clock,
+  ArrowRight,
+  BookOpen,
+  ChevronRight,
+  X,
+  AlertCircle,
+} from 'lucide-react';
 import { BlogPost } from '../types';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 
 const SignatureDivider = () => (
@@ -24,12 +35,15 @@ export default function Blog({ hideHeader = false }: BlogProps) {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
 
   useEffect(() => {
-    fetch('/api/blog')
+    api
+      .get<BlogPost[]>('/api/blog')
       .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error('Fallo al cargar artículos de blog');
+        if (res.success && res.data) {
+          setPosts(res.data);
+        } else {
+          throw new Error('Fallo al cargar artículos de blog');
+        }
       })
-      .then((data) => setPosts(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
@@ -37,22 +51,22 @@ export default function Blog({ hideHeader = false }: BlogProps) {
   const categories = ['Todos', 'Ecología', 'Comunidad', 'Adulto Mayor', 'Institucional'];
 
   const filteredPosts = posts.filter((post) => {
-    const matchesSearch = post.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          post.summary.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          post.content.toLowerCase().includes(searchTerm.toLowerCase());
-    
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchTerm.toLowerCase());
+
     const matchesCategory = selectedCategory === 'Todos' || post.category === selectedCategory;
 
     return matchesSearch && matchesCategory;
   });
 
-  const featuredPost = posts.find(p => p.featured) || (posts.length > 0 ? posts[0] : null);
-  const nonFeaturedPosts = filteredPosts.filter(p => !featuredPost || p.id !== featuredPost.id);
+  const featuredPost = posts.find((p) => p.featured) || (posts.length > 0 ? posts[0] : null);
+  const nonFeaturedPosts = filteredPosts.filter((p) => !featuredPost || p.id !== featuredPost.id);
 
   return (
     <div className="py-16 bg-[#F5F2ED] min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
         {/* Page title header */}
         {!hideHeader && (
           <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
@@ -64,7 +78,8 @@ export default function Blog({ hideHeader = false }: BlogProps) {
             </h1>
             <SignatureDivider />
             <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-              Explora las historias reales, el conocimiento técnico agroecológico y el espíritu voluntario de los proyectos activos en Cochabamba, Chocaya y la cordillera del Tunari.
+              Explora las historias reales, el conocimiento técnico agroecológico y el espíritu
+              voluntario de los proyectos activos en Cochabamba, Chocaya y la cordillera del Tunari.
             </p>
           </div>
         )}
@@ -110,24 +125,27 @@ export default function Blog({ hideHeader = false }: BlogProps) {
             {filteredPosts.length === 0 ? (
               <div className="text-center py-16 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#C5A059]/30 max-w-xl mx-auto space-y-3">
                 <AlertCircle className="h-8 w-8 text-[#C5A059] mx-auto" />
-                <h3 className="font-display text-lg font-bold text-[#1B3022]">No se encontraron publicaciones</h3>
-                <p className="text-xs text-[#2C2C2C]/80 font-sans">Intenta modificar tus términos de búsqueda o cambiar de categoría.</p>
+                <h3 className="font-display text-lg font-bold text-[#1B3022]">
+                  No se encontraron publicaciones
+                </h3>
+                <p className="text-xs text-[#2C2C2C]/80 font-sans">
+                  Intenta modificar tus términos de búsqueda o cambiar de categoría.
+                </p>
               </div>
             ) : (
               <div className="space-y-12">
-                
                 {/* 1. Featured Article Block */}
                 {featuredPost && selectedCategory === 'Todos' && searchTerm === '' && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
-                    className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] overflow-hidden shadow-none hover:border-[#1B3022]/40 transition-colors grid grid-cols-1 lg:grid-cols-12"
+                    className="glass border border-[#C5A059]/30 rounded-2xl overflow-hidden hover:border-[#1B3022]/40 hover:shadow-[0_20px_40px_-15px_rgba(27,48,34,0.15)] transition-all grid grid-cols-1 lg:grid-cols-12"
                   >
                     <div className="lg:col-span-7 h-64 sm:h-96 lg:h-full relative overflow-hidden bg-[#C5A059]/10">
                       <div className="absolute inset-0">
-                        <img 
-                          src={cleanGoogleDriveUrl(featuredPost.image)} 
+                        <img
+                          src={cleanGoogleDriveUrl(featuredPost.image)}
                           alt={featuredPost.title}
                           className="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02]"
                           referrerPolicy="no-referrer"
@@ -143,11 +161,11 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                         <span className="text-[10px] uppercase tracking-widest font-extrabold text-[#C5A059]">
                           {featuredPost.category}
                         </span>
-                        
+
                         <h2 className="font-display text-2xl font-black text-[#1B3022] leading-tight">
                           {featuredPost.title}
                         </h2>
-                        
+
                         <div className="text-xs text-[#2C2C2C] leading-relaxed font-sans space-y-3">
                           <p className="font-bold">{featuredPost.summary}</p>
                           <p className="line-clamp-[10] text-justify opacity-90">
@@ -162,7 +180,9 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                             <User className="h-4.5 w-4.5" />
                           </div>
                           <div>
-                            <span className="block text-xs font-bold text-[#1B3022]">{featuredPost.author}</span>
+                            <span className="block text-xs font-bold text-[#1B3022]">
+                              {featuredPost.author}
+                            </span>
                             <div className="flex items-center gap-2 text-[10px] text-[#2C2C2C]/70">
                               <span className="flex items-center gap-1 font-sans">
                                 <Calendar className="h-3 w-3 text-[#C5A059]" /> {featuredPost.date}
@@ -175,7 +195,7 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                           </div>
                         </div>
 
-                        <button 
+                        <button
                           onClick={() => setSelectedPost(featuredPost)}
                           className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-[#1B3022] hover:text-[#C5A059] transition-colors cursor-pointer"
                         >
@@ -189,21 +209,24 @@ export default function Blog({ hideHeader = false }: BlogProps) {
 
                 {/* 2. Grid of Articles */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {(selectedCategory !== 'Todos' || searchTerm !== '' ? filteredPosts : nonFeaturedPosts).map((post, idx) => (
+                  {(selectedCategory !== 'Todos' || searchTerm !== ''
+                    ? filteredPosts
+                    : nonFeaturedPosts
+                  ).map((post, idx) => (
                     <motion.article
                       key={post.id}
                       initial={{ opacity: 0, y: 15 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}
                       transition={{ duration: 0.5, delay: idx * 0.05 }}
-                      className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] overflow-hidden shadow-none hover:border-[#1B3022]/40 transition-colors flex flex-col justify-between group"
+                      className="glass border border-[#C5A059]/30 rounded-2xl overflow-hidden hover:border-[#1B3022]/40 hover:shadow-[0_20px_40px_-15px_rgba(27,48,34,0.15)] transition-all flex flex-col justify-between group"
                     >
                       <div>
                         {/* Article image */}
                         <div className="relative h-48 overflow-hidden bg-[#C5A059]/10">
-                          <img 
-                            src={cleanGoogleDriveUrl(post.image)} 
-                            alt={post.title} 
+                          <img
+                            src={cleanGoogleDriveUrl(post.image)}
+                            alt={post.title}
                             className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-555"
                             referrerPolicy="no-referrer"
                           />
@@ -215,15 +238,19 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                         {/* Article Body */}
                         <div className="p-6 space-y-3.5">
                           <div className="flex items-center gap-3 text-[10px] text-[#2C2C2C]/70">
-                            <span className="flex items-center gap-1 font-sans"><Calendar className="h-3 w-3 text-[#C5A059]" /> {post.date}</span>
+                            <span className="flex items-center gap-1 font-sans">
+                              <Calendar className="h-3 w-3 text-[#C5A059]" /> {post.date}
+                            </span>
                             <span>•</span>
-                            <span className="flex items-center gap-1 font-sans"><Clock className="h-3 w-3 text-[#C5A059]" /> {post.readTime}</span>
+                            <span className="flex items-center gap-1 font-sans">
+                              <Clock className="h-3 w-3 text-[#C5A059]" /> {post.readTime}
+                            </span>
                           </div>
-                          
+
                           <h3 className="font-display text-lg font-bold text-[#1B3022] leading-snug group-hover:text-[#C5A059] transition-colors line-clamp-2">
                             {post.title}
                           </h3>
-                          
+
                           <p className="text-xs text-[#2C2C2C] leading-relaxed line-clamp-3 font-sans">
                             {post.summary}
                           </p>
@@ -232,8 +259,10 @@ export default function Blog({ hideHeader = false }: BlogProps) {
 
                       {/* Footer Actions */}
                       <div className="p-6 pt-0 border-t border-[#C5A059]/15 flex items-center justify-between mt-auto">
-                        <span className="text-[10px] text-[#2C2C2C]/80 italic font-sans">Por: {post.author.split(',')[0]}</span>
-                        <button 
+                        <span className="text-[10px] text-[#2C2C2C]/80 italic font-sans">
+                          Por: {post.author.split(',')[0]}
+                        </span>
+                        <button
                           onClick={() => setSelectedPost(post)}
                           className="flex items-center gap-0.5 text-[10px] font-black uppercase tracking-widest text-[#1B3022] hover:text-[#C5A059] transition-colors cursor-pointer"
                         >
@@ -244,12 +273,10 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                     </motion.article>
                   ))}
                 </div>
-
               </div>
             )}
           </>
         )}
-
       </div>
 
       {/* Reader Dialog Overlay Modal */}
@@ -284,14 +311,14 @@ export default function Blog({ hideHeader = false }: BlogProps) {
               <div className="overflow-y-auto">
                 {/* Hero Image */}
                 <div className="h-64 sm:h-80 relative bg-[#C5A059]/10">
-                  <img 
-                    src={cleanGoogleDriveUrl(selectedPost.image)} 
-                    alt={selectedPost.title} 
+                  <img
+                    src={cleanGoogleDriveUrl(selectedPost.image)}
+                    alt={selectedPost.title}
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#2C2C2C]/90 via-black/25 to-transparent" />
-                  
+
                   {/* Overlay Title */}
                   <div className="absolute bottom-6 left-6 right-6 text-[#F5F2ED] space-y-2">
                     <span className="bg-[#1B3022] text-[#F5F2ED] text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-[2px] border border-[#C5A059]/30">
@@ -305,9 +332,18 @@ export default function Blog({ hideHeader = false }: BlogProps) {
 
                 {/* Meta details strip */}
                 <div className="bg-[#F5F2ED] px-6 sm:px-8 py-4 border-b border-[#C5A059]/25 flex flex-wrap items-center gap-6 text-xs text-[#2C2C2C]">
-                  <span className="flex items-center gap-1.5 font-sans"><Calendar className="h-4 w-4 text-[#C5A059]" /> <strong>Fecha:</strong> {selectedPost.date}</span>
-                  <span className="flex items-center gap-1.5 font-sans"><User className="h-4 w-4 text-[#C5A059]" /> <strong>Autor/a:</strong> {selectedPost.author}</span>
-                  <span className="flex items-center gap-1.5 font-sans"><Clock className="h-4 w-4 text-[#C5A059]" /> <strong>Lectura:</strong> {selectedPost.readTime}</span>
+                  <span className="flex items-center gap-1.5 font-sans">
+                    <Calendar className="h-4 w-4 text-[#C5A059]" /> <strong>Fecha:</strong>{' '}
+                    {selectedPost.date}
+                  </span>
+                  <span className="flex items-center gap-1.5 font-sans">
+                    <User className="h-4 w-4 text-[#C5A059]" /> <strong>Autor/a:</strong>{' '}
+                    {selectedPost.author}
+                  </span>
+                  <span className="flex items-center gap-1.5 font-sans">
+                    <Clock className="h-4 w-4 text-[#C5A059]" /> <strong>Lectura:</strong>{' '}
+                    {selectedPost.readTime}
+                  </span>
                 </div>
 
                 {/* Article Content */}
@@ -326,7 +362,9 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                   <div className="border-t border-[#C5A059]/20 pt-8 flex items-center justify-between gap-4 bg-[#FCF9F8]">
                     <div className="flex items-center gap-2">
                       <BookOpen className="h-5 w-5 text-[#C5A059]" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-[#1B3022]">VOSERDEM Bolivia • Sostenibilidad y Transparencia</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest text-[#1B3022]">
+                        VOSERDEM Bolivia • Sostenibilidad y Transparencia
+                      </span>
                     </div>
                     <button
                       onClick={() => setSelectedPost(null)}
@@ -337,7 +375,6 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                   </div>
                 </div>
               </div>
-
             </motion.div>
           </div>
         )}

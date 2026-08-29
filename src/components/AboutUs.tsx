@@ -1,10 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { 
-  Leaf, Heart, Users, Shield, GraduationCap, Compass, Landmark,
-  ArrowRight, BookOpen, FileText, Award, Calendar, ExternalLink, Activity
+import {
+  Leaf,
+  Heart,
+  Users,
+  Shield,
+  GraduationCap,
+  Compass,
+  Landmark,
+  ArrowRight,
+  BookOpen,
+  FileText,
+  Award,
+  Calendar,
+  ExternalLink,
+  Activity,
 } from 'lucide-react';
 import { Project, BlogPost, Bulletin } from '../types';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 
 interface AboutUsProps {
@@ -47,14 +60,14 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Shield,
   GraduationCap,
   Compass,
-  Landmark
+  Landmark,
 };
 
-export default function AboutUs({ 
-  onDonateClick, 
+export default function AboutUs({
+  onDonateClick,
   onProjectsClick,
   onBlogClick = () => {},
-  onBulletinsClick = () => {}
+  onBulletinsClick = () => {},
 }: AboutUsProps) {
   // Dynamic Content States
   const [aboutData, setAboutData] = useState<AboutUsData | null>(null);
@@ -66,59 +79,59 @@ export default function AboutUs({
 
   useEffect(() => {
     // Load Dynamic About Copy
-    fetch('/api/about')
-      .then(res => res.ok ? res.json() : null)
-      .then(data => {
-        if (data) setAboutData(data);
+    api
+      .get<AboutUsData>('/api/about')
+      .then((res) => {
+        if (res.success && res.data) setAboutData(res.data);
       })
-      .catch(err => console.error('Error fetching about dynamic content:', err));
+      .catch((err) => console.error('Error fetching about dynamic content:', err));
 
     // Load Preview Sources
-    fetch('/api/projects')
-      .then(res => res.ok ? res.json() : [])
-      .then((projs: Project[]) => {
-        if (projs && projs.length > 0) {
+    api
+      .get<Project[]>('/api/projects')
+      .then((res) => {
+        const projs = res.data;
+        if (res.success && projs && projs.length > 0) {
           // Sort or pick first/featured
           setLatestProject(projs[0]);
         }
       })
-      .catch(err => console.error('Error picking latest project preview:', err));
+      .catch((err) => console.error('Error picking latest project preview:', err));
 
-    fetch('/api/blog')
-      .then(res => res.ok ? res.json() : [])
-      .then((blogs: BlogPost[]) => {
-        if (blogs && blogs.length > 0) {
+    api
+      .get<BlogPost[]>('/api/blog')
+      .then((res) => {
+        const blogs = res.data;
+        if (res.success && blogs && blogs.length > 0) {
           // Find featured or first
-          const feat = blogs.find(b => b.featured) || blogs[0];
+          const feat = blogs.find((b) => b.featured) || blogs[0];
           setLatestBlog(feat);
         }
       })
-      .catch(err => console.error('Error picking latest blog preview:', err));
+      .catch((err) => console.error('Error picking latest blog preview:', err));
 
-    fetch('/api/bulletins')
-      .then(res => res.ok ? res.json() : [])
-      .then((bulls: Bulletin[]) => {
-        if (bulls && bulls.length > 0) {
+    api
+      .get<Bulletin[]>('/api/bulletins')
+      .then((res) => {
+        const bulls = res.data;
+        if (res.success && bulls && bulls.length > 0) {
           setLatestBulletin(bulls[0]);
         }
       })
-      .catch(err => console.error('Error picking latest bulletin preview:', err));
+      .catch((err) => console.error('Error picking latest bulletin preview:', err));
   }, []);
 
   if (aboutData === null) {
     return (
-      <div className="space-y-16 py-16 bg-[#F5F2ED] min-h-[600px] flex items-center justify-center animate-pulse">
-      </div>
+      <div className="space-y-16 py-16 bg-[#F5F2ED] min-h-[600px] flex items-center justify-center animate-pulse"></div>
     );
   }
 
   return (
     <div className="space-y-16 py-16 bg-[#F5F2ED]">
-      
       {/* Intro section: Mission/Vision (Split screen Column with Image) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
           {/* Left Column Text details */}
           <div className="lg:col-span-7 space-y-6">
             <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
@@ -129,9 +142,13 @@ export default function AboutUs({
             </h2>
             <div className="h-[1px] bg-[#C5A059]/30 w-32" />
             <p className="text-[#2C2C2C] text-sm leading-relaxed font-sans pre-wrap">
-              Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones migrantes. Hoy somos una obra sostenida por voluntarios, fundadores y aliados internacionales que responde a la extrema vulnerabilidad con acciones estructurales: unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que unen el desarrollo humano y la espiritualidad de servicio.
+              Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones
+              migrantes. Hoy somos una obra sostenida por voluntarios, fundadores y aliados
+              internacionales que responde a la extrema vulnerabilidad con acciones estructurales:
+              unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que
+              unen el desarrollo humano y la espiritualidad de servicio.
             </p>
-            
+
             <div className="flex flex-wrap gap-4 pt-2">
               <button
                 onClick={onDonateClick}
@@ -164,7 +181,6 @@ export default function AboutUs({
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Mission and Vision Grid cards */}
@@ -179,7 +195,9 @@ export default function AboutUs({
               <div className="w-12 h-12 bg-[#1B3022]/10 text-[#C5A059] flex items-center justify-center rounded-[4px] border border-[#C5A059]/20">
                 <Compass className="h-5 w-5" />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#1B3022]">{aboutData.missionTitle}</h3>
+              <h3 className="font-display text-xl font-bold text-[#1B3022]">
+                {aboutData.missionTitle}
+              </h3>
               <p className="text-[#2C2C2C] text-xs leading-relaxed font-sans pre-wrap">
                 {aboutData.missionText}
               </p>
@@ -196,7 +214,9 @@ export default function AboutUs({
               <div className="w-12 h-12 bg-[#1B3022]/10 text-[#C5A059] flex items-center justify-center rounded-[4px] border border-[#C5A059]/20">
                 <Shield className="h-5 w-5" />
               </div>
-              <h3 className="font-display text-xl font-bold text-[#1B3022]">{aboutData.visionTitle}</h3>
+              <h3 className="font-display text-xl font-bold text-[#1B3022]">
+                {aboutData.visionTitle}
+              </h3>
               <p className="text-[#2C2C2C] text-xs leading-relaxed font-sans pre-wrap">
                 {aboutData.visionText}
               </p>
@@ -213,8 +233,12 @@ export default function AboutUs({
       <section className="bg-[#FCF9F8]/65 py-16 border-y border-[#C5A059]/25">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
-            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">Presencia a Nivel Nacional</span>
-            <h2 className="font-display text-3xl font-bold text-[#1B3022]">Mapa de Impacto Territorial</h2>
+            <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
+              Presencia a Nivel Nacional
+            </span>
+            <h2 className="font-display text-3xl font-bold text-[#1B3022]">
+              Mapa de Impacto Territorial
+            </h2>
             <div className="h-[1px] bg-[#C5A059]/30 w-20 mx-auto" />
             <p className="text-xs text-[#2C2C2C]/80 font-sans">
               Nuestra acción capilar transforma vidas en cuatro grandes sitios piloto de Bolivia.
@@ -237,8 +261,12 @@ export default function AboutUs({
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="font-display text-md font-bold text-[#1B3022]">{pillar.title}</h4>
-                    <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">{pillar.description}</p>
+                    <h4 className="font-display text-md font-bold text-[#1B3022]">
+                      {pillar.title}
+                    </h4>
+                    <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
+                      {pillar.description}
+                    </p>
                   </div>
                 </motion.div>
               );
@@ -259,30 +287,34 @@ export default function AboutUs({
           </h2>
           <div className="h-[1px] bg-[#C5A059]/30 w-24 mx-auto" />
           <p className="text-xs text-[#2C2C2C] font-sans">
-            Conoce el estado de nuestros programas activos (Ecocampo, Comedores, Agua), rinde homenaje a quienes hicieron esto posible y revisa nuestra memoria institucional.
+            Conoce el estado de nuestros programas activos (Ecocampo, Comedores, Agua), rinde
+            homenaje a quienes hicieron esto posible y revisa nuestra memoria institucional.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
           {/* Preview Project */}
           <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-6 flex flex-col justify-between hover:border-[#1B3022]/35 transition-all">
             <div className="space-y-4">
               <span className="bg-[#1B3022]/10 border border-[#C5A059]/30 text-[#1B3022] text-[9px] uppercase font-bold tracking-widest px-2.5 py-1 rounded-[4px] inline-block">
                 Programa Emblemático
               </span>
-              
+
               {latestProject ? (
                 <div className="space-y-4">
-                  <img 
-                    src={cleanGoogleDriveUrl(latestProject.image)} 
+                  <img
+                    src={cleanGoogleDriveUrl(latestProject.image)}
                     alt={latestProject.title}
                     className="w-full h-40 object-cover rounded-[4px] border border-[#ebdccd]"
                     referrerPolicy="no-referrer"
                   />
-                  <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">{latestProject.title}</h3>
-                  <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">{latestProject.description}</p>
-                  
+                  <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">
+                    {latestProject.title}
+                  </h3>
+                  <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">
+                    {latestProject.description}
+                  </p>
+
                   {/* Progress Bar */}
                   <div className="space-y-2 text-[10px]">
                     <div className="flex justify-between font-mono font-bold text-[#2C2C2C]">
@@ -290,9 +322,11 @@ export default function AboutUs({
                       <span>META: ${latestProject.goal.toLocaleString()}</span>
                     </div>
                     <div className="w-full bg-[#1B3022]/10 h-1.5 rounded-full overflow-hidden">
-                      <div 
-                        className="bg-[#C5A059] h-full rounded-full" 
-                        style={{ width: `${Math.min(100, (latestProject.raised / latestProject.goal) * 100)}%` }}
+                      <div
+                        className="bg-[#C5A059] h-full rounded-full"
+                        style={{
+                          width: `${Math.min(100, (latestProject.raised / latestProject.goal) * 100)}%`,
+                        }}
                       />
                     </div>
                   </div>
@@ -324,8 +358,8 @@ export default function AboutUs({
 
               {latestBlog ? (
                 <div className="space-y-4">
-                  <img 
-                    src={cleanGoogleDriveUrl(latestBlog.image)} 
+                  <img
+                    src={cleanGoogleDriveUrl(latestBlog.image)}
                     alt={latestBlog.title}
                     className="w-full h-40 object-cover rounded-[4px] border border-[#ebdccd]"
                     referrerPolicy="no-referrer"
@@ -336,8 +370,12 @@ export default function AboutUs({
                     <span>·</span>
                     <span>{latestBlog.readTime}</span>
                   </div>
-                  <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">{latestBlog.title}</h3>
-                  <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">{latestBlog.summary}</p>
+                  <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">
+                    {latestBlog.title}
+                  </h3>
+                  <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">
+                    {latestBlog.summary}
+                  </p>
                 </div>
               ) : (
                 <div className="h-44 flex items-center justify-center text-xs text-neutral-400 font-sans border border-dashed rounded">
@@ -372,14 +410,16 @@ export default function AboutUs({
                       <h4 className="font-display font-black text-xs text-[#1B3022] uppercase tracking-wide">
                         {latestBulletin.issueNumber}
                       </h4>
-                      <p className="text-[9px] text-[#2C2C2C]/85 font-mono">Publicado: {latestBulletin.publishDate}</p>
+                      <p className="text-[9px] text-[#2C2C2C]/85 font-mono">
+                        Publicado: {latestBulletin.publishDate}
+                      </p>
                     </div>
                   </div>
 
                   <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-2 leading-tight">
                     {latestBulletin.title}
                   </h3>
-                  
+
                   <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-3 font-sans">
                     {latestBulletin.summary}
                   </p>
@@ -412,7 +452,6 @@ export default function AboutUs({
               </button>
             </div>
           </div>
-
         </div>
       </section>
 
@@ -421,13 +460,15 @@ export default function AboutUs({
         <div className="bg-[#1B3022] rounded-[8px] text-white p-8 md:p-12 lg:p-16 relative overflow-hidden shadow-none border border-[#C5A059]/40">
           {/* Back art details */}
           <div className="absolute right-0 bottom-0 w-80 h-80 rounded-full bg-[#C5A059]/5 blur-3xl -mr-20 -mb-20" />
-          
+
           <div className="max-w-3xl relative z-10 space-y-6">
             <h3 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[#F5F2ED]">
               ¿Quieres ser parte de la transformación en Bolivia?
             </h3>
             <p className="text-[#F5F2ED]/85 text-xs sm:text-sm leading-relaxed max-w-xl font-sans">
-              Apoya la formación de jóvenes en Sacaca, el sostenimiento de comedores comunitarios o el acompañamiento a los adultos mayores. Tu compromiso se traduce en resultados verificables y una Bolivia con más dignidad.
+              Apoya la formación de jóvenes en Sacaca, el sostenimiento de comedores comunitarios o
+              el acompañamiento a los adultos mayores. Tu compromiso se traduce en resultados
+              verificables y una Bolivia con más dignidad.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <button
@@ -446,7 +487,6 @@ export default function AboutUs({
           </div>
         </div>
       </section>
-
     </div>
   );
 }

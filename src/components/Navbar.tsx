@@ -1,75 +1,91 @@
 import React, { useState } from 'react';
-import { Heart, Menu, X, Landmark, Users, Trees, MessageSquare, ShieldCheck, HeartHandshake, BookOpen, FileText, Map } from 'lucide-react';
+import {
+  Heart,
+  Menu,
+  X,
+  Landmark,
+  Users,
+  Trees,
+  MessageSquare,
+  ShieldCheck,
+  HeartHandshake,
+  BookOpen,
+  FileText,
+  Map,
+} from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 import { VoserdemLogoColor } from './VoserdemLogo';
 import { LogoConfig } from '../types';
 
 interface NavbarProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
   logoConfig?: LogoConfig;
 }
 
-export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarProps) {
+export default function Navbar({ logoConfig }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const menuItems = [
-    { id: 'nuestra-obra', label: 'Nuestra Obra', icon: Users },
-    { id: 'impacto', label: 'Impacto Territorial', icon: Map },
-    { id: 'projects', label: 'Programas', icon: Trees },
-    { id: 'blog', label: 'Blog', icon: BookOpen },
-    { id: 'how-to-help', label: 'Cómo Ayudar', icon: HeartHandshake },
-    { id: 'contact', label: 'Contacto', icon: MessageSquare },
+    { path: '/nuestra-obra', label: 'Nuestra Obra', icon: Users },
+    { path: '/impacto', label: 'Impacto Territorial', icon: Map },
+    { path: '/programas', label: 'Programas', icon: Trees },
+    { path: '/blog', label: 'Blog', icon: BookOpen },
+    { path: '/como-ayudar', label: 'Cómo Ayudar', icon: HeartHandshake },
+    { path: '/contacto', label: 'Contacto', icon: MessageSquare },
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#1B3022] border-b border-[#C5A059]/30 shadow-md">
+    <nav className="sticky top-0 z-50 glass-dark border-b border-[#C5A059]/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             {/* Logo */}
-            <button
-              onClick={() => setActiveTab('home')}
-              className="flex items-center cursor-pointer group transition-transform duration-200"
+            <Link
+              to="/"
+              className="flex items-center cursor-pointer group transition-transform duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] rounded-sm"
+              aria-label="Ir a la página de inicio"
             >
               <VoserdemLogoColor size="md" className="group-hover:scale-102" config={logoConfig} />
-            </button>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = location.pathname.startsWith(item.path);
               return (
-                <button
-                  key={item.id}
-                  onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center space-x-1.5 px-3 py-2 rounded-[4px] text-xs font-semibold tracking-wider uppercase transition-all duration-200 cursor-pointer ${
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center space-x-1.5 px-3 py-2 rounded-[4px] text-xs font-semibold tracking-wider uppercase transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] ${
                     isActive
                       ? 'bg-[#C5A059]/20 text-[#C5A059] border-b border-[#C5A059]/60'
                       : 'text-[#F5F2ED]/85 hover:bg-[#C5A059]/10 hover:text-[#F5F2ED]'
                   }`}
                 >
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
             })}
-            <button
-              onClick={() => setActiveTab('donate')}
-              className="ml-4 flex items-center space-x-1.5 bg-[#C5A059] text-[#1B3022] px-4 py-2.5 rounded-[4px] text-xs font-bold uppercase tracking-wider hover:bg-[#C5A059]/90 transition-all duration-200 hover:-translate-y-[1px] active:scale-95 cursor-pointer border-b border-[#1B3022]"
+            <Link
+              to="/donar"
+              className="ml-4 flex items-center space-x-1.5 bg-[#C5A059] text-[#1B3022] px-4 py-2.5 rounded-[4px] text-xs font-bold uppercase tracking-wider hover:bg-[#C5A059]/90 transition-all duration-200 hover:-translate-y-[1px] active:scale-95 cursor-pointer border-b border-[#1B3022] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#1B3022]"
             >
               <Heart className="h-3.5 w-3.5 fill-current" />
               <span>Donar</span>
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-[4px] text-[#F5F2ED] hover:text-[#C5A059] hover:bg-[#C5A059]/10 focus:outline-none cursor-pointer"
+              aria-label={isOpen ? "Cerrar menú principal" : "Abrir menú principal"}
+              aria-expanded={isOpen}
+              className="inline-flex items-center justify-center p-2 rounded-[4px] text-[#F5F2ED] hover:text-[#C5A059] hover:bg-[#C5A059]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059] cursor-pointer"
             >
-              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
             </button>
           </div>
         </div>
@@ -77,18 +93,16 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-[#C5A059]/20 bg-[#1B3022] animate-fade-in">
+        <div className="md:hidden border-t border-[#C5A059]/20 glass-dark animate-fade-in">
           <div className="px-2 pt-2 pb-4 space-y-1 sm:px-3">
             {menuItems.map((item) => {
               const Icon = item.icon;
-              const isActive = activeTab === item.id;
+              const isActive = location.pathname.startsWith(item.path);
               return (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    setActiveTab(item.id);
-                    setIsOpen(false);
-                  }}
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setIsOpen(false)}
                   className={`flex items-center space-x-3 w-full px-4 py-3 rounded-[4px] text-sm font-semibold uppercase tracking-wider transition-colors ${
                     isActive
                       ? 'bg-[#C5A059]/20 text-[#C5A059]'
@@ -96,20 +110,18 @@ export default function Navbar({ activeTab, setActiveTab, logoConfig }: NavbarPr
                   }`}
                 >
                   <span>{item.label}</span>
-                </button>
+                </Link>
               );
             })}
             <div className="pt-2 px-4">
-              <button
-                onClick={() => {
-                  setActiveTab('donate');
-                  setIsOpen(false);
-                }}
+              <Link
+                to="/donar"
+                onClick={() => setIsOpen(false)}
                 className="flex items-center justify-center space-x-2 w-full bg-[#C5A059] text-[#1B3022] py-2.5 px-4 rounded-[4px] text-sm font-bold uppercase tracking-wider"
               >
                 <Heart className="h-4 w-4 fill-current" />
                 <span>Donar</span>
-              </button>
+              </Link>
             </div>
           </div>
         </div>

@@ -84,4 +84,3 @@ export interface LogoConfig {
   logoColor: LogoDetail;
   logoGold: LogoDetail;
 }
-

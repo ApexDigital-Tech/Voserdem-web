@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LogoConfig } from '../types';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 
 interface LogoProps {
@@ -8,17 +9,23 @@ interface LogoProps {
   config?: LogoConfig;
 }
 
-export function VoserdemLogoColor({ className = '', size = 'md', config: externalConfig }: LogoProps) {
+export function VoserdemLogoColor({
+  className = '',
+  size = 'md',
+  config: externalConfig,
+}: LogoProps) {
   const [internalConfig, setInternalConfig] = useState<LogoConfig | null>(null);
 
   useEffect(() => {
     if (externalConfig) return; // Use external config if provided
 
     const fetchLogos = () => {
-      fetch('/api/logos')
-        .then(res => res.json())
-        .then(data => setInternalConfig(data))
-        .catch(err => console.error('Error fetching logos color:', err));
+      api
+        .get<LogoConfig>('/api/logos')
+        .then((res) => {
+          if (res.success && res.data) setInternalConfig(res.data);
+        })
+        .catch((err) => console.error('Error fetching logos color:', err));
     };
 
     fetchLogos();
@@ -32,7 +39,7 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
     brandName: 'VOSERDEM',
     slogan: 'Voluntarios al Servicio de los Demás',
     useCustomImage: false,
-    imageUrl: ''
+    imageUrl: '',
   };
 
   const dimensions = {
@@ -73,7 +80,7 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
               <stop offset="70%" stopColor="#B38B24" />
               <stop offset="100%" stopColor="#F5D77F" />
             </linearGradient>
-            
+
             <linearGradient id="gold-ring-grad" x1="100%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#AA7C11" />
               <stop offset="50%" stopColor="#F3E5AB" />
@@ -82,21 +89,34 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
 
             {/* Bolivia Flag Gradient (gradient map) */}
             <linearGradient id="bolivia-grad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#D22630" />      {/* Red */}
-              <stop offset="45%" stopColor="#F9A825" />     {/* Yellow */}
-              <stop offset="55%" stopColor="#F9A825" />     {/* Yellow */}
-              <stop offset="100%" stopColor="#1B5E20" />    {/* Green */}
+              <stop offset="0%" stopColor="#D22630" /> {/* Red */}
+              <stop offset="45%" stopColor="#F9A825" /> {/* Yellow */}
+              <stop offset="55%" stopColor="#F9A825" /> {/* Yellow */}
+              <stop offset="100%" stopColor="#1B5E20" /> {/* Green */}
             </linearGradient>
 
             {/* Subtle Outer Drop Shadow */}
             <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="8" stdDeviation="6" floodColor="#1B3022" floodOpacity="0.18" />
+              <feDropShadow
+                dx="0"
+                dy="8"
+                stdDeviation="6"
+                floodColor="#1B3022"
+                floodOpacity="0.18"
+              />
             </filter>
           </defs>
 
           <g filter="url(#shadow)">
             {/* 1. Golden Outer Ring */}
-            <circle cx="250" cy="270" r="160" stroke="url(#gold-ring-grad)" strokeWidth="18" fill="#FFFFFF" />
+            <circle
+              cx="250"
+              cy="270"
+              r="160"
+              stroke="url(#gold-ring-grad)"
+              strokeWidth="18"
+              fill="#FFFFFF"
+            />
 
             {/* 2. Map of Bolivia Silhouette nested inside */}
             <path
@@ -115,19 +135,44 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
 
             {/* 3. Illustrated Stylized Figures holding hands in a circle */}
             <circle cx="160" cy="210" r="12" fill="#D22630" />
-            <path d="M 160 222 C 145 225, 140 245, 142 270" stroke="#D22630" strokeWidth="8" strokeLinecap="round" />
-            
+            <path
+              d="M 160 222 C 145 225, 140 245, 142 270"
+              stroke="#D22630"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
+
             <circle cx="190" cy="330" r="13" fill="#D95C2B" />
-            <path d="M 190 343 C 180 350, 190 380, 210 390" stroke="#D95C2B" strokeWidth="9" strokeLinecap="round" />
+            <path
+              d="M 190 343 C 180 350, 190 380, 210 390"
+              stroke="#D95C2B"
+              strokeWidth="9"
+              strokeLinecap="round"
+            />
 
             <circle cx="270" cy="350" r="13" fill="#1565C0" />
-            <path d="M 270 363 C 255 375, 290 395, 305 385" stroke="#1565C0" strokeWidth="9" strokeLinecap="round" />
+            <path
+              d="M 270 363 C 255 375, 290 395, 305 385"
+              stroke="#1565C0"
+              strokeWidth="9"
+              strokeLinecap="round"
+            />
 
             <circle cx="340" cy="290" r="12" fill="#00838F" />
-            <path d="M 340 302 C 345 315, 350 345, 335 360" stroke="#00838F" strokeWidth="8" strokeLinecap="round" />
+            <path
+              d="M 340 302 C 345 315, 350 345, 335 360"
+              stroke="#00838F"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
 
             <circle cx="350" cy="210" r="12" fill="#455A64" />
-            <path d="M 350 222 C 362 230, 365 255, 360 280" stroke="#455A64" strokeWidth="8" strokeLinecap="round" />
+            <path
+              d="M 350 222 C 362 230, 365 255, 360 280"
+              stroke="#455A64"
+              strokeWidth="8"
+              strokeLinecap="round"
+            />
 
             {/* Connecting hands overlaying (organic union) */}
             <path
@@ -142,7 +187,7 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
 
             {/* 4. Golden V and Sphere Symbol at the top (Fusing with the ring) */}
             <circle cx="250" cy="90" r="24" fill="url(#gold-grad)" />
-            
+
             {/* Main Gold "V" Arms swoop */}
             <path
               d="M 175 105
@@ -178,17 +223,23 @@ export function VoserdemLogoColor({ className = '', size = 'md', config: externa
   );
 }
 
-export function VoserdemLogoGold({ className = '', size = 'md', config: externalConfig }: LogoProps) {
+export function VoserdemLogoGold({
+  className = '',
+  size = 'md',
+  config: externalConfig,
+}: LogoProps) {
   const [internalConfig, setInternalConfig] = useState<LogoConfig | null>(null);
 
   useEffect(() => {
     if (externalConfig) return; // Use external config if provided
 
     const fetchLogos = () => {
-      fetch('/api/logos')
-        .then(res => res.json())
-        .then(data => setInternalConfig(data))
-        .catch(err => console.error('Error fetching logos gold:', err));
+      api
+        .get<LogoConfig>('/api/logos')
+        .then((res) => {
+          if (res.success && res.data) setInternalConfig(res.data);
+        })
+        .catch((err) => console.error('Error fetching logos gold:', err));
     };
 
     fetchLogos();
@@ -202,7 +253,7 @@ export function VoserdemLogoGold({ className = '', size = 'md', config: external
     brandName: 'VOSERDEM',
     slogan: 'Una Bolivia mejor es posible',
     useCustomImage: false,
-    imageUrl: ''
+    imageUrl: '',
   };
 
   const dimensions = {
@@ -245,7 +296,13 @@ export function VoserdemLogoGold({ className = '', size = 'md', config: external
               <stop offset="100%" stopColor="#FBE9B6" />
             </linearGradient>
             <filter id="gold-shadow" x="-10%" y="-10%" width="120%" height="120%">
-              <feDropShadow dx="0" dy="4" stdDeviation="4" floodColor="#000000" floodOpacity="0.3" />
+              <feDropShadow
+                dx="0"
+                dy="4"
+                stdDeviation="4"
+                floodColor="#000000"
+                floodOpacity="0.3"
+              />
             </filter>
           </defs>
           <g filter="url(#gold-shadow)">

@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
-import { Trees, Users, Award, Landmark, Heart, Activity, ArrowRight, Play, ChevronRight } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Trees,
+  Users,
+  Award,
+  Landmark,
+  Heart,
+  Activity,
+  ArrowRight,
+  Play,
+  ChevronRight,
+} from 'lucide-react';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 import { CarouselSlide } from '../types';
 
@@ -15,59 +27,61 @@ const iconMap: Record<string, any> = {
   Landmark,
   Award,
   Heart,
-  Activity
+  Activity,
 };
 
 const defaultSlides: CarouselSlide[] = [
   {
     id: 'slide-1',
-    image: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=1600',
+    image:
+      'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&q=80&w=1600',
     badge: '34 Años de Servicio',
     badgeIconName: 'Award',
     title: 'Una *Bolivia mejor* es posible',
-    description: 'Con la voluntad de hacer bien el bien y siguiendo las huellas de Jesús. 34 años de trayectoria en Cochabamba, Potosí y Santa Cruz.'
+    description:
+      'Con la voluntad de hacer bien el bien y siguiendo las huellas de Jesús. 34 años de trayectoria en Cochabamba, Potosí y Santa Cruz.',
   },
   {
     id: 'slide-2',
-    image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=1600',
+    image:
+      'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&q=80&w=1600',
     badge: 'Desarrollo Humano',
     badgeIconName: 'Heart',
     title: 'Educación, Salud y *Dignidad*',
-    description: 'Impactando a más de 1200 estudiantes en comedores escolares y brindando atención cálida a las abuelitas de Cochabamba.'
+    description:
+      'Impactando a más de 1200 estudiantes en comedores escolares y brindando atención cálida a las abuelitas de Cochabamba.',
   },
   {
     id: 'slide-3',
-    image: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=1600',
+    image:
+      'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&q=80&w=1600',
     badge: 'Impacto Territorial',
     badgeIconName: 'Landmark',
     title: 'De los *Andes* al *Oriente*',
-    description: 'Transformando comunidades en Sacaca, Quillacollo, Villa Tunari y el Norte Integrado Cruceño mediante desarrollo sostenible.'
-  }
+    description:
+      'Transformando comunidades en Sacaca, Quillacollo, Villa Tunari y el Norte Integrado Cruceño mediante desarrollo sostenible.',
+  },
 ];
 
 export default function Hero({ onLearnMore, onDonate }: HeroProps) {
-  const [slides, setSlides] = useState<CarouselSlide[] | null>(null);
   const [currentSlide, setCurrentSlide] = useState<number>(0);
 
   const { scrollY } = useScroll();
   // Translate the background background relative to viewport scrolling
   const yBg = useTransform(scrollY, [0, 1000], [0, 320]);
 
-  useEffect(() => {
-    fetch('/api/carousel')
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        if (data && data.length > 0) {
-          setSlides(data);
-        } else {
-          setSlides(defaultSlides);
-        }
-      })
-      .catch((err) => {
-        console.error('Error loading dynamic carousel slides:', err);
-        setSlides(defaultSlides);
-      });
-  }, []);
+  const fetchCarouselQuery = async () => {
+    const response = await api.get<CarouselSlide[]>('/api/carousel');
+    if (response.success && response.data && response.data.length > 0) {
+      return response.data;
+    }
+    return defaultSlides;
+  };
+
+  const { data: slides = null, isLoading } = useQuery({
+    queryKey: ['carousel'],
+    queryFn: fetchCarouselQuery,
+  });
 
   const slidesToRender = slides && slides.length > 0 ? slides : defaultSlides;
 
@@ -80,11 +94,11 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
     return () => clearInterval(timer);
   }, [slidesToRender.length]);
 
-  if (slides === null) {
-    return <div className="min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] bg-[#1B3022] flex items-center justify-center animate-pulse" />;
+  if (isLoading) {
+    return (
+      <div className="min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] bg-[#1B3022] flex items-center justify-center animate-pulse" />
+    );
   }
-
-
 
   // Helper to format titles with md-like *asterisks* into gorgeous highlighted spans
   const formatTitle = (titleText: string) => {
@@ -107,26 +121,28 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
 
   return (
     <div className="relative bg-[#1B3022] min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] overflow-hidden flex flex-col justify-between border-b border-[#C5A059]/30">
-      
       {/* 1. LAYER: Background Slides with delicate Cross-fade & high-performance scroll interpolation */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {slidesToRender.map((slide, index) => (
           <motion.div
             key={slide.id || index}
             initial={{ opacity: 0, scale: 1.03 }}
-            animate={{ 
+            animate={{
               opacity: currentSlide === index ? 1 : 0,
-              scale: currentSlide === index ? 1.0 : 1.05
+              scale: currentSlide === index ? 1.0 : 1.05,
             }}
-            transition={{ 
+            transition={{
               opacity: { duration: 1.8, ease: 'easeInOut' },
-              scale: { duration: 6.5, ease: 'easeOut' }
+              scale: { duration: 6.5, ease: 'easeOut' },
             }}
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ 
+            style={{
               backgroundImage: `url(${cleanGoogleDriveUrl(slide.image)})`,
               y: yBg,
-              visibility: currentSlide === index || (Math.abs(currentSlide - index) <= 1) ? 'visible' : 'hidden'
+              visibility:
+                currentSlide === index || Math.abs(currentSlide - index) <= 1
+                  ? 'visible'
+                  : 'hidden',
             }}
           />
         ))}
@@ -143,7 +159,6 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
       {/* 3. LAYER: Foreground Interactive Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 sm:pt-20 lg:pt-28 relative z-20 flex-grow flex flex-col justify-center w-full animate-fade-in">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
           {/* Left Text Column: Fully animated with staggering transitions relative to active slide */}
           <div className="lg:col-span-8 space-y-6 md:space-y-8 text-center lg:text-left">
             <AnimatePresence mode="wait">
@@ -157,7 +172,9 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
               >
                 {/* Active category badge with dynamic Lucide mapping */}
                 <span className="inline-flex items-center space-x-2 bg-[#C5A059]/20 text-[#FFE5A3] border border-[#C5A059]/40 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider">
-                  {React.createElement(iconMap[activeSlide?.badgeIconName] || Trees, { className: "h-3.5 w-3.5 text-[#C5A059]" })}
+                  {React.createElement(iconMap[activeSlide?.badgeIconName] || Trees, {
+                    className: 'h-3.5 w-3.5 text-[#C5A059]',
+                  })}
                   <span>{activeSlide?.badge}</span>
                 </span>
 
@@ -182,7 +199,7 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                 <Heart className="h-4 w-4 fill-current text-[#1B3022]" />
                 <span>Apoyar un Proyecto</span>
               </button>
-              
+
               <button
                 onClick={onLearnMore}
                 className="w-full sm:w-auto flex items-center justify-center space-x-1.5 bg-transparent text-[#F5F2ED] border border-[#F5F2ED]/40 hover:bg-[#F5F2ED]/10 px-8 py-3.5 rounded-[4px] text-xs font-bold uppercase tracking-wider transition-all duration-200 cursor-pointer"
@@ -191,7 +208,7 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                 <ChevronRight className="h-4 w-4 text-[#C5A059]" />
               </button>
             </div>
-            
+
             {/* Slide Navigation Indicators */}
             <div className="flex justify-center lg:justify-start items-center gap-2 pt-4">
               {slidesToRender.map((_, idx) => (
@@ -199,7 +216,9 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    currentSlide === idx ? 'w-8 bg-[#C5A059]' : 'w-2.5 bg-[#F5F2ED]/30 hover:bg-[#F5F2ED]/50'
+                    currentSlide === idx
+                      ? 'w-8 bg-[#C5A059]'
+                      : 'w-2.5 bg-[#F5F2ED]/30 hover:bg-[#F5F2ED]/50'
                   }`}
                   title={`Ir a diapositiva ${idx + 1}`}
                 />
@@ -221,9 +240,12 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                   <Award className="h-6 w-6" />
                 </div>
                 <div className="space-y-1.5">
-                  <span className="text-[9px] font-bold text-[#C5A059] uppercase tracking-widest block">Institución con historia</span>
+                  <span className="text-[9px] font-bold text-[#C5A059] uppercase tracking-widest block">
+                    Institución con historia
+                  </span>
                   <p className="text-xs text-[#F5F2ED]/85 leading-relaxed font-sans">
-                    Más de tres décadas construyendo una Bolivia mejor mediante el Modelo de Desarrollo Sostenible Integral, guiados por el espíritu de servicio.
+                    Más de tres décadas construyendo una Bolivia mejor mediante el Modelo de
+                    Desarrollo Sostenible Integral, guiados por el espíritu de servicio.
                   </p>
                   <p className="text-[10px] italic text-[#C5A059] font-medium pt-1">
                     ✓ Transparencia civil auditada
@@ -232,7 +254,6 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
               </div>
             </motion.div>
           </div>
-
         </div>
       </div>
 
@@ -258,14 +279,17 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
                 <div className="p-1.5 bg-[#1B3022]/60 text-[#C5A059] rounded-lg mb-2 border border-[#C5A059]/10">
                   <Icon className="h-4 w-4" style={{ color: stat.color }} />
                 </div>
-                <span className="font-display text-2xl sm:text-3xl font-black text-[#F5F2ED] tracking-tight">{stat.count}</span>
-                <span className="text-[9px] text-[#F5F2ED]/75 font-semibold tracking-wider mt-0.5 uppercase block">{stat.text}</span>
+                <span className="font-display text-2xl sm:text-3xl font-black text-[#F5F2ED] tracking-tight">
+                  {stat.count}
+                </span>
+                <span className="text-[9px] text-[#F5F2ED]/75 font-semibold tracking-wider mt-0.5 uppercase block">
+                  {stat.text}
+                </span>
               </motion.div>
             );
           })}
         </div>
       </div>
-
     </div>
   );
 }

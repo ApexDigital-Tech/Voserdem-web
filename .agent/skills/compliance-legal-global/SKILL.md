@@ -11,12 +11,12 @@ priority: HIGH
 
 ## Core Rules
 
-| Framework | Region | Key Requirements |
-|-----------|--------|------------------|
-| **GDPR** | Europe | Consent management, Right to be forgotten, Data portability |
-| **LGPD** | Brazil | Explicit consent, Data protection officer, Impact reports |
-| **CCPA** | USA (CA) | "Do Not Sell My Info", Transparency, Opt-out rights |
-| **HIPAA** | USA | (If Health) PHI protection, Audit logs, Encryption at rest |
+| Framework | Region   | Key Requirements                                            |
+| --------- | -------- | ----------------------------------------------------------- |
+| **GDPR**  | Europe   | Consent management, Right to be forgotten, Data portability |
+| **LGPD**  | Brazil   | Explicit consent, Data protection officer, Impact reports   |
+| **CCPA**  | USA (CA) | "Do Not Sell My Info", Transparency, Opt-out rights         |
+| **HIPAA** | USA      | (If Health) PHI protection, Audit logs, Encryption at rest  |
 
 ## Best Practices
 

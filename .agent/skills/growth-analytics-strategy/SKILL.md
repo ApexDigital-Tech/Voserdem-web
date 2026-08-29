@@ -11,11 +11,11 @@ priority: MEDIUM
 
 ## Core Rules
 
-| Metric | Focus | Implementation |
-|--------|-------|----------------|
-| **Retention** | User return rate | Push notifications, Email drip, Personalization |
-| **Conversion** | Goal completion | A/B testing, Funnel analysis, CTA optimization |
-| **Visibility** | SEO & GEO | Semantic HTML, Schema.org, AI-friendly content |
+| Metric         | Focus            | Implementation                                  |
+| -------------- | ---------------- | ----------------------------------------------- |
+| **Retention**  | User return rate | Push notifications, Email drip, Personalization |
+| **Conversion** | Goal completion  | A/B testing, Funnel analysis, CTA optimization  |
+| **Visibility** | SEO & GEO        | Semantic HTML, Schema.org, AI-friendly content  |
 
 ## Best Practices
 

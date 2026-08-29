@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { FileText, Mail, Calendar, Download, Bookmark, Sparkles, Check, AlertCircle } from 'lucide-react';
+import {
+  FileText,
+  Mail,
+  Calendar,
+  Download,
+  Bookmark,
+  Sparkles,
+  Check,
+  AlertCircle,
+} from 'lucide-react';
 import { Bulletin } from '../types';
+import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 
 const SignatureDivider = () => (
@@ -19,7 +29,7 @@ interface BulletinsProps {
 export default function Bulletins({ hideHeader = false }: BulletinsProps) {
   const [bulletins, setBulletins] = useState<Bulletin[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  
+
   // Subscriber form state
   const [emailInput, setEmailInput] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
@@ -27,12 +37,15 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/bulletins')
+    api
+      .get<Bulletin[]>('/api/bulletins')
       .then((res) => {
-        if (res.ok) return res.json();
-        throw new Error('Fallo al obtener boletines');
+        if (res.success && res.data) {
+          setBulletins(res.data);
+        } else {
+          throw new Error('Fallo al obtener boletines');
+        }
       })
-      .then((data) => setBulletins(data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   }, []);
@@ -50,21 +63,16 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
     setSuccessMessage(null);
 
     try {
-      const res = await fetch('/api/subscribers', {
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify({ email: emailInput })
-      });
+      const res = await api.post('/api/subscribers', { email: emailInput });
 
-      const data = await res.json();
-      if (res.ok) {
-        setSuccessMessage('¡Suscripción exitosa! Ahora estás registrado en nuestro boletín oficial.');
+      if (res.success) {
+        setSuccessMessage('¡Suscripción exitosa!');
         setEmailInput('');
       } else {
-        setErrorMessage(data.error || 'Error al completar la suscripción.');
+        setErrorMessage(res.error || 'Error al procesar la suscripción.');
       }
-    } catch (err) {
-      setErrorMessage('Error de red. Por favor, reintente más tarde.');
+    } catch {
+      setErrorMessage('Error de red. Intenta más tarde.');
     } finally {
       setSubmitting(false);
     }
@@ -73,7 +81,6 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
   return (
     <div className="py-16 bg-[#F5F2ED] min-h-screen space-y-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
-        
         {/* Title Header */}
         {!hideHeader && (
           <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">
@@ -85,14 +92,14 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
             </h1>
             <div className="h-[1px] bg-[#C5A059]/30 w-32 mx-auto" />
             <p className="text-xs text-[#2C2C2C] leading-relaxed font-sans">
-              Accede a nuestra colección histórica de revistas y boletines, un registro detallado de más de 34 años de trabajo voluntario y solidaridad institucional en Bolivia.
+              Accede a nuestra colección histórica de revistas y boletines, un registro detallado de
+              más de 34 años de trabajo voluntario y solidaridad institucional en Bolivia.
             </p>
           </div>
         )}
 
         {/* Dynamic Split Grid (Newsletter Form + Bulletins stream) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          
           {/* LEFT: Subscription Module Widget */}
           <div className="lg:col-span-4 bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-6 sm:p-8 space-y-6 lg:sticky lg:top-24 shadow-none">
             <div className="space-y-3">
@@ -101,7 +108,9 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
               </div>
               <h3 className="font-display text-xl font-bold text-[#1B3022]">Mantente Informado</h3>
               <p className="text-xs text-[#2C2C2C]/95 leading-relaxed font-sans">
-                Recibe mensualmente en tu correo nuestro resumen ejecutivo de voluntariado, estados financieros, hitos forestales en Chocaya, e historias inspiradoras de nuestras abuelas beneficiarias.
+                Recibe mensualmente en tu correo nuestro resumen ejecutivo de voluntariado, estados
+                financieros, hitos forestales en Chocaya, e historias inspiradoras de nuestras
+                abuelas beneficiarias.
               </p>
             </div>
 
@@ -134,9 +143,9 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
 
             {/* Error notifications */}
             {errorMessage && (
-              <motion.div 
-                initial={{ opacity: 0, y: 5 }} 
-                animate={{ opacity: 1, y: 0 }} 
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="p-3 bg-red-50 border border-red-200/45 text-red-700 text-xs rounded-[4px] flex items-start gap-2"
               >
                 <AlertCircle className="h-4.5 w-4.5 shrink-0 mt-0.5 text-red-600" />
@@ -146,9 +155,9 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
 
             {/* Success notifications */}
             {successMessage && (
-              <motion.div 
-                initial={{ opacity: 0, y: 5 }} 
-                animate={{ opacity: 1, y: 0 }} 
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
                 className="p-3 bg-green-50 border border-green-200/40 text-[#1B3022] text-xs rounded-[4px] flex items-start gap-2"
               >
                 <Check className="h-4.5 w-4.5 shrink-0 mt-0.5 text-[#1B3022]" />
@@ -158,7 +167,9 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
 
             <div className="border-t border-[#C5A059]/20 pt-4 text-[10px] text-[#2C2C2C]/70 leading-relaxed flex items-center gap-2">
               <Sparkles className="h-3.5 w-3.5 text-[#C5A059] shrink-0" />
-              <span className="font-sans">Privacidad garantizada. Puedes desuscribirte de la lista en cualquier momento.</span>
+              <span className="font-sans">
+                Privacidad garantizada. Puedes desuscribirte de la lista en cualquier momento.
+              </span>
             </div>
           </div>
 
@@ -175,7 +186,9 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
             ) : bulletins.length === 0 ? (
               <div className="text-center py-12 bg-[#FCF9F8] border border-dashed border-[#C5A059]/30 rounded-[8px]">
                 <FileText className="h-8 w-8 text-[#C5A059] mx-auto mb-3" />
-                <p className="text-xs text-[#2C2C2C]/80 font-sans">Aún no hay boletines publicados disponibles en línea.</p>
+                <p className="text-xs text-[#2C2C2C]/80 font-sans">
+                  Aún no hay boletines publicados disponibles en línea.
+                </p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -191,7 +204,10 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
                     {/* Bulletin Cover Photo */}
                     <div className="w-full md:w-36 h-28 shrink-0 overflow-hidden rounded-[4px] border border-[#ebdccd]/80 bg-neutral-100">
                       <img
-                        src={cleanGoogleDriveUrl(bull.image) || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=400'}
+                        src={
+                          cleanGoogleDriveUrl(bull.image) ||
+                          'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=400'
+                        }
                         alt={bull.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         referrerPolicy="no-referrer"
@@ -209,11 +225,11 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
                             <Calendar className="h-3 w-3 text-[#C5A059]" /> {bull.publishDate}
                           </span>
                         </div>
-                        
+
                         <h4 className="font-display text-lg font-bold text-[#1B3022] group-hover:text-[#C5A059] transition-colors leading-snug">
                           {bull.title}
                         </h4>
-                        
+
                         <p className="text-xs text-[#2C2C2C]/90 leading-relaxed font-sans">
                           {bull.summary}
                         </p>
@@ -221,7 +237,10 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
 
                       <div className="pt-2 flex justify-start md:justify-end">
                         <a
-                          href={bull.downloadUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'}
+                          href={
+                            bull.downloadUrl ||
+                            'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                          }
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 bg-[#FCF9F8] hover:bg-[#1B3022]/5 text-[#1B3022] px-4 py-2.5 rounded-[4px] text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer border border-[#1B3022] w-full sm:w-auto justify-center"
@@ -236,9 +255,7 @@ export default function Bulletins({ hideHeader = false }: BulletinsProps) {
               </div>
             )}
           </div>
-
         </div>
-
       </div>
     </div>
   );
