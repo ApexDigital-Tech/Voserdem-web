@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Bulletin } from '../types';
-import { Plus, Edit2, Trash2, FileText } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';

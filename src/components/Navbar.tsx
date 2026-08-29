@@ -3,14 +3,11 @@ import {
   Heart,
   Menu,
   X,
-  Landmark,
   Users,
   Trees,
   MessageSquare,
-  ShieldCheck,
   HeartHandshake,
   BookOpen,
-  FileText,
   Map,
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';

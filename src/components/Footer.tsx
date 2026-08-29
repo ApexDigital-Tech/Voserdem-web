@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trees, Mail, Phone, Heart, Globe, Award } from 'lucide-react';
+import { Mail, Phone, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { VoserdemLogoGold } from './VoserdemLogo';
 import { LogoConfig } from '../types';

@@ -10,7 +10,6 @@ import {
   HelpCircle,
   Check,
   AlertCircle,
-  CheckCircle,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { motion, AnimatePresence } from 'motion/react';

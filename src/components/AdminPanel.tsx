@@ -8,7 +8,6 @@ import {
   Bulletin,
   Subscriber,
   CarouselSlide,
-  LogoConfig,
 } from '../types';
 import {
   ShieldAlert,
@@ -23,17 +22,13 @@ import {
   RefreshCw,
   Layers,
   DollarSign,
-  Send,
   ArrowRight,
-  X,
-  AlertOctagon,
   CheckSquare,
   Sparkles,
   MapPin,
   FileText,
   Users,
   Compass,
-  Activity,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';

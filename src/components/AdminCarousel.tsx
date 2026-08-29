@@ -1,6 +1,6 @@
 import React from 'react';
 import { CarouselSlide } from '../types';
-import { Sparkles, CheckCircle, Trash2, Camera, MapPin, Trees, Navigation, Leaf, Mountain, Droplets, Sun, Wind } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';
 

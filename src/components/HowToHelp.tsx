@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { Calendar, Users, Heart, Sprout, ShieldAlert, Award, FileText } from 'lucide-react';
+import { Users, Heart, Sprout, FileText } from 'lucide-react';
 
 interface HowToHelpProps {
   onDonateClick: () => void;

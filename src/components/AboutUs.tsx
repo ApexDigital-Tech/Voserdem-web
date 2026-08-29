@@ -11,7 +11,6 @@ import {
   ArrowRight,
   BookOpen,
   FileText,
-  Award,
   Calendar,
   ExternalLink,
   Activity,

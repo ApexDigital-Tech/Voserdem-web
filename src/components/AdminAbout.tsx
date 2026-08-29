@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Compass, Save, Eye, Plus, Trash2, Leaf, Heart, Users, MapPin, Search, Calendar, Target, Flag, Info, GraduationCap, Building, Activity, BookOpen, Layers, Sparkles, FileText } from 'lucide-react';
+import { Compass, Activity, BookOpen, Layers, Sparkles, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { api } from '../services/api';
 import { cleanGoogleDriveUrl } from '../utils/imageUtils';

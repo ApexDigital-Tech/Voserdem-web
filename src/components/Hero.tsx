@@ -8,8 +8,6 @@ import {
   Landmark,
   Heart,
   Activity,
-  ArrowRight,
-  Play,
   ChevronRight,
 } from 'lucide-react';
 import { api } from '../services/api';

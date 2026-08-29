@@ -106,7 +106,7 @@ export default function AdminPagesManager() {
 
   const saveEditingBlock = () => {
     if (!editingBlock) return;
-    let newBlocks = [...blocks];
+    const newBlocks = [...blocks];
     const idx = newBlocks.findIndex((b) => b.id === editingBlock.id);
     if (idx >= 0) {
       newBlocks[idx] = editingBlock;
