@@ -1,0 +1,231 @@
+{
+  "projects": [
+    {
+      "id": "proj-1",
+      "title": "Ecocamp Chocaya",
+      "description": "Centro de restauración ecológica y educación ambiental en Bolivia. Aprendizaje activo sobre permacultura, reforestación y tecnologías ecológicas para jóvenes comunitarios.",
+      "category": "Medio Ambiente",
+      "region": "Valles",
+      "area": "Medio Ambiente",
+      "image": "data:image/jpeg;base64,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",
+      "goal": 15000,
+      "raised": 9449,
+      "location": "Chocaya, Cochabamba, Bolivia",
+      "impact": "Más de 500 árboles nativos plantados y 250 jóvenes capacitados anualmente.",
+      "details": "El Ecocamp de Chocaya es una de nuestras joyas de restauración de ecosistemas. Enclavado en las faldas de la cordillera del Tunari, reforestamos tierras erosionadas y enseñamos a los escolares locales los secretos de la permacultura. Los fondos se utilizarán para ampliar el vivero de árboles autóctonos y mejorar los sistemas de riego por goteo."
+    },
+    {
+      "id": "proj-2",
+      "title": "Las Abuelitas de VOSERDEM",
+      "description": "Programa de asistencia social y de nutrición integral para abuelas vulnerables. Un refugio de acogida, talleres manuales y alimentación digna en Cochabamba.",
+      "category": "Adulto Mayor",
+      "region": "Valles",
+      "area": "Intergeneracional",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUAyAq-XGdrQWIw9T6mmzlllYHut3VuPT2Jg&s",
+      "goal": 10000,
+      "raised": 6200,
+      "location": "Cochabamba Centro, Bolivia",
+      "impact": "Alimentación diaria de alta calidad y talleres de salud mental para 60 adultas mayores en peligro de exclusión social.",
+      "details": "Muchas adultas mayores en Cochabamba carecen de cobertura social o familiar. En VOSERDEM, las recibimos con los brazos abiertos. Este proyecto cubre almuerzos nutritivos calientes de lunes a viernes, chequeos médicos básicos, medicamentos esenciales y un taller de costura y artesanía que les devuelve el propósito y la autonomía."
+    },
+    {
+      "id": "proj-3",
+      "title": "Micro-Huertos y Soberanía Alimentaria",
+      "description": "Capacitación familiar en agricultura ecológica urbana. Construcción de camas de cultivo y manejo orgánico de plagas en zonas periurbanas de Cochabamba.",
+      "category": "Desarrollo",
+      "region": "Valles",
+      "area": "Productivo",
+      "image": "https://images.unsplash.com/photo-1530595467537-0b5996c41f2d?auto=format&fit=crop&q=80&w=800",
+      "goal": 8000,
+      "raised": 3500,
+      "location": "Distrito 9, Cochabamba, Bolivia",
+      "impact": "45 familias con sus propios huertos productivos activos, mejorando su alimentación y economía doméstica.",
+      "details": "Buscamos empoderar a los barrios más desfavorecidos con herramientas prácticas para cultivar verduras frescas en poco espacio. Este proyecto provee de semillas orgánicas, fertilizante ecológico, tierra preparada y asesores que guían a cada familia en la siembra y cosecha de sus propios alimentos."
+    }
+  ],
+  "donations": [
+    {
+      "id": "don-1780583046846",
+      "donorName": "Rolando",
+      "email": "aliendredilan@gmail.com",
+      "amount": 999,
+      "projectId": "proj-1",
+      "projectTitle": "Ecocamp Chocaya",
+      "date": "2026-06-04T14:24:06.846Z",
+      "comment": "Donación mensual"
+    }
+  ],
+  "messages": [],
+  "blog": [
+    {
+      "id": "blog-1",
+      "title": "Restauración activa en el Tunari: ¿Por qué plantamos Queñuas?",
+      "summary": "La queñua (Polylepis) es un árbol nativo indispensable para recargar los acuíferos de Cochabamba. Descubre el impacto ecológico de nuestras jornadas en Chocaya.",
+      "content": "En las alturas de la cordillera del Tunari, la erosión del suelo y la pérdida de cobertura vegetal nativa amenazan la seguridad hídrica de Cochabamba. El género Polylepis, popularmente conocido como Queñua, cumple un papel ecológico protagónico. Sus troncos retorcidos y su corteza laminada atrapan la niebla y la humedad del ambiente de montaña, infiltrando agua dulce directo en las vertientes subterráneas que alimentan el valle cochabambino.\n\nEn nuestras últimas campañas voluntarias de Ecocamp Chocaya, hemos plantado más de 400 nuevos brotes de queñua producidos en nuestro vivero forestal. El riego inicial y el cuidado orgánico de estas plántulas son cruciales durante el invierno andino. Invitamos a la comunidad de Cochabamba y a las escuelas a unirse a los talleres semanales donde aprendemos sobre la producción de compostaje y conservación de biodiversidad nativa.",
+      "image": "https://lh3.googleusercontent.com/d/11vQPHoLh7gdvdWAjaO2gM-a3Ds9Wvs2N",
+      "category": "Ecología",
+      "author": "Ing. René Mendoza, Coordinador Ecológico",
+      "date": "2026-05-15",
+      "readTime": "4 min",
+      "featured": true,
+      "status": "published"
+    },
+    {
+      "id": "blog-2",
+      "title": "Tejiendo lazos con nuestras abuelas en Cochabamba",
+      "summary": "Nuestro taller semanal de costura creativa no solo genera hermosos bolsos reciclados, sino que reconstruye redes de autoestima y afecto filial en nuestras adultas mayores.",
+      "content": "Cada día, a partir de las 9 de la mañana, el comedor central de VOSERDEM abre sus puertas para acoger a más de sesenta abuelitas de diversas zonas periurbanas de Cochabamba. Tras una comida diseñada con alta concentración proteica y vitaminas esenciales por nuestro equipo de nutricionistas, la sala se transforma.\n\nLas máquinas de coser y los hilos de colores se adueñan del espacio. Este año, inauguramos la línea de Costura Creativa Ecofamilia. Bajo la guía de voluntarias capacitadas en diseño de modas, nuestras queridas abuelitas transforman telas reutilizadas y retazos de jeans en espléndidos bolsos, estuches y manteles de cocina con detalles bordados a mano. Este espacio tiene un valor terapéutico incalculable: les ayuda con la motricidad fina, combate de raíz la soledad crónica de la vejez y les proporciona un ingreso digno del comercio sustentable.",
+      "image": "https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&q=80&w=800",
+      "category": "Adulto Mayor",
+      "author": "Lic. Clara Salazar, Trabajo Social",
+      "date": "2026-05-28",
+      "readTime": "5 min",
+      "featured": false
+    },
+    {
+      "id": "blog-3",
+      "title": "La permacultura como motor de soberanía alimentaria urbana",
+      "summary": "Implementamos con éxito 15 nuevos micro-huertos familiares en el Distrito 9. Consejos prácticos de cultivo orgánico urbano en tierras secas de Cochabamba.",
+      "content": "El desarrollo sostenible empieza en el núcleo familiar. El constante aumento de precio en los alimentos básicos afecta de manera desproporcionada a las familias periurbanas del sur de Cochabamba. VOSERDEM, con su programa de Micro-Huertos Orgánicos, brinda una alternativa de autonomía nutricional real.\n\nEn la última capacitación comunitaria, enseñamos cómo preparar \"camas de doble excavación\" para retener la humedad en terrenos áridos, emplear acolchado de paja (mulch) para evitar la evaporación bajo el inclemente sol andino y fabricar biopreparados caseros a base de ajo, ají y cenizas para repeler plagas de forma no tóxica. Nos entusiasma ver la primera cosecha de lechugas moradas, tomates cherry andinos y acelgas gigantescas cultivados con el sudor de madres cochabambinas, reduciendo los gastos de canasta básica y garantizando alimentación 100% limpia sin pesticidas.",
+      "image": "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?auto=format&fit=crop&q=80&w=800",
+      "category": "Comunidad",
+      "author": "Est. Andrés Torrico, Agronomía",
+      "date": "2026-06-01",
+      "readTime": "3 min",
+      "featured": false
+    },
+    {
+      "id": "blog-1780583911929",
+      "title": "VOSERDEM: La Voluntad de Hacer Bien el Bien",
+      "summary": "OSERDEM es una organización boliviana cuya filosofía central se resume en la voluntad de hacer bien el bien, un principio que exige transformar la caridad espontánea en una labor social profesional, estratégica y técnica. El texto detalla cómo esta institución fusiona los valores de la doctrina social católica con un enfoque de desarrollo sostenible, priorizando el empoderamiento de comunidades vulnerables a través de la educación y la innovación agrícola. Para garantizar resultados duraderos, la entidad se apoya en un robusto cuerpo de voluntariado profesional y proyectos emblemáticos como la Universidad Campesina de Sacaca, que busca profesionalizar a la juventud rural en sus propios entornos. En última instancia, su propósito es atacar las causas estructurales de la pobreza y la degradación ecológica, sustituyendo el asistencialismo pasivo por una cultura de corresponsabilidad y excelencia académica.",
+      "content": "La filosofía institucional de VOSERDEM (Voluntarios al Servicio de los Demás) se fundamenta en el principio rector de la \"voluntad de hacer bien el bien\" [1-3]. Este postulado conceptual establece que la labor caritativa y social debe trascender las respuestas intuitivas o el \"asistencialismo pasivo\"; en su lugar, debe ejecutarse con excelencia técnica, planificación estratégica y un claro enfoque hacia la sostenibilidad temporal [1, 4]. Al combinar la doctrina social de la Iglesia Católica con un enfoque profesional riguroso de desarrollo sostenible, VOSERDEM considera que la fraternidad humana y el amor son herramientas prácticas indispensables para reducir las brechas de exclusión social y construir una sociedad más equitativa [5].\nDentro del contexto de la labor socio-ecológica de VOSERDEM en Bolivia, esta filosofía se pone en práctica a través de tres objetivos estratégicos principales [1, 6]:\nAportar \"Sal y Luz\": Promover acciones conscientes, responsables y fundamentadas en valores para que los laicos democraticen y dinamicen la construcción de comunidades unidas por principios de comunión y participación mutua [6, 7].\nDesarrollo Sostenible Integral: Mejorar el bienestar físico y espiritual de las familias vulnerables en sus hogares y entorno natural, fomentando un uso resiliente de los recursos naturales y la innovación tecnológica [6, 7].\nTrabajo desde Sitios Piloto Estratégicos: Priorizar sistemáticamente las regiones de Bolivia con mayor vulnerabilidad geográfica, económica y social, implementando programas articulados de educación, investigación, producción agraria y voluntariado [6, 7].\nPara garantizar que estas intervenciones cumplan con el alto estándar de \"hacer bien el bien\", VOSERDEM se apoya fundamentalmente en el voluntariado profesional [8]. La organización mantiene un cuerpo de aproximadamente cincuenta expertos voluntarios (incluyendo agrónomos, sociólogos, auditores e ingenieros) que donan su tiempo y conocimientos para formular proyectos complejos que superan el alcance de las organizaciones comunitarias tradicionales [8, 9]. Además, VOSERDEM asegura que sus acciones locales tengan resonancia global y cumplan normativas internacionales al alinear sus metas con la Agenda 2025 de Bolivia, los compromisos del Pacto Educativo Global Católico y los Objetivos de Desarrollo Sostenible (ODS) de las Naciones Unidas [2, 7, 10].\nEn la práctica, esta filosofía se traduce en empoderar a las comunidades rurales para resolver las causas profundas de la pobreza extrema y la degradación ecológica en lugar de brindar soluciones temporales [11]. Por ejemplo, en la árida región de Sacaca en el altiplano, los programas de comedores escolares exigen la corresponsabilidad de los padres; no son receptores pasivos, sino que aportan mano de obra, leña y recursos locales (como papas o harinas) mientras aprenden nuevas tecnologías de cultivos bajo protección térmica [12, 13]. De manera paralela, el proyecto de agroforestería regenerativa \"Paraíso Verde\" en las laderas de Cochabamba otorga asistencia técnica a los agricultores para plantar frutales, construir terrazas de contención y reservorios de agua, alejándolos del monocultivo insostenible y protegiendo sus ingresos contra el cambio climático [14, 15].\nEl impacto más notable de esta visión es la Unidad Académica Campesina de Sacaca (UAC Sacaca), una filial universitaria creada con el fin de descentralizar la educación superior y llevarla directamente a los jóvenes del campo [16]. Bajo la misión de una \"voluntad firme de hacer bien el bien\", la universidad une la excelencia académica con la extensión en servicio comunitario [3, 17]. Al ofrecer carreras como Ingeniería Agropecuaria, Enfermería y Administración de Empresas, diseñadas específicamente para los ecosistemas altiplánicos [18], VOSERDEM busca que los jóvenes talentosos adquieran las herramientas científicas para liderar el desarrollo sostenible de sus propias comunidades, evitando la migración forzada y fortaleciendo la economía local [11, 19, 20].",
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkATD8hi-awwK0DISK6fgwA2WSuBQS_d4UVw&s",
+      "category": "Institucional",
+      "author": "Dr. Gonzalo Alfaro",
+      "date": "2026-06-04",
+      "readTime": "3 min",
+      "featured": false,
+      "status": "published"
+    }
+  ],
+  "bulletins": [
+    {
+      "id": "bull-1",
+      "title": "Boletín Informativo Otoño 2026 - Edición N° 12",
+      "summary": "Revisión completa de las campañas de invierno en el Tunari, informe de raciones servidas en el comedor de abuelitas e inicio de la Escuela Eco para jóvenes.",
+      "publishDate": "2026-04-30",
+      "issueNumber": "Año 12 - N° 1",
+      "downloadUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "image": "https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      "id": "bull-2",
+      "title": "Memoria Ecológica de Chocaya - Edición Especial",
+      "summary": "Edición exclusiva detallando las técnicas de filtración hídrica y reforestación de cuencas de cabecera de agua implementadas por los ingenieros de la UMSS y técnicos ecólogos bolivianos.",
+      "publishDate": "2025-11-15",
+      "issueNumber": "N° Especial Viveros",
+      "downloadUrl": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "image": "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&q=80&w=800"
+    },
+    {
+      "id": "bull-1780584798964",
+      "title": "Festejo de las Abuelitas de VOSERDEM",
+      "summary": "Festejo de el 27 de Mayo con las abuelitas de Voserdem",
+      "issueNumber": "Año 2-2026",
+      "publishDate": "2026-06-04",
+      "downloadUrl": "https://drive.google.com/file/d/1hKefHfC7Qg-RqXVKRZIMkMCUPF1Jda2G/view?usp=sharing",
+      "image": "https://lh3.googleusercontent.com/d/1hKefHfC7Qg-RqXVKRZIMkMCUPF1Jda2G",
+      "status": "published"
+    }
+  ],
+  "subscribers": [],
+  "aboutUs": {
+    "introSub": "Asociación de Laicos Católicos · Bolivia",
+    "introTitle": "Institución con Alma, Resultados y Visión",
+    "introText": "Nacidos en 1993 en la Parroquia Compañía de Jesús al servicio de poblaciones migrantes temporales. Hoy somos una obra sostenida por voluntarios, fundadores y aliados internacionales, que responde a la extrema vulnerabilidad con acciones estructurales: unidades académicas, comedores comunitarios, centros multifuncionales y ecocampos que unen el desarrollo humano y la espiritualidad de servicio.",
+    "missionTitle": "Nuestra Misión",
+    "missionText": "Servir a las poblaciones más vulnerables de Bolivia aplicando el Modelo de Desarrollo Sostenible Integral (DSI). Nuestra labor articula la formación educativa (técnica y superior), el sustento nutricional en comedores comunitarios, el acompañamiento directo a sectores marginados y el cuidado responsable de la casa común a través de la agroforestería y el desarrollo territorial; todo ello cimentado en la espiritualidad cristiana y el compromiso voluntario.",
+    "visionTitle": "Nuestra Visión 2030",
+    "visionText": "Consolidar operativamente nuestra institución a nivel nacional e internacional, afianzando la plena sostenibilidad de nuestras obras estructurales: las Unidades Académicas (UAS UCB V), los Centros Multifuncionales y los programas de atención comunitaria. Aspiramos a una presencia autónoma y transformadora en los Sitios Piloto Andino, Valles, Amazónico y Chaco, demostrando que una Bolivia mejor, justa y equitativa es posible.",
+    "imageUrl": "https://lh3.googleusercontent.com/d/1YZuC_fwe_Q8nVnH1tHzgts8tUbOKG_uX",
+    "heroImageUrl": "https://lh3.googleusercontent.com/d/1HCc3nOPUZMvvJOXnChQtij8F5NEbT0jn",
+    "pillars": [
+      {
+        "title": "Sitio Piloto Andino",
+        "description": "Sacaca, Norte de Potosí y Kami. Centro Multifuncional «Gabriela» y Unidad Académica Sacaca (UAS UCB V). Intervención en zonas de extrema pobreza con infraestructura educativa y de servicio social.",
+        "iconName": "Landmark"
+      },
+      {
+        "title": "Sitio Piloto Valles",
+        "description": "Quillacollo, Cercado y Ecocampo Chocaya. Raíz fundacional en la Parroquia Compañía de Jesús. Agroforestería, energía solar y acompañamiento a comunidades rurales.",
+        "iconName": "Leaf"
+      },
+      {
+        "title": "Sitio Piloto Amazónico",
+        "description": "Villa Tunari, El Torno y Norte Integrado Cruceño. Comedores escolares y descentralización de la acción educativa en el trópico boliviano.",
+        "iconName": "Users"
+      },
+      {
+        "title": "Sitio Piloto Chaco",
+        "description": "Región en gestación estratégica. VOSERDEM avanza hacia la presencia integral en las cuatro grandes bioregiones de Bolivia, completando su cobertura territorial nacional.",
+        "iconName": "Compass"
+      }
+    ]
+  },
+  "carouselSlides": [
+    {
+      "id": "slide-1",
+      "image": "https://lh3.googleusercontent.com/d/1kljogQTD1_WiV8bh0lMdY8t47uRt7YQM",
+      "badge": "Medio Ambiente & Ecología",
+      "badgeIconName": "Trees",
+      "title": "Sembrando Sostenibilidad, Cultivando Dignidad Humana",
+      "description": "Somos una organización sin fines de lucro en Cochabamba, Bolivia. Restauramos ecosistemas degradados en el Ecocamp Chocaya y brindamos amor, nutrición y salud integral a nuestras queridas Abuelitas."
+    },
+    {
+      "id": "slide-2",
+      "image": "https://lh3.googleusercontent.com/d/1mvFgGZKKenOOlu8FskDExGiCLJoQl7JD",
+      "badge": "Desarrollo Humano & Nutrición",
+      "badgeIconName": "Users",
+      "title": "Nutrición, Salud y Amor Incondicional para Abuelitas",
+      "description": "Ofrecemos raciones alimentarias balanceadas, cuidado fisioterapéutico, acompañamiento espiritual y un espacio seguro de socialización para adultos mayores vulnerables en Cochabamba."
+    },
+    {
+      "id": "slide-3",
+      "image": "https://lh3.googleusercontent.com/d/1YOCiWc09f90aZxaaoxJJhSb2f2r8Wqmn",
+      "badge": "Educación & Ecocamp Chocaya",
+      "badgeIconName": "Trees",
+      "title": "Formación y Regeneración Ecológica Integrada",
+      "description": "Transformamos la relación con nuestra Madre Tierra mediante capacitaciones en agroecología y reforestación nativa autónoma, capacitando a las nuevas generaciones de líderes ambientales."
+    },
+    {
+      "id": "slide-4",
+      "image": "https://lh3.googleusercontent.com/d/1BCxm215_-YsDJ-lngvXvQZmQTZWOtlDV",
+      "badge": "Voluntariado Recíproco",
+      "badgeIconName": "Heart",
+      "title": "El Poder de Servir con el Corazón Abierto",
+      "description": "Guiamos a voluntarios locales y extranjeros para canalizar sus profesiones y conocimientos directamente en áreas de salud, educación y restauración forestal boliviana."
+    },
+    {
+      "id": "slide-5",
+      "image": "https://lh3.googleusercontent.com/d/1VevIqau5kqh73-q8ndNtCnP8oZbe1By2",
+      "badge": "Educación superior",
+      "badgeIconName": "Landmark",
+      "title": "Uniendo Esfuerzos para el Futuro de Bolivia",
+      "description": "Desarrollamos procesos educativos de alta calidad para profesionalizar a los jóvenes, La Universidad Católica Boliviana presente con tres carreras: Enfermería, Agroforestal y Administración de empresas."
+    }
+  ],
+  "logoConfig": {
+    "logoColor": {
+      "brandName": "VOSERDEM",
+      "slogan": "Voluntarios al Servicio de los Demás",
+      "useCustomImage": true,
+      "imageUrl": "https://lh3.googleusercontent.com/d/1l9NqhOoyA9YnDOxalFTaKMM6kVU2UDbX"
+    },
+    "logoGold": {
+      "brandName": "VOSERDEM",
+      "slogan": "Una Bolivia mejor es posible",
+      "useCustomImage": true,
+      "imageUrl": "https://lh3.googleusercontent.com/d/1FkY0uILEXakE-NbsWt8117GyZa89-cUv"
+    }
+  }
+}
