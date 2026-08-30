@@ -126,7 +126,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
       : projects.filter((p) => getProjectArea(p) === selectedRegion);
 
   return (
-    <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 bg-[#F5F2ED]">
+    <div className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-[#F5F2ED]">
       {/* Tab Filter & Intro */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pb-4 border-b border-[#C5A059]/20">
         <div>
@@ -236,7 +236,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
                           viewport={{ once: true, margin: '-50px' }}
                           whileHover={{ y: -6 }}
                           transition={{ duration: 0.4, delay: 0.1 }}
-                          className="glass border border-[#C5A059]/30 rounded-2xl transition-all flex flex-col justify-between overflow-hidden hover:border-[#1B3022]/40 hover:shadow-[0_20px_40px_-15px_rgba(27,48,34,0.15)]"
+                          className="reveal glass border border-[#C5A059]/30 rounded-2xl transition-all flex flex-col justify-between overflow-hidden hover:border-[#1B3022]/40 hover:shadow-[0_20px_40px_-15px_rgba(27,48,34,0.15)]"
                         >
                           {/* Image & category badge overlay */}
                           <div className="relative h-52 overflow-hidden bg-[#C5A059]/10">

@@ -3,9 +3,9 @@ import { Target, Lightbulb, Compass, Sprout, Heart, ShieldCheck } from 'lucide-r
 
 export default function NuestraObra() {
   return (
-    <div className="bg-[#F5F2ED] py-16 px-4 sm:px-6 lg:px-8 space-y-24 max-w-7xl mx-auto">
+    <div className="reveal bg-[#F5F2ED] py-16 px-4 sm:px-6 lg:px-8 space-y-24 max-w-7xl mx-auto">
       {/* El Origen y el Lema */}
-      <section className="text-center space-y-6 max-w-4xl mx-auto animate-fade-in">
+      <section className="reveal text-center space-y-6 max-w-4xl mx-auto animate-fade-in">
         <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059]">
           Fundación y Propósito
         </span>
@@ -22,7 +22,7 @@ export default function NuestraObra() {
       </section>
 
       {/* Misión y Visión */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <section className="reveal grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-8 space-y-6 hover:border-[#1B3022]/30 transition-colors shadow-sm">
           <div className="flex items-center gap-3">
             <div className="bg-[#1B3022] p-2 rounded-full">
@@ -53,7 +53,7 @@ export default function NuestraObra() {
       </section>
 
       {/* Modelo DSI */}
-      <section className="space-y-12">
+      <section className="reveal space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <h2 className="font-display text-3xl font-black text-[#1B3022]">
             Modelo de Desarrollo Sostenible Integral (DSI)
@@ -97,7 +97,7 @@ export default function NuestraObra() {
       </section>
 
       {/* Horizonte 2030 */}
-      <section className="bg-[#1B3022] rounded-[12px] p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
+      <section className="reveal bg-[#1B3022] rounded-[12px] p-8 md:p-12 text-center space-y-6 relative overflow-hidden">
         <Compass className="h-32 w-32 text-[#C5A059]/10 absolute -top-10 -right-10 rotate-45" />
         <h2 className="font-display text-3xl font-black text-[#F5F2ED] relative z-10">
           Horizonte 2030

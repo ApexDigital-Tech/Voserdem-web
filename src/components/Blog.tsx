@@ -66,7 +66,7 @@ export default function Blog({ hideHeader = false }: BlogProps) {
 
   return (
     <div className="py-16 bg-[#F5F2ED] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Page title header */}
         {!hideHeader && (
           <div className="text-center space-y-3 max-w-3xl mx-auto mb-12">

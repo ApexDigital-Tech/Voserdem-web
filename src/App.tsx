@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
-import { LogoConfig } from './types';
-import { api } from './services/api';
 import { Toaster } from 'react-hot-toast';
+import { api } from './services/api';
+import { LogoConfig } from './types';
+import { useReveal } from './hooks/useReveal';
 
-const AboutUs = React.lazy(() => import('./components/AboutUs'));
+const AboutUs = lazy(() => import('./components/AboutUs'));
 const Projects = React.lazy(() => import('./components/Projects'));
 const DonationForm = React.lazy(() => import('./components/DonationForm'));
 const Contact = React.lazy(() => import('./components/Contact'));
@@ -39,6 +40,8 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [preselectedProjectId, setPreselectedProjectId] = useState<string>('');
+
+  useReveal();
 
   // Logos loaded once at app level — prevents flash-of-SVG in Navbar/Footer
   const [logoConfig, setLogoConfig] = useState<LogoConfig>(defaultLogoConfig);

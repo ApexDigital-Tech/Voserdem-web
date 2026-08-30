@@ -129,7 +129,7 @@ export default function AboutUs({
   return (
     <div className="space-y-16 py-16 bg-[#F5F2ED]">
       {/* Intro section: Mission/Vision (Split screen Column with Image) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column Text details */}
           <div className="lg:col-span-7 space-y-6">
@@ -224,13 +224,13 @@ export default function AboutUs({
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="reveal max-w-7xl mx-auto px-4">
         <SignatureDivider />
       </div>
 
       {/* Pillars Section */}
       <section className="bg-[#FCF9F8]/65 py-16 border-y border-[#C5A059]/25">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto space-y-3 mb-16">
             <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] block">
               Presencia a Nivel Nacional
@@ -275,7 +275,7 @@ export default function AboutUs({
       </section>
 
       {/* NEW: Blog, Projects, and Bulletins Real-Time Preview section with images and direct links */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+      <section className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <span className="text-[10px] uppercase tracking-widest font-bold text-[#C5A059] flex items-center justify-center gap-1.5">
             <Activity className="h-3 w-3 animate-pulse" />
@@ -455,7 +455,7 @@ export default function AboutUs({
       </section>
 
       {/* Call to action within landing page */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="reveal max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-[#1B3022] rounded-[8px] text-white p-8 md:p-12 lg:p-16 relative overflow-hidden shadow-none border border-[#C5A059]/40">
           {/* Back art details */}
           <div className="absolute right-0 bottom-0 w-80 h-80 rounded-full bg-[#C5A059]/5 blur-3xl -mr-20 -mb-20" />
