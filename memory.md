@@ -99,16 +99,20 @@
   5. `AdminAbout`
 - Fase 1 CERRADA. Todos han sido verificados pasando tsc y build sin errores.
 
-## 2. Tareas Pendientes (Próxima Sesión)
+## 2. Estado Actual del Proyecto y Tareas Pendientes
 
-1. **Fase 2: Clean Code (Limpieza Profunda):**
-   - Instalar y configurar un setup de ESLint real (con reglas para react-hooks).
-   - Purgar todos los imports no utilizados en los archivos del frontend.
-   - Eliminar o archivar archivos obsoletos en la raíz del proyecto.
-2. **Fase 3: Performance & Robustness:**
-   - Implementar code-splitting (`React.lazy`) para el panel de administración.
-   - Añadir estados de carga y manejo de errores más robustos para las llamadas a la API.
-   - Agregar rate limiting en los endpoints públicos.
-   - Añadir validación de inputs del lado del servidor en `api/index.ts`.
-3. **Fase 4: Verificación Final:**
-   - Prueba manual del rechazo RLS, verificación de las 9 pestañas, build size < 500 KB, y comprobación de fallo con passwords antiguos.
+**Frente 1 (Arquitectura, Seguridad y Performance - Fases 0 a 4): CERRADO**
+- Seguridad implementada: Políticas RLS estrictas, contraseñas fuera del código, endpoint inseguro `/api/admin/reset` eliminado, credenciales de Supabase y Vercel rotadas (Tercera Clave Definitiva) y verificadas en producción.
+- Monolito `AdminPanel.tsx` exitosamente desmantelado en 5 módulos limpios (`AdminDonations`, `AdminProjects`, `AdminBulletins`, `AdminCarousel`, `AdminAbout`).
+- Calidad de código y Rendimiento: ESLint real configurado, code-splitting con `React.lazy` implementado, validación de schemas con `Zod`, Rate Limiting en endpoints públicos, depuración de dependencias no usadas. Bundle optimizado bajo el umbral de 500KB.
+
+**Frente 2 (Diseño UI/UX Sitio Público): CERRADO (Código)**
+- Hero convertido a carrusel dinámico, swipeable, accesible y con autoplay conectado al Admin.
+- Menú móvil estilo hamburguesa fullscreen funcional con scroll lock validado.
+- Tokens de diseño integrados: tipografía Fraunces + Inter, preservación de paleta original.
+- Animaciones de scroll-reveal implementadas globalmente mediante el hook `useReveal.ts` + IntersectionObserver en `Projects`, `NuestraObra`, `Blog` y `AboutUs`, con compatibilidad `prefers-reduced-motion`.
+- Verificado y aprobado vía build `tsc` + despliegue exitoso (pruebas en móvil real confirmadas).
+
+**PENDIENTES (Próxima Sesión / Bloqueos Externos)**
+1. **[BLOQUEADO] Cambio de DNS:** La migración del dominio oficial `voserdem.org` hacia Vercel está en pausa. El dominio cuenta con un WordPress en vivo; **no se realizará ningún cambio DNS hasta recibir autorización explícita del cliente/Director.**
+2. **[PRÓXIMA SESIÓN] Acta de Entrega:** Actualizar `ACTA_DE_ENTREGA.md` con la URL final autorizada. Se debe realizar una última auditoría visual para garantizar de forma absoluta que ninguna contraseña/credencial se exponga en texto plano dentro del acta antes de entregarla al cliente.

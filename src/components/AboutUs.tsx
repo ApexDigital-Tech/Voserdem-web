@@ -62,6 +62,22 @@ const iconMap: Record<string, React.ComponentType<any>> = {
   Landmark,
 };
 
+const defaultAboutData: AboutUsData = {
+  introSub: 'Impacto Social',
+  introTitle: 'Nuestra Historia',
+  introText: 'VOSERDEM es una organización civil comprometida con el desarrollo sostenible integral...',
+  missionTitle: 'Nuestra Misión',
+  missionText: 'Promover el desarrollo.',
+  visionTitle: 'Nuestra Visión',
+  visionText: 'Una sociedad justa.',
+  imageUrl: '',
+  pillars: [
+    { title: 'Educación', description: 'Formación técnica y valores.', iconName: 'GraduationCap' },
+    { title: 'Comedores', description: 'Nutrición comunitaria.', iconName: 'Heart' },
+    { title: 'Ecocampos', description: 'Agroforestería y agua.', iconName: 'Leaf' }
+  ]
+};
+
 export default function AboutUs({
   onDonateClick,
   onProjectsClick,
@@ -81,9 +97,16 @@ export default function AboutUs({
     api
       .get<AboutUsData>('/api/about')
       .then((res) => {
-        if (res.success && res.data) setAboutData(res.data);
+        if (res.success && res.data) {
+          setAboutData(res.data);
+        } else {
+          setAboutData(defaultAboutData);
+        }
       })
-      .catch((err) => console.error('Error fetching about dynamic content:', err));
+      .catch((err) => {
+        console.error('Error fetching about dynamic content:', err);
+        setAboutData(defaultAboutData);
+      });
 
     // Load Preview Sources
     api
@@ -91,7 +114,6 @@ export default function AboutUs({
       .then((res) => {
         const projs = res.data;
         if (res.success && projs && projs.length > 0) {
-          // Sort or pick first/featured
           setLatestProject(projs[0]);
         }
       })
@@ -102,7 +124,6 @@ export default function AboutUs({
       .then((res) => {
         const blogs = res.data;
         if (res.success && blogs && blogs.length > 0) {
-          // Find featured or first
           const feat = blogs.find((b) => b.featured) || blogs[0];
           setLatestBlog(feat);
         }

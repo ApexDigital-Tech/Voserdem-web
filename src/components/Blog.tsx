@@ -34,18 +34,25 @@ export default function Blog({ hideHeader = false }: BlogProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
 
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    api
-      .get<BlogPost[]>('/api/blog')
-      .then((res) => {
+    const fetchBlog = async () => {
+      try {
+        const res = await api.get<BlogPost[]>('/api/blog');
         if (res.success && res.data) {
           setPosts(res.data);
         } else {
           throw new Error('Fallo al cargar artículos de blog');
         }
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
+      } catch (err) {
+        console.error(err);
+        setError('No se pudieron cargar los artículos del blog. Por favor, intente más tarde.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBlog();
   }, []);
 
   const categories = ['Todos', 'Ecología', 'Comunidad', 'Adulto Mayor', 'Institucional'];
@@ -119,6 +126,16 @@ export default function Blog({ hideHeader = false }: BlogProps) {
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1B3022]"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-16 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#ba1a1a]/30 max-w-xl mx-auto space-y-3">
+            <AlertCircle className="h-8 w-8 text-[#ba1a1a] mx-auto" />
+            <h3 className="font-display text-lg font-bold text-[#1B3022]">
+              Error de conexión
+            </h3>
+            <p className="text-xs text-[#2C2C2C]/80 font-sans">
+              {error}
+            </p>
           </div>
         ) : (
           <>
