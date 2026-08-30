@@ -93,12 +93,6 @@ export default function Hero({ onLearnMore, onDonate }: HeroProps) {
     return () => clearInterval(timer);
   }, [slidesToRender.length, shouldReduceMotion, isPaused, paginate, currentSlide]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[600px] sm:min-h-[660px] md:min-h-[720px] lg:min-h-[680px] bg-[#1B3022] flex items-center justify-center animate-pulse" />
-    );
-  }
-
   const formatTitle = (titleText: string) => {
     if (!titleText) return '';
     const parts = titleText.split(/(\*[^*]+\*)/g);

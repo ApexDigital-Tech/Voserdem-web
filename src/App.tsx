@@ -51,6 +51,7 @@ const RouteWrapper = ({ children }: { children: React.ReactNode }) => (
       }
     >
       <motion.div
+        className="w-full flex-1 flex flex-col"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -10 }}
@@ -115,7 +116,7 @@ export default function App() {
       <Toaster position="top-right" />
       <Navbar logoConfig={logoConfig} />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 w-full flex flex-col">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route

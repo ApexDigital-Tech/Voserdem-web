@@ -47,7 +47,7 @@ export default function Blog({ hideHeader = false }: BlogProps) {
         }
       } catch (err) {
         console.error(err);
-        setError('No se pudieron cargar los artículos del blog. Por favor, intente más tarde.');
+        setError('No fue posible cargar el contenido en este momento.');
       } finally {
         setLoading(false);
       }
@@ -136,6 +136,12 @@ export default function Blog({ hideHeader = false }: BlogProps) {
             <p className="text-xs text-[#2C2C2C]/80 font-sans">
               {error}
             </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 bg-[#ba1a1a] hover:bg-[#ba1a1a]/90 text-white px-5 py-2 rounded-[4px] text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
+            >
+              Reintentar Carga
+            </button>
           </div>
         ) : (
           <>

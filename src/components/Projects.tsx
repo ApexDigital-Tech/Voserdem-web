@@ -118,7 +118,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
     queryFn: fetchProjectsQuery,
   });
 
-  const error = isError ? 'Error de red. Mostrando proyectos de muestra.' : null;
+  const error = isError ? 'No fue posible cargar el contenido en este momento.' : null;
 
   const filteredProjects =
     selectedRegion === 'Todas'

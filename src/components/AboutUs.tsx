@@ -85,7 +85,7 @@ export default function AboutUs({
   onBulletinsClick = () => {},
 }: AboutUsProps) {
   // Dynamic Content States
-  const [aboutData, setAboutData] = useState<AboutUsData | null>(null);
+  const [aboutData, setAboutData] = useState<AboutUsData>(defaultAboutData);
 
   // Previews States
   const [latestProject, setLatestProject] = useState<Project | null>(null);
@@ -99,13 +99,10 @@ export default function AboutUs({
       .then((res) => {
         if (res.success && res.data) {
           setAboutData(res.data);
-        } else {
-          setAboutData(defaultAboutData);
         }
       })
       .catch((err) => {
         console.error('Error fetching about dynamic content:', err);
-        setAboutData(defaultAboutData);
       });
 
     // Load Preview Sources
@@ -140,12 +137,6 @@ export default function AboutUs({
       })
       .catch((err) => console.error('Error picking latest bulletin preview:', err));
   }, []);
-
-  if (aboutData === null) {
-    return (
-      <div className="space-y-16 py-16 bg-[#F5F2ED] min-h-[600px] flex items-center justify-center animate-pulse"></div>
-    );
-  }
 
   return (
     <div className="space-y-16 py-16 bg-[#F5F2ED]">
