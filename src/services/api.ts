@@ -6,7 +6,7 @@ export interface ApiResponse<T> {
 }
 
 const getAdminPassword = (): string | null => {
-  return sessionStorage.getItem('voserdem_admin_password');
+  return sessionStorage.getItem('voserdem_admin_password') || import.meta.env.VITE_ADMIN_PASSKEY || null;
 };
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {

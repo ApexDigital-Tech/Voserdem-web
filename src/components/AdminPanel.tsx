@@ -251,6 +251,7 @@ export default function AdminPanel() {
     if (passwordInput.trim() === ADMIN_PASSKEY) {
       setIsAuthenticated(true);
       sessionStorage.setItem('voserdem_admin_auth', 'true');
+      sessionStorage.setItem('voserdem_admin_password', passwordInput.trim());
       setLoginError(null);
       loadAllAdminData();
     } else {
@@ -261,6 +262,7 @@ export default function AdminPanel() {
   const handleLogout = () => {
     setIsAuthenticated(false);
     sessionStorage.removeItem('voserdem_admin_auth');
+    sessionStorage.removeItem('voserdem_admin_password');
     setPasswordInput('');
   };
 
