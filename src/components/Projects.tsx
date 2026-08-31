@@ -114,7 +114,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
     return fallbackProjects;
   };
 
-  const { data: projects = fallbackProjects, isLoading: loading, isError, refetch } = useQuery({
+  const { data: projects = fallbackProjects, isError, refetch } = useQuery({
     queryKey: ['projects'],
     queryFn: fetchProjectsQuery,
   });
@@ -176,22 +176,7 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
       )}
 
       {/* Skeleton / Projects Grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3].map((s) => (
-            <div
-              key={s}
-              className="bg-[#FCF9F8] border border-[#C5A059]/30 rounded-[8px] p-5 space-y-4 animate-pulse"
-            >
-              <div className="bg-[#C5A059]/10 h-48 w-full rounded-[4px]" />
-              <div className="h-4 bg-[#C5A059]/10 w-2/3 rounded-[4px]" />
-              <div className="h-4 bg-[#C5A059]/5 w-full rounded-[4px]" />
-              <div className="h-2 bg-[#C5A059]/5 w-full rounded-[4px]" />
-              <div className="h-8 bg-[#C5A059]/10 w-1/3 rounded-[4px]" />
-            </div>
-          ))}
-        </div>
-      ) : filteredProjects.length === 0 ? (
+      {filteredProjects.length === 0 ? (
         <div className="text-center py-20 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#C5A059]/30">
           <p className="text-[#2C2C2C]/80 text-xs font-semibold uppercase tracking-wider">
             No se encontraron programas disponibles para esta línea.

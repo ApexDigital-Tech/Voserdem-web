@@ -56,7 +56,7 @@ const DEFAULT_POSTS: BlogPost[] = [
 
 export default function Blog({ hideHeader = false }: BlogProps) {
   const [posts, setPosts] = useState<BlogPost[]>(DEFAULT_POSTS);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
@@ -149,42 +149,19 @@ export default function Blog({ hideHeader = false }: BlogProps) {
           </div>
         </div>
 
-        {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1B3022]"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-16 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#ba1a1a]/30 max-w-xl mx-auto space-y-3">
-            <AlertCircle className="h-8 w-8 text-[#ba1a1a] mx-auto" />
-            <h3 className="font-display text-lg font-bold text-[#1B3022]">
-              Error de conexión
+        {filteredPosts.length === 0 ? (
+          <div className="text-center py-20 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#C5A059]/30">
+            <BookOpen className="h-10 w-10 text-[#C5A059]/50 mx-auto mb-4" />
+            <h3 className="font-display text-xl font-bold text-[#1B3022]">
+              No se encontraron artículos
             </h3>
-            <p className="text-xs text-[#2C2C2C]/80 font-sans">
-              {error}
+            <p className="text-sm text-[#2C2C2C]/70 font-sans mt-2">
+              Prueba con otro término de búsqueda o categoría.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-4 bg-[#ba1a1a] hover:bg-[#ba1a1a]/90 text-white px-5 py-2 rounded-[4px] text-xs font-bold transition-all cursor-pointer uppercase tracking-wider"
-            >
-              Reintentar Carga
-            </button>
           </div>
         ) : (
-          <>
-            {filteredPosts.length === 0 ? (
-              <div className="text-center py-16 bg-[#FCF9F8] rounded-[8px] border border-dashed border-[#C5A059]/30 max-w-xl mx-auto space-y-3">
-                <AlertCircle className="h-8 w-8 text-[#C5A059] mx-auto" />
-                <h3 className="font-display text-lg font-bold text-[#1B3022]">
-                  No se encontraron publicaciones
-                </h3>
-                <p className="text-xs text-[#2C2C2C]/80 font-sans">
-                  Intenta modificar tus términos de búsqueda o cambiar de categoría.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-12">
-                {/* 1. Featured Article Block */}
-                {featuredPost && selectedCategory === 'Todos' && searchTerm === '' && (
+          <div className="space-y-12">
+            {featuredPost && selectedCategory === 'Todos' && searchTerm === '' && (
                   <motion.div
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -323,8 +300,6 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                   ))}
                 </div>
               </div>
-            )}
-          </>
         )}
       </div>
 
