@@ -27,8 +27,35 @@ interface BlogProps {
   hideHeader?: boolean;
 }
 
+const DEFAULT_POSTS: BlogPost[] = [
+  {
+    id: '1',
+    title: 'Transformando vidas en la comunidad',
+    summary: 'Conoce cómo nuestro programa de educación técnica está generando nuevas oportunidades para los jóvenes de escasos recursos en la región andina.',
+    content: 'A través de nuestros talleres de capacitación técnica, hemos logrado que más de 50 jóvenes obtengan certificación en agroforestería y carpintería. Esto no solo mejora sus perspectivas laborales, sino que fortalece la economía local respetando el medio ambiente.\n\nEl impacto de la educación...',
+    image: '',
+    category: 'Comunidad',
+    author: 'VOSERDEM',
+    date: 'Reciente',
+    readTime: '3 min',
+    featured: true
+  },
+  {
+    id: '2',
+    title: 'Nuevos sistemas de riego en Chocaya',
+    summary: 'La implementación de riego por goteo beneficia a familias campesinas, asegurando sus cosechas frente a las sequías.',
+    content: 'Con el apoyo de voluntarios y expertos, instalamos sistemas de riego eficiente que optimizan el uso del agua. Estas acciones concretas responden al llamado del cuidado de la casa común, permitiendo que las familias no pierdan su sustento.',
+    image: '',
+    category: 'Ecología',
+    author: 'VOSERDEM',
+    date: 'Reciente',
+    readTime: '4 min',
+    featured: false
+  }
+];
+
 export default function Blog({ hideHeader = false }: BlogProps) {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [posts, setPosts] = useState<BlogPost[]>(DEFAULT_POSTS);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
@@ -204,15 +231,15 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                           </div>
                           <div>
                             <span className="block text-xs font-bold text-[#1B3022]">
-                              {featuredPost.author}
+                              {featuredPost?.author || 'VOSERDEM'}
                             </span>
                             <div className="flex items-center gap-2 text-[10px] text-[#2C2C2C]/70">
                               <span className="flex items-center gap-1 font-sans">
-                                <Calendar className="h-3 w-3 text-[#C5A059]" /> {featuredPost.date}
+                                <Calendar className="h-3 w-3 text-[#C5A059]" /> {featuredPost?.date || 'Reciente'}
                               </span>
                               <span>•</span>
                               <span className="flex items-center gap-1 font-sans">
-                                <Clock className="h-3 w-3 text-[#C5A059]" /> {featuredPost.readTime}
+                                <Clock className="h-3 w-3 text-[#C5A059]" /> {featuredPost?.readTime || ''}
                               </span>
                             </div>
                           </div>
@@ -281,9 +308,9 @@ export default function Blog({ hideHeader = false }: BlogProps) {
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="p-6 pt-0 border-t border-[#C5A059]/15 flex items-center justify-between mt-auto">
+                        <div className="p-6 pt-0 border-t border-[#C5A059]/15 flex items-center justify-between mt-auto">
                         <span className="text-[10px] text-[#2C2C2C]/80 italic font-sans">
-                          Por: {post.author.split(',')[0]}
+                          Por: {post?.author ? post.author.split(',')[0] : 'VOSERDEM'}
                         </span>
                         <button
                           onClick={() => setSelectedPost(post)}

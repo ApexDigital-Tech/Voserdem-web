@@ -88,9 +88,42 @@ export default function AboutUs({
   const [aboutData, setAboutData] = useState<AboutUsData>(defaultAboutData);
 
   // Previews States
-  const [latestProject, setLatestProject] = useState<Project | null>(null);
-  const [latestBlog, setLatestBlog] = useState<BlogPost | null>(null);
-  const [latestBulletin, setLatestBulletin] = useState<Bulletin | null>(null);
+  const [latestProject, setLatestProject] = useState<Project | null>({
+    id: 'default-proj',
+    title: 'Apoyo Educativo Integral',
+    description: 'Brindamos apoyo escolar y material educativo a niños y jóvenes de zonas periurbanas.',
+    area: 'Educación',
+    category: 'Educación',
+    region: 'Cochabamba',
+    location: 'Sectores Vulnerables',
+    image: '',
+    raised: 1500,
+    goal: 5000,
+    impact: 'Más de 500 niños beneficiados anualmente',
+    details: 'Programa de retención escolar'
+  });
+  
+  const [latestBlog, setLatestBlog] = useState<BlogPost | null>({
+    id: 'default-blog',
+    title: 'Transformando vidas en la comunidad',
+    summary: 'Conoce cómo nuestro programa de educación técnica está generando nuevas oportunidades.',
+    content: 'A través de nuestros talleres de capacitación...',
+    image: '',
+    category: 'Comunidad',
+    author: 'VOSERDEM',
+    date: 'Reciente',
+    readTime: '3 min',
+    featured: true
+  });
+  
+  const [latestBulletin, setLatestBulletin] = useState<Bulletin | null>({
+    id: 'default-bull',
+    title: 'Boletín Anual de Resultados',
+    summary: 'Resumen de nuestras actividades y alcance en el último periodo.',
+    issueNumber: 'Boletín N° 1',
+    publishDate: 'Reciente',
+    downloadUrl: '#'
+  });
 
   useEffect(() => {
     // Load Dynamic About Copy
@@ -314,29 +347,29 @@ export default function AboutUs({
               {latestProject ? (
                 <div className="space-y-4">
                   <img
-                    src={cleanGoogleDriveUrl(latestProject.image)}
-                    alt={latestProject.title}
+                    src={cleanGoogleDriveUrl(latestProject?.image || '')}
+                    alt={latestProject?.title || 'Proyecto'}
                     className="w-full h-40 object-cover rounded-[4px] border border-[#ebdccd]"
                     referrerPolicy="no-referrer"
                   />
                   <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">
-                    {latestProject.title}
+                    {latestProject?.title || 'Cargando...'}
                   </h3>
                   <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">
-                    {latestProject.description}
+                    {latestProject?.description || 'Sin descripción disponible.'}
                   </p>
 
                   {/* Progress Bar */}
                   <div className="space-y-2 text-[10px]">
                     <div className="flex justify-between font-mono font-bold text-[#2C2C2C]">
-                      <span>RECAUDADO: ${latestProject.raised.toLocaleString()} USD</span>
-                      <span>META: ${latestProject.goal.toLocaleString()}</span>
+                      <span>RECAUDADO: ${(latestProject?.raised || 0).toLocaleString()} USD</span>
+                      <span>META: ${(latestProject?.goal || 1).toLocaleString()}</span>
                     </div>
                     <div className="w-full bg-[#1B3022]/10 h-1.5 rounded-full overflow-hidden">
                       <div
                         className="bg-[#C5A059] h-full rounded-full"
                         style={{
-                          width: `${Math.min(100, (latestProject.raised / latestProject.goal) * 100)}%`,
+                          width: `${Math.min(100, ((latestProject?.raised || 0) / (latestProject?.goal || 1)) * 100)}%`,
                         }}
                       />
                     </div>
@@ -370,22 +403,22 @@ export default function AboutUs({
               {latestBlog ? (
                 <div className="space-y-4">
                   <img
-                    src={cleanGoogleDriveUrl(latestBlog.image)}
-                    alt={latestBlog.title}
+                    src={cleanGoogleDriveUrl(latestBlog?.image || '')}
+                    alt={latestBlog?.title || 'Noticia'}
                     className="w-full h-40 object-cover rounded-[4px] border border-[#ebdccd]"
                     referrerPolicy="no-referrer"
                   />
                   <div className="flex items-center gap-2 text-[9px] text-[#2C2C2C]/70 font-mono">
                     <Calendar className="h-3 w-3 text-[#C5A059]" />
-                    <span>{latestBlog.date}</span>
+                    <span>{latestBlog?.date || 'Reciente'}</span>
                     <span>·</span>
-                    <span>{latestBlog.readTime}</span>
+                    <span>{latestBlog?.readTime || ''}</span>
                   </div>
                   <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-1">
-                    {latestBlog.title}
+                    {latestBlog?.title || 'Cargando...'}
                   </h3>
                   <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-2 font-sans">
-                    {latestBlog.summary}
+                    {latestBlog?.summary || ''}
                   </p>
                 </div>
               ) : (
@@ -419,20 +452,20 @@ export default function AboutUs({
                     <FileText className="h-10 w-10 text-[#C5A059]" />
                     <div>
                       <h4 className="font-display font-black text-xs text-[#1B3022] uppercase tracking-wide">
-                        {latestBulletin.issueNumber}
+                        {latestBulletin?.issueNumber || 'Boletín'}
                       </h4>
                       <p className="text-[9px] text-[#2C2C2C]/85 font-mono">
-                        Publicado: {latestBulletin.publishDate}
+                        Publicado: {latestBulletin?.publishDate || 'Reciente'}
                       </p>
                     </div>
                   </div>
 
                   <h3 className="font-display font-bold text-base text-[#1B3022] line-clamp-2 leading-tight">
-                    {latestBulletin.title}
+                    {latestBulletin?.title || 'Cargando...'}
                   </h3>
 
                   <p className="text-[11px] text-[#2C2C2C] leading-relaxed line-clamp-3 font-sans">
-                    {latestBulletin.summary}
+                    {latestBulletin?.summary || ''}
                   </p>
                 </div>
               ) : (
