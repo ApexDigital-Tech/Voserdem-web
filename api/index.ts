@@ -16,12 +16,15 @@ import fs from 'fs';
 import path from 'path';
 
 // ---- Environment validation (fail-fast on missing secrets) ----
-const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'placeholder-key';
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'placeholder-key';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const ADMIN_PASSKEY = process.env.ADMIN_PASSKEY || 'admin-fallback';
+const ADMIN_PASSKEY = process.env.ADMIN_PASSKEY || process.env.VITE_ADMIN_PASSKEY || 'admin-fallback';
 
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+const hasValidEnv = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL) && 
+                    (process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY);
+
+if (!hasValidEnv) {
   console.warn(
     '⚠️ [WARNING] Missing required SUPABASE_URL or SUPABASE_ANON_KEY. Falling back to local mock data.'
   );
@@ -29,9 +32,7 @@ if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
 
 // Use Service Role Key for backend operations to bypass RLS and perform admin tasks securely.
 const activeKey = supabaseServiceKey || supabaseAnonKey;
-const supabase = (process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY)
-  ? createClient(supabaseUrl, activeKey)
-  : null;
+const supabase = hasValidEnv ? createClient(supabaseUrl, activeKey) : null;
 
 const app = express();
 const TENANT_ID = 'voserdem-bolivia';
