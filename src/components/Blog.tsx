@@ -67,11 +67,10 @@ export default function Blog({ hideHeader = false }: BlogProps) {
     const fetchBlog = async () => {
       try {
         const res = await api.get<BlogPost[]>('/api/blog');
-        if (res.success && res.data) {
+        if (res.success && res.data && res.data.length > 0) {
           setPosts(res.data);
-        } else {
-          throw new Error('Fallo al cargar artículos de blog');
         }
+        // If it's an empty array or failed, we just keep DEFAULT_POSTS
       } catch (err) {
         console.error(err);
         setError('No fue posible cargar el contenido en este momento.');

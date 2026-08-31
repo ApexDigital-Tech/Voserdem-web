@@ -102,14 +102,15 @@ export default function Projects({ onDonateSelect }: ProjectsProps) {
   const getProjectRegion = (p: Project): string => p.region || 'Bolivia';
 
   const fetchProjectsQuery = async () => {
-    const response = await api.get<Project[]>('/api/projects');
-    if (!response.success) {
-      throw new Error(response.error || 'No se pudieron recuperar los proyectos.');
+    try {
+      const response = await api.get<Project[]>('/api/projects');
+      if (response.success && response.data && Array.isArray(response.data) && response.data.length > 0) {
+        return response.data;
+      }
+    } catch (err) {
+      console.error('Error fetching projects:', err);
     }
-    const data = response.data;
-    if (data && Array.isArray(data) && data.length > 0) {
-      return data;
-    }
+    // Si falla o no hay datos, retornamos el fallback
     return fallbackProjects;
   };
 

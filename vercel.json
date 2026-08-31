@@ -9,14 +9,14 @@
   "redirects": [
     { "source": "/nosotros", "destination": "/nuestra-obra", "permanent": true },
     { "source": "/quienes-somos", "destination": "/nuestra-obra", "permanent": true },
-    { "source": "/proyectos", "destination": "/projects", "permanent": true },
-    { "source": "/programas", "destination": "/projects", "permanent": true },
+    { "source": "/proyectos", "destination": "/programas", "permanent": true },
+    { "source": "/projects", "destination": "/programas", "permanent": true },
     { "source": "/noticias", "destination": "/blog", "permanent": true },
     { "source": "/category/(.*)", "destination": "/blog", "permanent": true },
     { "source": "/tag/(.*)", "destination": "/blog", "permanent": true },
     { "source": "/author/(.*)", "destination": "/blog", "permanent": true },
-    { "source": "/donaciones", "destination": "/how-to-help", "permanent": true },
-    { "source": "/donar", "destination": "/how-to-help", "permanent": true },
-    { "source": "/contacto", "destination": "/contact", "permanent": true }
+    { "source": "/donaciones", "destination": "/donar", "permanent": true },
+    { "source": "/how-to-help", "destination": "/como-ayudar", "permanent": true },
+    { "source": "/contact", "destination": "/contacto", "permanent": true }
   ]
 }
